@@ -1,12 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/lib/site";
+import { photos } from "@/lib/photos";
 import { PLACEHOLDER_ARTICLES, PLACEHOLDER_BRANDS } from "@/lib/placeholders";
 import { Hero } from "@/components/home/Hero";
 import { Categories } from "@/components/home/Categories";
 import { Process } from "@/components/home/Process";
 import { Stats } from "@/components/home/Stats";
 import { Marquee } from "@/components/motion/Marquee";
+import { ParallaxBanner } from "@/components/motion/ParallaxBanner";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { ChevronRightIcon } from "@/components/icons";
 
@@ -72,43 +74,76 @@ export default function HomePage() {
 
       <Stats />
 
+      {/* Bandeau photo : le stock */}
+      <ParallaxBanner
+        image={photos.cagesRed}
+        alt="Cages de pièces de carrosserie référencées dans l'entrepôt de Colomiers"
+        className="flex min-h-[60vh] items-center text-white"
+        overlayClassName="bg-gradient-to-r from-night/85 via-night/55 to-night/30"
+      >
+        <div className="container-x py-24">
+          <Reveal className="max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Notre stock</p>
+            <h2 className="display-title mt-4 text-5xl sm:text-6xl lg:text-7xl">
+              Chaque pièce <span className="text-outline-brand">a sa place</span>
+            </h2>
+            <p className="mt-5 max-w-xl text-lg leading-8 text-white/80">
+              Démontée, contrôlée, référencée et photographiée avant sa mise en ligne. Ce que vous voyez sur le
+              site est exactement ce qui vous attend en rayon.
+            </p>
+            <Link
+              href="/pieces-auto"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400"
+            >
+              Explorer le stock <ChevronRightIcon size={18} />
+            </Link>
+          </Reveal>
+        </div>
+      </ParallaxBanner>
+
       {/* Enlèvement de véhicule */}
-      <section className="container-x pb-20 lg:pb-28">
+      <section className="container-x py-20 lg:py-28">
         <Reveal>
-          <div className="grain relative isolate grid items-center gap-8 overflow-hidden rounded-3xl bg-ink px-6 py-12 text-white sm:px-10 lg:grid-cols-[1.2fr_1fr] lg:px-14 lg:py-16">
-            <div aria-hidden className="absolute -right-24 -top-24 -z-10 h-80 w-80 animate-blob rounded-full bg-brand/30 blur-3xl motion-reduce:animate-none" />
-            <div aria-hidden className="absolute -bottom-32 left-1/3 -z-10 h-72 w-72 animate-blob rounded-full bg-brand/15 blur-3xl [animation-delay:-9s] motion-reduce:animate-none" />
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Pour professionnels et particuliers</p>
-              <h2 className="display-title mt-4 text-4xl sm:text-5xl">
-                Nous rachetons votre véhicule et vous en débarrassons gratuitement*
-              </h2>
-              <p className="mt-5 max-w-2xl leading-7 text-white/75">
-                Vous ne savez pas quoi faire de votre vieille voiture ? Vous changez de véhicule et souhaitez
-                bénéficier de la prime à la casse ? Nous rachetons votre véhicule : faites-le estimer auprès de
-                nos services. Véhicule stationné sur la voie publique et menacé d&apos;amende ? À réception du
-                dossier complet, nous nous occupons de tout.
-              </p>
-              <p className="mt-3 text-xs text-white/45">
-                * Sous conditions. Contactez nos services pour savoir si vous êtes éligible à l&apos;enlèvement
-                gratuit. Intervention en régions Occitanie et Nouvelle-Aquitaine.
-              </p>
+          <ParallaxBanner
+            image={photos.truck}
+            alt="Camion plateau Cazenave Pièces Auto pour l'enlèvement de véhicules"
+            className="rounded-3xl text-white shadow-2xl shadow-ink/20"
+            overlayClassName="bg-gradient-to-r from-night/95 via-night/80 to-night/35"
+            amount={60}
+          >
+            <div className="grid items-center gap-8 px-6 py-12 sm:px-10 lg:grid-cols-[1.2fr_1fr] lg:px-14 lg:py-16">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Pour professionnels et particuliers</p>
+                <h2 className="display-title mt-4 text-4xl sm:text-5xl">
+                  Nous rachetons votre véhicule et vous en débarrassons gratuitement*
+                </h2>
+                <p className="mt-5 max-w-2xl leading-7 text-white/80">
+                  Vous ne savez pas quoi faire de votre vieille voiture ? Vous changez de véhicule et souhaitez
+                  bénéficier de la prime à la casse ? Nous rachetons votre véhicule : faites-le estimer auprès de
+                  nos services. Véhicule stationné sur la voie publique et menacé d&apos;amende ? À réception du
+                  dossier complet, nous nous occupons de tout.
+                </p>
+                <p className="mt-3 text-xs text-white/50">
+                  * Sous conditions. Contactez nos services pour savoir si vous êtes éligible à l&apos;enlèvement
+                  gratuit. Intervention en régions Occitanie et Nouvelle-Aquitaine.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 lg:items-end">
+                <Link
+                  href="/enlevement-vehicule"
+                  className="inline-flex items-center justify-center rounded-full bg-brand px-8 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_40px_rgba(152,174,7,0.45)]"
+                >
+                  Faire estimer mon véhicule
+                </Link>
+                <a
+                  href={site.phoneHref}
+                  className="inline-flex items-center justify-center rounded-full border border-white/30 bg-night/40 px-8 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10"
+                >
+                  {site.phone}
+                </a>
+              </div>
             </div>
-            <div className="flex flex-col gap-3 lg:items-end">
-              <Link
-                href="/enlevement-vehicule"
-                className="inline-flex items-center justify-center rounded-full bg-brand px-8 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_40px_rgba(152,174,7,0.45)]"
-              >
-                Faire estimer mon véhicule
-              </Link>
-              <a
-                href={site.phoneHref}
-                className="inline-flex items-center justify-center rounded-full border border-white/25 px-8 py-4 text-sm font-bold text-white transition hover:bg-white/10"
-              >
-                {site.phone}
-              </a>
-            </div>
-          </div>
+          </ParallaxBanner>
         </Reveal>
       </section>
 
@@ -143,22 +178,35 @@ export default function HomePage() {
 
       {/* Professionnels */}
       <section className="border-b border-line">
-        <Reveal className="container-x flex flex-col items-start gap-6 py-14 lg:flex-row lg:items-center lg:justify-between">
-          <div>
+        <div className="container-x grid items-center gap-10 py-20 lg:grid-cols-2 lg:py-24">
+          <Reveal>
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">Espace pro</p>
             <h2 className="display-title mt-3 text-4xl text-ink sm:text-5xl">Professionnel de l&apos;automobile ?</h2>
-            <p className="mt-3 max-w-2xl text-steel">
+            <p className="mt-4 max-w-xl leading-7 text-steel">
               Garages, carrossiers, concessionnaires, assureurs, fourrières : créez votre compte professionnel
-              pour bénéficier de conditions dédiées et d&apos;un interlocuteur unique.
+              pour bénéficier de conditions dédiées et d&apos;un interlocuteur unique, au comptoir comme en ligne.
             </p>
-          </div>
-          <Link
-            href="/espace-pro"
-            className="inline-flex shrink-0 items-center justify-center rounded-full bg-ink px-8 py-4 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-ink-700"
-          >
-            Créer mon compte pro
-          </Link>
-        </Reveal>
+            <Link
+              href="/espace-pro"
+              className="mt-7 inline-flex items-center justify-center rounded-full bg-ink px-8 py-4 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-ink-700"
+            >
+              Créer mon compte pro
+            </Link>
+          </Reveal>
+          <Reveal delay={0.15} className="relative">
+            <div aria-hidden className="absolute -inset-4 -z-10 rounded-[2rem] bg-brand-100" />
+            <div className="relative aspect-[16/10] overflow-hidden rounded-3xl shadow-xl shadow-ink/10">
+              <Image
+                src={photos.counter}
+                alt="Comptoir d'accueil des professionnels chez Cazenave Pièces Auto"
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                placeholder="blur"
+                className="object-cover"
+              />
+            </div>
+          </Reveal>
+        </div>
       </section>
 
       {/* Le Mag */}
@@ -179,11 +227,19 @@ export default function HomePage() {
                 href={a.href}
                 className="group block h-full overflow-hidden rounded-2xl border border-line bg-white transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-ink/10"
               >
-                <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-ink to-night">
-                  <span className="absolute left-4 top-4 rounded-full bg-white/10 px-3 py-1 font-display text-lg font-semibold text-brand-400 backdrop-blur">
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <Image
+                    src={a.photo}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    placeholder="blur"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-night/70 to-transparent" />
+                  <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-white/10 px-3 py-1 font-display text-lg font-semibold text-brand-400 backdrop-blur">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span aria-hidden className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-brand/30 blur-3xl transition-transform duration-700 group-hover:scale-150" />
                 </div>
                 <div className="p-5">
                   <h3 className="font-display text-2xl font-semibold uppercase leading-none text-ink transition-colors group-hover:text-brand-700">{a.title}</h3>

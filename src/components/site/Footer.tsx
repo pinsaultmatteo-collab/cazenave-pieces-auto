@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import logo from "@/assets/brand/logo-navbar.png";
+import logoWhite from "@/assets/brand/logo-white.png";
 import { site } from "@/lib/site";
 
 const columns = [
@@ -45,9 +45,7 @@ export function Footer() {
       {/* Colonnes */}
       <div className="container-x grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <div className="inline-block rounded-xl bg-white p-3">
-            <Image src={logo} alt="Cazenave Pièces Auto" className="h-10 w-auto" />
-          </div>
+          <Image src={logoWhite} alt="Cazenave Pièces Auto" className="h-12 w-auto" />
           <p className="mt-5 text-sm leading-6 text-white/80">
             {site.tagline}. Centre VHU agréé, casse auto à {site.address.city}, près de Toulouse.
           </p>
@@ -129,6 +127,11 @@ export function Footer() {
                 </li>
               );
             })}
+            {site.certifications.map((c) => (
+              <li key={c.name} className="rounded-lg bg-white px-4 py-2" title={c.name}>
+                <Image src={c.logo} alt={c.name} className="h-12 w-auto object-contain" />
+              </li>
+            ))}
           </ul>
           <p className="mt-6 text-center text-xs text-white/60">
             Nos partenaires recyclage :{" "}

@@ -1,29 +1,39 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
 import { Reveal } from "@/components/motion/Reveal";
+import { photos } from "@/lib/photos";
 
 const STEPS = [
   {
     n: "01",
     title: "Réception et dépollution",
     text: "Le véhicule hors d'usage arrive au centre, il est enregistré, dépollué et ses fluides sont collectés séparément.",
+    photo: photos.depollution,
+    alt: "Technicien dépolluant un véhicule sous le pont élévateur",
   },
   {
     n: "02",
     title: "Démontage et contrôle",
-    text: "Chaque pièce est démontée, testée, référencée et photographiée sous plusieurs angles par nos équipes.",
+    text: "Chaque pièce est démontée, testée et référencée par nos équipes dans notre atelier de Colomiers.",
+    photo: photos.lift,
+    alt: "Véhicule sur pont élévateur en cours de démontage",
   },
   {
     n: "03",
-    title: "Mise en ligne",
-    text: "La pièce apparaît sur le site avec ses photos, son état et sa compatibilité. Le stock se met à jour toutes les 30 minutes.",
+    title: "Photo et mise en ligne",
+    text: "Chaque pièce passe par notre studio photo avant d'apparaître sur le site avec son état et sa compatibilité. Stock à jour toutes les 30 minutes.",
+    photo: photos.studioPart,
+    alt: "Pièce photographiée dans le studio lumineux de l'atelier",
   },
   {
     n: "04",
-    title: "Expédition sous 24/48h",
-    text: "Emballage soigné, expédition partout en France ou retrait sur place à Colomiers. Garantie 12 mois.",
+    title: "Expédition ou retrait",
+    text: "Emballage soigné et expédition sous 24/48h partout en France, ou retrait au comptoir de Colomiers. Garantie 12 mois.",
+    photo: photos.counter,
+    alt: "Comptoir d'accueil Cazenave Pièces Auto",
   },
 ] as const;
 
@@ -114,13 +124,26 @@ export function Process() {
           </svg>
         </div>
 
-        <ol className="mt-10 grid gap-8 lg:mt-8 lg:grid-cols-4 lg:gap-6">
+        <ol className="mt-10 grid gap-6 lg:mt-8 lg:grid-cols-4">
           {STEPS.map((s, i) => (
             <Reveal key={s.n} delay={i * 0.12}>
-              <li className="relative h-full rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm transition-colors duration-500 hover:border-brand-400/60 hover:bg-white/[0.07]">
-                <span className="font-display text-5xl font-bold text-brand-400/90 lg:hidden">{s.n}</span>
-                <h3 className="font-display mt-2 text-2xl font-semibold uppercase leading-none lg:mt-0">{s.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-white/65">{s.text}</p>
+              <li className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] transition-colors duration-500 hover:border-brand-400/60">
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <Image
+                    src={s.photo}
+                    alt={s.alt}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, 100vw"
+                    placeholder="blur"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-night/90 to-transparent" />
+                  <span className="absolute bottom-3 left-4 font-display text-4xl font-bold text-brand-400 lg:hidden">{s.n}</span>
+                </div>
+                <div className="p-5">
+                  <h3 className="font-display text-2xl font-semibold uppercase leading-none">{s.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-white/65">{s.text}</p>
+                </div>
               </li>
             </Reveal>
           ))}

@@ -3,6 +3,9 @@ import logoVhu from "@/assets/brand/logo-vhu.png";
 import logoAdeme from "@/assets/brand/logo-ademe.png";
 import logoQualicert from "@/assets/brand/logo-qualicert.png";
 import logoGoodbyeCar from "@/assets/brand/goodbyecar.png";
+import certSiv from "@/assets/brand/cert-siv.png";
+import certValorauto from "@/assets/brand/cert-valorauto.png";
+import certIndraExpert from "@/assets/brand/cert-indra-expert.jpg";
 import pictoHoraire from "@/assets/brand/picto-horaire.svg";
 import pictoGarantie from "@/assets/brand/picto-garantie.svg";
 import pictoMadeInFrance from "@/assets/brand/picto-made-in-france.svg";
@@ -104,6 +107,13 @@ export const site = {
     { name: "ADEME", logo: logoAdeme, href: "https://www.ademe.fr" },
     { name: "Certification Qualicert", logo: logoQualicert, href: "https://www.qualicert.fr" },
     { name: "GoodbyeCar", logo: logoGoodbyeCar, href: "https://www.goodbye-car.com" },
+  ],
+
+  /** Autres agréments et réseaux (visuels fournis par la cliente), sans lien externe. */
+  certifications: [
+    { name: "Centre agréé S.I.V", logo: certSiv },
+    { name: "Indra Centre Expert : traitement des véhicules électriques et hybrides", logo: certIndraExpert },
+    { name: "Réseau Valorauto Stellantis", logo: certValorauto },
   ],
 
   /** Partenaires cités en texte sur le site actuel. */
