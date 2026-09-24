@@ -1,0 +1,168 @@
+import Image from "next/image";
+import Link from "next/link";
+import logo from "@/assets/brand/logo-navbar.png";
+import { site } from "@/lib/site";
+
+const columns = [
+  {
+    title: "Pièces auto",
+    links: [
+      { label: "Toutes nos pièces d'occasion", href: "/pieces-auto" },
+      { label: "Rechercher par marque", href: "/pieces-auto/marques" },
+      { label: "Véhicules d'occasion", href: "/vehicules-occasion" },
+      { label: "Enlèvement de véhicule", href: "/enlevement-vehicule" },
+      { label: "Espace professionnel", href: "/espace-pro" },
+    ],
+  },
+  {
+    title: "Cazenave",
+    links: [
+      { label: "Qui sommes-nous", href: "/qui-sommes-nous" },
+      { label: "Notre engagement écologique", href: "/qui-sommes-nous#engagement" },
+      { label: "Le Mag", href: "/mag" },
+      { label: "Contact", href: "/contact" },
+      { label: "Je donne mon avis", href: site.social.googleReviews, external: true },
+    ],
+  },
+  {
+    title: "Besoin d'aide",
+    links: [
+      { label: "Livraison et retours", href: "/livraison-et-retours" },
+      { label: "Garantie 12 mois", href: "/garantie" },
+      { label: "Mon compte", href: "/mon-compte" },
+      { label: "Mes commandes", href: "/mon-compte/commandes" },
+      { label: "Conditions générales de vente", href: "/conditions-generales-de-vente" },
+      { label: "Mentions légales", href: "/mentions-legales" },
+    ],
+  },
+] as const;
+
+export function Footer() {
+  const year = new Date().getFullYear();
+
+  return (
+    <footer className="mt-16 bg-ink text-white">
+      {/* Colonnes */}
+      <div className="container-x grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
+        <div className="lg:col-span-2">
+          <div className="inline-block rounded-xl bg-white p-3">
+            <Image src={logo} alt="Cazenave Pièces Auto" className="h-10 w-auto" />
+          </div>
+          <p className="mt-5 text-sm leading-6 text-white/80">
+            {site.tagline}. Centre VHU agréé, casse auto à {site.address.city}, près de Toulouse.
+          </p>
+          <address className="mt-5 space-y-1 text-sm not-italic text-white/80">
+            <p className="font-semibold text-white">{site.name}</p>
+            <p>
+              {site.address.street}, {site.address.extra}
+            </p>
+            <p>
+              {site.address.postcode} {site.address.city}
+            </p>
+            <p className="pt-2">
+              <a href={site.phoneHref} className="font-semibold text-white hover:text-brand">
+                {site.phone}
+              </a>
+              <span className="text-white/60"> · </span>
+              <span>SMS </span>
+              <a href={site.smsHref} className="font-semibold text-white hover:text-brand">
+                {site.sms}
+              </a>
+            </p>
+            <p>{site.hours}</p>
+            <p className="text-white/60">{site.hoursClosed}</p>
+          </address>
+        </div>
+
+        {columns.map((col) => (
+          <div key={col.title}>
+            <h2 className="text-sm font-bold uppercase tracking-wide text-brand">{col.title}</h2>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              {col.links.map((link) =>
+                "external" in link && link.external ? (
+                  <li key={link.href}>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white/80 transition hover:text-white"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ) : (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-white/80 transition hover:text-white">
+                      {link.label}
+                    </Link>
+                  </li>
+                ),
+              )}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      {/* Certifications et partenaires (obligatoires, avec liens) */}
+      <div className="border-t border-white/10">
+        <div className="container-x py-8">
+          <p className="text-center text-xs font-semibold uppercase tracking-wide text-white/60">
+            Certifications et partenaires
+          </p>
+          <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+            {site.partners.map((p) => {
+              const external = p.href.startsWith("http");
+              const img = (
+                <Image src={p.logo} alt={p.name} className="h-12 w-auto object-contain" />
+              );
+              return (
+                <li key={p.name} className="rounded-lg bg-white px-4 py-2">
+                  {external ? (
+                    <a href={p.href} target="_blank" rel="noopener noreferrer" title={p.name}>
+                      {img}
+                    </a>
+                  ) : (
+                    <Link href={p.href} title={p.name}>
+                      {img}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-6 text-center text-xs text-white/60">
+            Nos partenaires recyclage :{" "}
+            {site.textPartners.map((p, i) => (
+              <span key={p.name}>
+                <a href={p.href} target="_blank" rel="noopener noreferrer" className="underline hover:text-white">
+                  {p.name}
+                </a>
+                {i < site.textPartners.length - 1 ? ", " : "."}
+              </span>
+            ))}
+          </p>
+        </div>
+      </div>
+
+      {/* Ligne légale */}
+      <div className="border-t border-white/10">
+        <div className="container-x flex flex-col items-center justify-between gap-3 py-5 text-xs text-white/60 md:flex-row">
+          <p>
+            © {year} {site.name} · Tous droits réservés · Agrément préfectoral {site.agrement}
+          </p>
+          <div className="flex items-center gap-4">
+            <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              Facebook
+            </a>
+            <a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              Instagram
+            </a>
+            <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              LinkedIn
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}

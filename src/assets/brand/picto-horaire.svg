@@ -1,0 +1,19 @@
+<svg id="Groupe_158" data-name="Groupe 158" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="73.934" height="73.935" viewBox="0 0 73.934 73.935">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_96" data-name="Rectangle 96" width="73.934" height="73.935" fill="#98ae07"/>
+    </clipPath>
+  </defs>
+  <path id="Tracé_212" data-name="Tracé 212" d="M67.237,38.066H47.1V11.508H44.7V40.466H73.654v-2.4Z" transform="translate(-8.929 -2.299)" fill="#98ae07"/>
+  <g id="Groupe_157" data-name="Groupe 157" transform="translate(0 0)">
+    <g id="Groupe_156" data-name="Groupe 156" clip-path="url(#clip-path)">
+      <path id="Tracé_213" data-name="Tracé 213" d="M36.967,0A36.967,36.967,0,1,0,73.933,36.967,37.009,37.009,0,0,0,36.967,0m0,71.534A34.567,34.567,0,1,1,71.533,36.967,34.606,34.606,0,0,1,36.967,71.534" transform="translate(0 0)" fill="#98ae07"/>
+      <rect id="Rectangle_90" data-name="Rectangle 90" width="2.401" height="6.416" transform="translate(35.766 58.309)" fill="#98ae07"/>
+      <rect id="Rectangle_91" data-name="Rectangle 91" width="6.416" height="2.401" transform="translate(16.491 55.746) rotate(-45)" fill="#98ae07"/>
+      <rect id="Rectangle_92" data-name="Rectangle 92" width="6.415" height="2.401" transform="translate(9.21 35.767)" fill="#98ae07"/>
+      <rect id="Rectangle_93" data-name="Rectangle 93" width="2.401" height="6.416" transform="matrix(0.707, -0.707, 0.707, 0.707, 16.491, 18.189)" fill="#98ae07"/>
+      <rect id="Rectangle_94" data-name="Rectangle 94" width="6.416" height="2.4" transform="translate(51.209 21.028) rotate(-45)" fill="#98ae07"/>
+      <rect id="Rectangle_95" data-name="Rectangle 95" width="2.4" height="6.416" transform="translate(51.209 52.907) rotate(-45)" fill="#98ae07"/>
+    </g>
+  </g>
+</svg>

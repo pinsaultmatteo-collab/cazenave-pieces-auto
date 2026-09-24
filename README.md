@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cazenave Pièces Auto — site e-commerce
 
-## Getting Started
+Refonte du site [cazenave.net](https://cazenave.net) : casse auto et centre VHU agréé à Colomiers (31),
+vente en ligne de pièces auto d'occasion. Stock, clients et commandes pilotés par l'API Opisto,
+paiement Stripe, déploiement Vercel.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router, TypeScript) et Tailwind CSS 4
+- Postgres (Neon) via Drizzle ORM — réplique locale du stock Opisto, synchronisée toutes les 30 minutes
+- Stripe pour le paiement, remontée du règlement dans Opisto
+- Recherche par plaque d'immatriculation via un fournisseur tiers, avec mise en cache
+
+## Démarrer
 
 ```bash
+npm install
+cp .env.example .env.local   # puis renseigner les valeurs
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Le site tourne sur http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Organisation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/app` — pages et routes (App Router)
+- `src/components` — en-tête, pied de page, modules d'accueil
+- `src/lib/site.ts` — coordonnées, navigation, partenaires (logos obligatoires en pied de page)
+- `src/assets/brand` — logo, pictos et logos partenaires
 
-## Learn More
+## Règles
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Ne jamais committer de secrets : tout passe par `.env.local` (ignoré par git)
+- Les logos partenaires et leurs liens du pied de page sont une obligation contractuelle
+- Le site reste en `noindex` hors production Vercel (`VERCEL_ENV=production`)
