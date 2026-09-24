@@ -2,7 +2,9 @@
 
 /*
  * Charte Cazenave Pièces Auto (reprise du site actuel) :
- * ardoise #2b3d47, vert olive #98ae07, police Montserrat.
+ * ardoise #2b3d47, vert olive #98ae07, Montserrat pour le texte.
+ * Titres en Barlow Condensed (esprit automobile), fonds nuit pour les
+ * sections cinématiques.
  */
 @theme {
   --color-ink: #2b3d47;
@@ -10,10 +12,13 @@
   --color-ink-900: #16232a;
   --color-ink-100: #dfe5e8;
   --color-ink-50: #eef1f3;
+  --color-night: #0d161b;
+  --color-night-800: #121e25;
 
   --color-brand: #98ae07;
   --color-brand-600: #87990a;
   --color-brand-700: #6f7f08;
+  --color-brand-400: #b8cf1f;
   --color-brand-200: #dfe8a3;
   --color-brand-100: #eef3cc;
   --color-brand-50: #f7f9e6;
@@ -23,6 +28,46 @@
   --color-steel: #6b7a83;
 
   --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-barlow), var(--font-montserrat), sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 48s linear infinite;
+  --animate-grid: grid-move 1.4s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-blob: blob 18s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 5s linear infinite;
+  --animate-cue: cue 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.8s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes grid-move {
+  from { background-position: 0 0; }
+  to { background-position: 0 80px; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(70px, -50px) scale(1.15); }
+  66% { transform: translate(-50px, 40px) scale(0.92); }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes cue {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
 }
 
 :root {
@@ -40,6 +85,33 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Lenis (défilement fluide) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Préférence système : on coupe toutes les animations décoratives. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Conteneur de page : largeur max 1280px, gouttières 16 / 24 / 32px. */
 @utility container-x {
   margin-inline: auto;
@@ -54,10 +126,32 @@ body {
   }
 }
 
-/* Titres de section en capitales, style "gros titre" de la référence GPA. */
+/* Titres condensés en capitales, style automobile. */
 @utility display-title {
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
-  line-height: 1.05;
+  letter-spacing: 0.01em;
+  line-height: 0.95;
+}
+
+/* Grain cinéma très léger, posé sur les fonds sombres. */
+@utility grain {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    background-size: 180px 180px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Texte détouré (contour vert, intérieur transparent). */
+@utility text-outline-brand {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--color-brand);
 }

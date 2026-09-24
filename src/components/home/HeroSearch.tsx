@@ -16,7 +16,7 @@ export function HeroSearch() {
   const [tab, setTab] = useState<Tab>("immat");
 
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-xl shadow-ink/10 sm:p-7">
+    <div className="rounded-2xl border-t-4 border-brand bg-white p-5 shadow-2xl shadow-black/40 sm:p-7">
       <div role="tablist" aria-label="Mode de recherche" className="flex gap-1 rounded-xl bg-mist p-1">
         {tabs.map((t) => {
           const active = t.id === tab;
