@@ -11,6 +11,30 @@ import pictoSecurite from "@/assets/brand/picto-securite.svg";
 import pictoSupport from "@/assets/brand/picto-support-client.svg";
 
 /**
+ * URL publique du site, toujours valide :
+ * 1. NEXT_PUBLIC_SITE_URL si renseignée (et non vide),
+ * 2. sinon l'URL de production Vercel, puis l'URL du déploiement en cours,
+ * 3. sinon le domaine définitif.
+ */
+function resolveSiteUrl(): string {
+  const candidates = [
+    process.env.NEXT_PUBLIC_SITE_URL?.trim(),
+    process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
+    process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
+    "https://cazenave.net",
+  ];
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    try {
+      return new URL(candidate).origin;
+    } catch {
+      // valeur invalide : on passe à la suivante
+    }
+  }
+  return "https://cazenave.net";
+}
+
+/**
  * Informations de l'entreprise et configuration globale du site.
  * Source : site actuel cazenave.net (septembre 2026).
  */
@@ -21,7 +45,7 @@ export const site = {
   tagline: "Le spécialiste de la pièce auto d'occasion depuis 1974",
   description:
     "Trouvez simplement et rapidement votre pièce auto d'occasion pas cher, testée et garantie 12 mois. Expédition sous 24/48h partout en France depuis notre casse auto de Colomiers, près de Toulouse.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://cazenave.net",
+  url: resolveSiteUrl(),
   foundedYear: 1974,
 
   phone: "05 61 78 40 40",
