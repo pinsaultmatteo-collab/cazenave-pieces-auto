@@ -16,9 +16,9 @@ const POINTS = [
 ];
 
 const GALLERY = [
-  { photo: photos.cagesRed, alt: "Cages de pièces de carrosserie", className: "left-0 top-6 w-[58%] -rotate-6" },
-  { photo: photos.aisleWide, alt: "Allée de rayonnages", className: "right-0 top-0 w-[46%] rotate-3" },
-  { photo: photos.tyres, alt: "Rayonnage de pneus", className: "bottom-0 left-[26%] w-[48%] rotate-2" },
+  { photo: photos.cagesRed, alt: "Cages de pièces de carrosserie", className: "-left-4 top-4 w-[66%] -rotate-6" },
+  { photo: photos.aisleWide, alt: "Allée de rayonnages", className: "-right-4 top-0 w-[54%] rotate-3" },
+  { photo: photos.tyres, alt: "Rayonnage de pneus", className: "-bottom-2 left-[24%] w-[56%] rotate-2" },
 ];
 
 /** Bloc « Notre stock » : allée de moteurs en fond, arguments et mosaïque photo. */
@@ -31,7 +31,7 @@ export function StockBanner() {
       overlayClassName="bg-gradient-to-r from-night/92 via-night/78 to-night/45"
       amount={110}
     >
-      <div className="container-x grid items-center gap-14 py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-32">
+      <div className="container-x grid items-center gap-14 py-24 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16 lg:py-32">
         <Reveal>
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Notre stock</p>
           <h2 className="display-title mt-4 text-5xl sm:text-6xl lg:text-7xl">
@@ -73,7 +73,7 @@ export function StockBanner() {
             <StaggerItem key={g.alt} className={`absolute ${g.className}`}>
               <TiltCard className="relative rounded-2xl" max={7}>
                 <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border-4 border-white/90 shadow-2xl shadow-black/50">
-                  <Image src={g.photo} alt={g.alt} fill sizes="30vw" placeholder="blur" className="object-cover" />
+                  <Image src={g.photo} alt={g.alt} fill sizes="36vw" placeholder="blur" className="object-cover" />
                 </div>
               </TiltCard>
             </StaggerItem>

@@ -17,6 +17,9 @@ const iso = (d: Date | null | undefined): string | null => (d ? d.toISOString() 
 /** Pièce visible sur le site : présente chez Opisto, disponible, en stock, non bloquée. */
 const LIVE = and(isNull(parts.deletedAt), eq(parts.available, true), eq(parts.inStock, true), eq(parts.blocked, false))!;
 
+/** Pièce avec au moins une vraie photo (le visuel générique Opisto « no-photos » est exclu). */
+const HAS_PHOTO = sql`jsonb_array_length(${parts.photos}) > 0 and ${parts.photos}::text not ilike '%no-photo%'`;
+
 const normalize = (s: string) =>
   s
     .normalize("NFD")
@@ -263,10 +266,44 @@ export async function getLatestParts(limit = 8): Promise<Part[]> {
   const rows = await db
     .select()
     .from(parts)
-    .where(and(LIVE, sql`jsonb_array_length(${parts.photos}) > 0`))
+    .where(and(LIVE, HAS_PHOTO))
     .orderBy(sql`${parts.opistoCreatedAt} desc nulls last`, desc(parts.id))
     .limit(limit);
   return rows.map(toPart);
+}
+
+/** Sous-catégories à privilégier pour illustrer chaque famille (minuscules, ordre de préférence). */
+const SHOWCASE_PREFERENCES: Record<string, string[]> = {
+  "carrosserie-exterieure": ["porte avant gauche", "porte avant droit", "pare-chocs avant", "capot", "hayon", "aile avant gauche", "aile avant droit", "retroviseur gauche"],
+  "carrosserie-interieure-et-divers": ["siege avant gauche", "siege avant droit", "volant", "compteur", "planche de bord complete", "banquette arriere"],
+  "grosse-mecanique": ["moteur", "boite de vitesses", "turbo", "culasse", "pont arriere"],
+  "petite-mecanique": ["alternateur", "demarreur", "compresseur de climatisation", "cremaillere assistee", "radiateur", "pompe a injection"],
+  electricite: ["calculateur moteur", "boitier de servitude", "autoradio", "phare avant gauche"],
+  jantes: ["jante alu", "jante", "jante tole"],
+  pneus: ["pneu"],
+};
+
+/** Une photo de pièce réelle pour illustrer chaque famille, indexée par identifiant de famille. */
+export async function getCategoryShowcase(): Promise<Record<number, { photo: string; name: string }>> {
+  const db = await getDb();
+  const families = await db.select({ id: categories.id, slug: categories.slug }).from(categories);
+  const out: Record<number, { photo: string; name: string }> = {};
+  await Promise.all(
+    families.map(async (f) => {
+      const prefs = SHOWCASE_PREFERENCES[f.slug] ?? [];
+      // Sous-catégories préférées d'abord, puis la pièce la plus récente.
+      const order: SQL[] = [sql`${parts.opistoCreatedAt} desc nulls last`, desc(parts.id)];
+      if (prefs.length) order.unshift(sql`array_position(array[${sql.join(prefs.map((n) => sql`${n}`), sql`, `)}]::text[], lower(${parts.subCategoryName})) asc nulls last`);
+      const [row] = await db
+        .select({ photo: sql<string>`${parts.photos}->>0`, name: parts.name })
+        .from(parts)
+        .where(and(LIVE, HAS_PHOTO, eq(parts.categoryId, f.id)))
+        .orderBy(...order)
+        .limit(1);
+      if (row?.photo) out[f.id] = { photo: row.photo, name: row.name };
+    }),
+  );
+  return out;
 }
 
 export async function getPart(id: number): Promise<Part | null> {

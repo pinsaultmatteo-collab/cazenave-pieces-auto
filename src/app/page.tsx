@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
 import { FAQ } from "@/lib/faq";
 import { categoryVisual, PLACEHOLDER_ARTICLES, PLACEHOLDER_BRANDS } from "@/lib/placeholders";
-import { getCategories, getCategoryCounts, getLatestParts, isDemoData } from "@/lib/catalog";
+import { getCategories, getCategoryCounts, getCategoryShowcase, getLatestParts, isDemoData } from "@/lib/catalog";
 import { PartCard } from "@/components/catalog/PartCard";
 import { Hero } from "@/components/home/Hero";
 import { Categories } from "@/components/home/Categories";
@@ -50,12 +50,16 @@ const faqJsonLd = {
 };
 
 export default async function HomePage() {
-  const [categories, counts, latest] = await Promise.all([getCategories(), getCategoryCounts(), getLatestParts(4)]);
+  const [categories, counts, latest, showcase] = await Promise.all([getCategories(), getCategoryCounts(), getLatestParts(4), getCategoryShowcase()]);
   const demo = isDemoData();
   const categoryTiles = categories
     .filter((c) => demo || (counts[c.id] ?? 0) > 0)
     .slice(0, 9)
-    .map((c) => ({ slug: c.slug, name: c.name, count: counts[c.id] ?? 0, ...categoryVisual(c.slug) }));
+    .map((c) => {
+      const visual = categoryVisual(c.slug);
+      const shot = showcase[c.id];
+      return { slug: c.slug, name: c.name, count: counts[c.id] ?? 0, icon: visual.icon, photo: shot?.photo ?? visual.photo, photoLabel: shot?.name };
+    });
 
   return (
     <>

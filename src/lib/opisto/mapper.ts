@@ -22,14 +22,19 @@ export function titleCase(value: string | null): string | null {
 
 const money = (n: number | undefined | null) => (typeof n === "number" && Number.isFinite(n) ? n.toFixed(2) : null);
 
-/** Photos grand format d'une pièce ou d'un véhicule (photos de la pièce d'abord). */
+/** Vrai pour une vraie photo ; faux pour le visuel générique « pas de photo » d'Opisto. */
+export function isRealPhoto(url: string | null | undefined): url is string {
+  return Boolean(url) && !/no-photo/i.test(url!);
+}
+
+/** Photos grand format d'une pièce ou d'un véhicule (photos de la pièce d'abord), sans le visuel générique. */
 export function photoUrls(item: { ScaledPhotos?: OpistoPart["ScaledPhotos"]; Photos?: string[] }, size: "large" | "medium" = "large"): string[] {
   const scaled = item.ScaledPhotos ?? [];
   if (scaled.length) {
     const sorted = [...scaled].sort((a, b) => Number(b.IsPart) - Number(a.IsPart) || Number(b.IsThumbnail ?? false) - Number(a.IsThumbnail ?? false));
-    return sorted.map((p) => (size === "large" ? p.UrlLargePhoto || p.Url : p.UrlMediumPhoto || p.Url)).filter(Boolean);
+    return sorted.map((p) => (size === "large" ? p.UrlLargePhoto || p.Url : p.UrlMediumPhoto || p.Url)).filter(isRealPhoto);
   }
-  return (item.Photos ?? []).filter(Boolean);
+  return (item.Photos ?? []).filter(isRealPhoto);
 }
 
 /** Version courte : la désignation commerciale sans le nom du modèle qu'elle répète. */
@@ -83,7 +88,7 @@ export function mapVehicle(v: OpistoVehicle, casse: number, now: Date): NewVehic
     status: cleanLabel(v.Status),
     expertPrice: money(v.ExpertPrice),
     photos: photoUrls(v),
-    vignette: photoUrls(v, "medium")[0] || v.Vignette || null,
+    vignette: photoUrls(v, "medium")[0] || (isRealPhoto(v.Vignette) ? v.Vignette : null),
     policeId: v.PoliceId ?? null,
     deletedAt: null,
     syncedAt: now,
@@ -141,7 +146,7 @@ export function mapPart(p: OpistoPart, casse: number, family: { id: number; name
     shippings: p.Shippings ?? [],
     photos,
     photosMedium: photoUrls(p, "medium"),
-    vignette: photoUrls(p, "medium")[0] || p.Vignette || null,
+    vignette: photoUrls(p, "medium")[0] || (isRealPhoto(p.Vignette) ? p.Vignette : null),
     available: p.Available !== false,
     inStock: p.IsInStock !== false,
     forSale: p.ForSale !== false,

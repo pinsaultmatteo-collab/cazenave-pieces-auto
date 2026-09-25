@@ -125,3 +125,12 @@ export async function getVehicle(id: number): Promise<Vehicle | null> {
 export async function listPartLinks(): Promise<{ id: number; slug: string; updatedAt: string }[]> {
   return DEMO_PARTS.filter((p) => p.available && p.inStock).map((p) => ({ id: p.id, slug: p.slug, updatedAt: p.updatedAt }));
 }
+
+/** Une photo de pièce par catégorie (jeu de démonstration). */
+export async function getCategoryShowcase(): Promise<Record<number, { photo: string; name: string }>> {
+  const out: Record<number, { photo: string; name: string }> = {};
+  for (const p of DEMO_PARTS) {
+    if (p.available && p.photos[0] && !out[p.categoryId]) out[p.categoryId] = { photo: p.photos[0], name: p.name };
+  }
+  return out;
+}

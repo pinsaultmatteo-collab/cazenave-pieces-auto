@@ -12,7 +12,10 @@ export type CategoryTile = {
   name: string;
   /** Nombre de pièces en stock (0 si inconnu) */
   count: number;
-  photo: StaticImageData;
+  /** Photo d'une pièce réelle du stock (URL) ou photo locale de repli */
+  photo: StaticImageData | string;
+  /** Nom de la pièce illustrée, si photo réelle */
+  photoLabel?: string;
   icon: string;
 };
 
@@ -29,10 +32,10 @@ export function Categories({ items }: { items: CategoryTile[] }) {
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
                   src={c.photo}
-                  alt={`Pièces d'occasion : ${c.name.toLowerCase()}`}
+                  alt={c.photoLabel ? `${c.photoLabel} d'occasion, ${c.name.toLowerCase()}` : `Pièces d'occasion : ${c.name.toLowerCase()}`}
                   fill
                   sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  placeholder="blur"
+                  placeholder={typeof c.photo === "string" ? "empty" : "blur"}
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-night via-night/45 to-night/5" />

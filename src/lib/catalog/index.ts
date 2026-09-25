@@ -39,6 +39,7 @@ export const getBrandCounts: typeof db.getBrandCounts = (...a) => impl().getBran
 export const getCategoryCounts: typeof db.getCategoryCounts = (...a) => impl().getCategoryCounts(...a);
 export const searchParts: typeof db.searchParts = (...a) => impl().searchParts(...a);
 export const getLatestParts: typeof db.getLatestParts = (...a) => impl().getLatestParts(...a);
+export const getCategoryShowcase: typeof db.getCategoryShowcase = (...a) => impl().getCategoryShowcase(...a);
 export const getPart: typeof db.getPart = (...a) => impl().getPart(...a);
 export const getRelatedParts: typeof db.getRelatedParts = (...a) => impl().getRelatedParts(...a);
 export const listPartLinks: typeof db.listPartLinks = (...a) => impl().listPartLinks(...a);
