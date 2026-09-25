@@ -3,14 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { CatalogSection, readCatalogParams } from "@/components/catalog/catalog-page";
-import { canPrerenderCatalog, getBrandBySlug, getBrandCounts, getBrands, getModels } from "@/lib/catalog";
+import { getBrandBySlug, getBrandCounts, getModels } from "@/lib/catalog";
 import { photos } from "@/lib/photos";
 
-export async function generateStaticParams() {
-  if (!canPrerenderCatalog()) return [];
-  return (await getBrands()).map((b) => ({ brand: b.slug }));
-}
-
+// Page rendue à la demande (stock synchronisé, filtres dans l'URL).
 export async function generateMetadata({ params }: PageProps<"/pieces-auto/marques/[brand]">): Promise<Metadata> {
   const { brand } = await params;
   const b = await getBrandBySlug(brand);

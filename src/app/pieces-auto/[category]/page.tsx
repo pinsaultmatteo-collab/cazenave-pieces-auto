@@ -2,15 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { CatalogSection, readCatalogParams } from "@/components/catalog/catalog-page";
-import { canPrerenderCatalog, getCategories, getCategoryBySlug, getCategoryCounts } from "@/lib/catalog";
+import { getCategoryBySlug, getCategoryCounts } from "@/lib/catalog";
 import { photos } from "@/lib/photos";
 import { PLACEHOLDER_CATEGORIES } from "@/lib/placeholders";
 
-export async function generateStaticParams() {
-  if (!canPrerenderCatalog()) return [];
-  return (await getCategories()).map((c) => ({ category: c.slug }));
-}
-
+// Page rendue à la demande : le stock change toutes les 30 minutes et les
+// filtres passent par l'URL. Pas de pré-rendu à la construction.
 export async function generateMetadata({ params }: PageProps<"/pieces-auto/[category]">): Promise<Metadata> {
   const { category } = await params;
   const cat = await getCategoryBySlug(category);

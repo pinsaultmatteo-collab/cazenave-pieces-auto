@@ -28,11 +28,6 @@ export function isDemoData(): boolean {
   return catalogSource() === "demo";
 }
 
-/** Faux en développement sur PGlite : le rendu statique à la construction est alors désactivé pour le catalogue. */
-export function canPrerenderCatalog(): boolean {
-  return catalogSource() === "demo" || Boolean(process.env.DATABASE_URL);
-}
-
 const impl = () => (catalogSource() === "demo" ? demo : db);
 
 export const getCategories: typeof db.getCategories = (...a) => impl().getCategories(...a);
