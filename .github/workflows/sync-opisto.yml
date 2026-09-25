@@ -1,0 +1,48 @@
+name: Synchronisation Opisto
+
+# Toutes les 30 minutes : appelle l'API du site déployé, qui met à jour la
+# base Neon depuis Opisto (delta ; parcours complet automatique une fois par
+# jour ou sur demande). Secrets à renseigner dans GitHub :
+#   SITE_URL     ex. https://cazenave.net
+#   SYNC_SECRET  même valeur que la variable SYNC_SECRET sur Vercel
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Mode (delta ou full)"
+        default: "delta"
+        required: false
+
+concurrency:
+  group: sync-opisto
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Appel de l'API de synchronisation
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          SYNC_SECRET: ${{ secrets.SYNC_SECRET }}
+          MODE: ${{ github.event.inputs.mode || 'delta' }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SITE_URL:-}" ] || [ -z "${SYNC_SECRET:-}" ]; then
+            echo "Secrets SITE_URL / SYNC_SECRET manquants"; exit 1
+          fi
+          query=""
+          if [ "$MODE" = "full" ]; then query="?mode=full"; fi
+          for i in $(seq 1 40); do
+            body=$(curl -sS -X POST -H "Authorization: Bearer $SYNC_SECRET" "$SITE_URL/api/sync$query")
+            query=""
+            echo "#$i $body"
+            done=$(echo "$body" | python3 -c 'import json,sys; d=json.load(sys.stdin); print("1" if d.get("done") else "0"); sys.exit(1 if d.get("error") else 0)')
+            if [ "$done" = "1" ]; then exit 0; fi
+            if echo "$body" | grep -q '"skipped"'; then sleep 60; fi
+          done
+          echo "Synchronisation incomplète après 40 appels"; exit 1

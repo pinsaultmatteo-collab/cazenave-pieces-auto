@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { CatalogSection, readCatalogParams } from "@/components/catalog/catalog-page";
-import { getCategories, getCategoryBySlug, getCategoryCounts } from "@/lib/catalog";
+import { canPrerenderCatalog, getCategories, getCategoryBySlug, getCategoryCounts } from "@/lib/catalog";
 import { photos } from "@/lib/photos";
 import { PLACEHOLDER_CATEGORIES } from "@/lib/placeholders";
 
 export async function generateStaticParams() {
+  if (!canPrerenderCatalog()) return [];
   return (await getCategories()).map((c) => ({ category: c.slug }));
 }
 
@@ -31,7 +32,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
   return (
     <>
       <PageHero
-        kicker={`${counts[cat.id] ?? 0} pièces en stock`}
+        kicker={`${(counts[cat.id] ?? 0).toLocaleString("fr-FR")} pièces en stock`}
         title={cat.name}
         text={cat.description}
         image={heroPhoto}

@@ -13,6 +13,8 @@ const OLD_MAG_TAGS = [
 ];
 
 const nextConfig: NextConfig = {
+  // Postgres embarqué (développement) : binaire WASM chargé côté Node, pas bundlé
+  serverExternalPackages: ["@electric-sql/pglite"],
   images: {
     remotePatterns: [
       // Photos des pièces et véhicules servies par le stockage Opisto

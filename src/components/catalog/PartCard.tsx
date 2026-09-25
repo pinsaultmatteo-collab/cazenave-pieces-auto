@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { partHref, type Part } from "@/lib/catalog";
+import { partHref } from "@/lib/catalog/links";
+import type { Part } from "@/lib/catalog/types";
 import { formatPrice } from "@/lib/format";
 import { CheckIcon, TruckIcon } from "@/components/icons";
 

@@ -12,6 +12,9 @@ import { AddToCartButton } from "@/components/catalog/AddToCartButton";
 import { PartCard } from "@/components/catalog/PartCard";
 import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
 
+/** Rendu mis en cache et rafraîchi au plus toutes les 10 minutes (stock synchronisé depuis Opisto). */
+export const revalidate = 600;
+
 const CONDITION: Record<Part["condition"], string> = { GOOD: "Bon état", CORRECT: "État correct", BAD: "État moyen" };
 
 async function load(slug: string) {

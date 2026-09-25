@@ -10,6 +10,9 @@ import { ProductGallery } from "@/components/catalog/ProductGallery";
 import { PartsGrid } from "@/components/catalog/PartsGrid";
 import { PhoneIcon } from "@/components/icons";
 
+/** Rendu mis en cache et rafraîchi au plus toutes les 10 minutes (stock synchronisé depuis Opisto). */
+export const revalidate = 600;
+
 export async function generateMetadata({ params }: PageProps<"/vehicule-occasion/[id]/[slug]">): Promise<Metadata> {
   const { id } = await params;
   const v = await getVehicle(Number(id));

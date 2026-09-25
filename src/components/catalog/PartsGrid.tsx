@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Part } from "@/lib/catalog";
+import type { Part } from "@/lib/catalog/types";
 import { PartCard } from "./PartCard";
 import { site } from "@/lib/site";
 

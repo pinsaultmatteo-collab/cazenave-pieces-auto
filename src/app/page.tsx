@@ -3,7 +3,9 @@ import Link from "next/link";
 import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
 import { FAQ } from "@/lib/faq";
-import { PLACEHOLDER_ARTICLES, PLACEHOLDER_BRANDS } from "@/lib/placeholders";
+import { categoryVisual, PLACEHOLDER_ARTICLES, PLACEHOLDER_BRANDS } from "@/lib/placeholders";
+import { getCategories, getCategoryCounts, getLatestParts, isDemoData } from "@/lib/catalog";
+import { PartCard } from "@/components/catalog/PartCard";
 import { Hero } from "@/components/home/Hero";
 import { Categories } from "@/components/home/Categories";
 import { Process } from "@/components/home/Process";
@@ -16,6 +18,9 @@ import { Marquee } from "@/components/motion/Marquee";
 import { ParallaxBanner } from "@/components/motion/ParallaxBanner";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { ChevronRightIcon } from "@/components/icons";
+
+/** Rendu mis en cache et rafraîchi au plus toutes les 30 minutes (stock synchronisé depuis Opisto). */
+export const revalidate = 1800;
 
 function SectionHeading({ kicker, title, text, href, link }: { kicker: string; title: string; text: string; href: string; link: string }) {
   return (
@@ -44,7 +49,14 @@ const faqJsonLd = {
   ),
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [categories, counts, latest] = await Promise.all([getCategories(), getCategoryCounts(), getLatestParts(4)]);
+  const demo = isDemoData();
+  const categoryTiles = categories
+    .filter((c) => demo || (counts[c.id] ?? 0) > 0)
+    .slice(0, 9)
+    .map((c) => ({ slug: c.slug, name: c.name, count: counts[c.id] ?? 0, ...categoryVisual(c.slug) }));
+
   return (
     <>
       <Hero />
@@ -82,7 +94,7 @@ export default function HomePage() {
             />
           </Reveal>
           <div className="mt-10">
-            <Categories />
+            <Categories items={categoryTiles} />
           </div>
         </div>
       </section>
@@ -100,18 +112,24 @@ export default function HomePage() {
             />
           </Reveal>
           <Stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <StaggerItem key={i} className="overflow-hidden rounded-2xl border border-line bg-white" aria-busy="true">
-                <div className="relative aspect-[4/3] overflow-hidden bg-ink-50">
-                  <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent motion-reduce:animate-none" />
-                </div>
-                <div className="space-y-2 p-4">
-                  <div className="h-4 w-3/4 rounded bg-ink-50" />
-                  <div className="h-3 w-1/2 rounded bg-ink-50" />
-                  <div className="h-6 w-1/3 rounded bg-brand-100" />
-                </div>
-              </StaggerItem>
-            ))}
+            {latest.length > 0
+              ? latest.map((part) => (
+                  <StaggerItem key={part.id}>
+                    <PartCard part={part} />
+                  </StaggerItem>
+                ))
+              : Array.from({ length: 4 }).map((_, i) => (
+                  <StaggerItem key={i} className="overflow-hidden rounded-2xl border border-line bg-white" aria-busy="true">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-ink-50">
+                      <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent motion-reduce:animate-none" />
+                    </div>
+                    <div className="space-y-2 p-4">
+                      <div className="h-4 w-3/4 rounded bg-ink-50" />
+                      <div className="h-3 w-1/2 rounded bg-ink-50" />
+                      <div className="h-6 w-1/3 rounded bg-brand-100" />
+                    </div>
+                  </StaggerItem>
+                ))}
           </Stagger>
         </div>
       </section>

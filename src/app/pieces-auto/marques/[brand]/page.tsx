@@ -3,10 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { CatalogSection, readCatalogParams } from "@/components/catalog/catalog-page";
-import { getBrandBySlug, getBrandCounts, getBrands, getModels } from "@/lib/catalog";
+import { canPrerenderCatalog, getBrandBySlug, getBrandCounts, getBrands, getModels } from "@/lib/catalog";
 import { photos } from "@/lib/photos";
 
 export async function generateStaticParams() {
+  if (!canPrerenderCatalog()) return [];
   return (await getBrands()).map((b) => ({ brand: b.slug }));
 }
 
@@ -31,7 +32,7 @@ export default async function BrandPage({ params, searchParams }: PageProps<"/pi
   return (
     <>
       <PageHero
-        kicker={`${counts[b.id] ?? 0} pièces en stock`}
+        kicker={`${(counts[b.id] ?? 0).toLocaleString("fr-FR")} pièces en stock`}
         title={
           <>
             Pièces <span className="text-brand-400">{b.name}</span> d&apos;occasion

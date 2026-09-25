@@ -14,17 +14,37 @@ export const PLACEHOLDER_BRANDS = [
   "VOLKSWAGEN", "VOLVO",
 ] as const;
 
+/**
+ * Visuels des catégories du catalogue : photo et pictogramme par adresse.
+ * Les huit premières sont les familles Opisto ; les suivantes couvrent le
+ * jeu de démonstration. Toute catégorie inconnue reçoit `CATEGORY_FALLBACK`.
+ */
 export const PLACEHOLDER_CATEGORIES = [
-  { name: "Carrosserie", slug: "carrosserie", photo: photos.cagesRed },
-  { name: "Mécanique", slug: "mecanique", photo: photos.engines },
-  { name: "Éclairage et signalisation", slug: "eclairage", photo: photos.aisleHeadlights },
-  { name: "Habitacle", slug: "habitacle", photo: photos.seatStudio },
-  { name: "Électrique et électronique", slug: "electrique", photo: photos.evBattery },
-  { name: "Direction, suspension, train", slug: "direction-suspension", photo: photos.aisleWide },
-  { name: "Freinage", slug: "freinage", photo: photos.racks },
-  { name: "Refroidissement et climatisation", slug: "refroidissement-climatisation", photo: photos.aisle },
-  { name: "Boîte de vitesses et transmission", slug: "transmission", photo: photos.aisleCages },
+  { name: "Carrosserie extérieure", slug: "carrosserie-exterieure", photo: photos.cagesRed, icon: "carrosserie" },
+  { name: "Carrosserie intérieure et divers", slug: "carrosserie-interieure-et-divers", photo: photos.seatStudio, icon: "habitacle" },
+  { name: "Grosse mécanique", slug: "grosse-mecanique", photo: photos.engines, icon: "mecanique" },
+  { name: "Petite mécanique", slug: "petite-mecanique", photo: photos.aisleWide, icon: "refroidissement-climatisation" },
+  { name: "Electricité", slug: "electricite", photo: photos.evBattery, icon: "electrique" },
+  { name: "Jantes", slug: "jantes", photo: photos.racks, icon: "direction-suspension" },
+  { name: "Pneus", slug: "pneus", photo: photos.aisle, icon: "freinage" },
+  { name: "Partie Cycle", slug: "partie-cycle", photo: photos.aisleCages, icon: "transmission" },
+  { name: "Carrosserie", slug: "carrosserie", photo: photos.cagesRed, icon: "carrosserie" },
+  { name: "Mécanique", slug: "mecanique", photo: photos.engines, icon: "mecanique" },
+  { name: "Éclairage et signalisation", slug: "eclairage", photo: photos.aisleHeadlights, icon: "eclairage" },
+  { name: "Habitacle", slug: "habitacle", photo: photos.seatStudio, icon: "habitacle" },
+  { name: "Électrique et électronique", slug: "electrique", photo: photos.evBattery, icon: "electrique" },
+  { name: "Direction, suspension, train", slug: "direction-suspension", photo: photos.aisleWide, icon: "direction-suspension" },
+  { name: "Freinage", slug: "freinage", photo: photos.racks, icon: "freinage" },
+  { name: "Refroidissement et climatisation", slug: "refroidissement-climatisation", photo: photos.aisle, icon: "refroidissement-climatisation" },
+  { name: "Boîte de vitesses et transmission", slug: "transmission", photo: photos.aisleCages, icon: "transmission" },
 ] as const;
+
+export const CATEGORY_FALLBACK = { photo: photos.aisle, icon: "mecanique" } as const;
+
+/** Photo et pictogramme d'une catégorie, d'après son adresse. */
+export function categoryVisual(slug: string): { photo: (typeof PLACEHOLDER_CATEGORIES)[number]["photo"]; icon: string } {
+  return PLACEHOLDER_CATEGORIES.find((c) => c.slug === slug) ?? CATEGORY_FALLBACK;
+}
 
 export const PLACEHOLDER_ARTICLES = [
   {

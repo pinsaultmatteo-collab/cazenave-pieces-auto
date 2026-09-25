@@ -94,7 +94,7 @@ export function CatalogFilters({ basePath, categories, brands, modelsByBrand, va
         </select>
       </label>
       <p className="text-sm font-semibold text-ink lg:pb-2.5" aria-live="polite">
-        {pending ? "Recherche…" : `${total} pièce${total > 1 ? "s" : ""}`}
+        {pending ? "Recherche…" : `${total.toLocaleString("fr-FR")} pièce${total > 1 ? "s" : ""}`}
       </p>
     </form>
   );

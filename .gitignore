@@ -42,3 +42,6 @@ next-env.d.ts
 
 # env example (sans secrets) : versionné
 !.env.example
+
+# base locale PGlite et exports de synchronisation
+/.data

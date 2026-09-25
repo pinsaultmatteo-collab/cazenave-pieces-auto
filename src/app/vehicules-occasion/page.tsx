@@ -36,7 +36,7 @@ export default async function VehiclesPage({ searchParams }: PageProps<"/vehicul
       <div className="container-x py-10 lg:py-14">
         <DemoNotice className="mb-6" />
         <p className="text-sm font-semibold text-ink">
-          {result.total} véhicule{result.total > 1 ? "s" : ""} sur le parc
+          {result.total.toLocaleString("fr-FR")} véhicule{result.total > 1 ? "s" : ""} sur le parc
         </p>
         <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {result.items.map((v) => (

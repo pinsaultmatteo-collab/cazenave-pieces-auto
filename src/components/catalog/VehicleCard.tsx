@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { vehicleHref, vehicleLabel, type Vehicle } from "@/lib/catalog";
+import { vehicleHref, vehicleLabel } from "@/lib/catalog/links";
+import type { Vehicle } from "@/lib/catalog/types";
 import { formatMileage, formatPrice } from "@/lib/format";
 
 export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
