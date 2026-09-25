@@ -45,7 +45,11 @@ function credentials() {
   return { CasseId: casseId(), Username: OPISTO_USERNAME, Password: OPISTO_PASSWORD, SecretId: OPISTO_SECRET_ID };
 }
 
-const MIN_INTERVAL_MS = Number(process.env.OPISTO_MIN_INTERVAL_MS ?? 250);
+/**
+ * Espacement minimal entre deux appels. Quotas annoncés : 100 appels/min en
+ * production (650 ms ≈ 92/min), 1000/min en préproduction.
+ */
+const MIN_INTERVAL_MS = Number(process.env.OPISTO_MIN_INTERVAL_MS ?? (process.env.OPISTO_ENV === "prod" ? 650 : 250));
 let lastCallAt = 0;
 let requestCount = 0;
 
