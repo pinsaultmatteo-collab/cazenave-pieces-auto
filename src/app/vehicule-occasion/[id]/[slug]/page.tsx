@@ -54,8 +54,10 @@ export default async function VehiclePage({ params }: PageProps<"/vehicule-occas
         <DemoNotice className="mt-4" />
       </div>
 
-      <section className="container-x grid gap-10 py-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14 lg:py-12">
-        <ProductGallery photos={v.photos} alt={label} />
+      <section className="container-x grid gap-10 py-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-14 lg:py-12">
+        <div className="lg:sticky lg:top-40 lg:self-start">
+          <ProductGallery photos={v.photos} alt={label} />
+        </div>
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">{v.forSale ? "Véhicule à vendre" : "Véhicule pour pièces"}</p>
           <h1 className="display-title mt-3 text-4xl text-ink sm:text-5xl">

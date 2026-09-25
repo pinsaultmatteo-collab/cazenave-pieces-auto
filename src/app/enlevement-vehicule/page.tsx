@@ -158,15 +158,15 @@ export default function RemovalPage() {
         </div>
 
         {/* Carte fixe */}
-        <aside className="lg:sticky lg:top-44 lg:self-start">
+        <aside className="lg:sticky lg:top-40 lg:self-start">
           <Reveal delay={0.15}>
             <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-xl shadow-ink/10">
-              <div className="border-b border-line px-6 py-5">
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">Zone d&apos;intervention</p>
-                <h2 className="display-title mt-1 text-2xl text-ink">Occitanie et Nouvelle-Aquitaine</h2>
+              <div className="flex items-baseline justify-between gap-3 border-b border-line px-5 py-3.5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-brand-700">Zone d&apos;intervention</p>
+                <h2 className="display-title text-xl text-ink">Occitanie et Nouvelle-Aquitaine</h2>
               </div>
-              <div className="relative px-6 pt-4">
-                <Image src={franceMap} alt="Carte de France : zone d'intervention en Occitanie et Nouvelle-Aquitaine" className="w-full" sizes="(min-width: 1024px) 34vw, 100vw" />
+              <div className="relative mx-auto max-w-[300px] px-4 pt-3">
+                <Image src={franceMap} alt="Carte de France : zone d'intervention en Occitanie et Nouvelle-Aquitaine" className="w-full" sizes="300px" />
                 {/* Repère Colomiers */}
                 <span aria-hidden className="absolute left-[46%] top-[71%] flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink/40" />
@@ -176,22 +176,24 @@ export default function RemovalPage() {
                   Colomiers
                 </span>
               </div>
-              <ul className="space-y-2 px-6 pb-2 pt-4 text-xs text-steel">
-                <li className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-sm bg-brand" /> Enlèvement gratuit sous conditions d&apos;accessibilité
+              <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 px-5 pb-1 pt-2 text-[11px] text-steel">
+                <li className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-sm bg-brand" /> Enlèvement gratuit sous conditions
                 </li>
-                <li className="flex items-center gap-2">
-                  <PinIcon size={14} className="text-ink" /> Centre agréé VHU, {site.address.city} (31)
+                <li className="flex items-center gap-1.5">
+                  <PinIcon size={13} className="text-ink" /> Centre agréé VHU, {site.address.city}
                 </li>
               </ul>
-              <div className="m-6 mt-4 flex flex-col gap-2 rounded-2xl bg-mist p-4">
-                <p className="text-xs text-steel">Hors zone ou accès difficile ? Appelez-nous, nous trouvons une solution.</p>
-                <a href={site.phoneHref} className="flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white transition hover:bg-ink-700">
-                  <PhoneIcon size={16} /> {site.phone}
-                </a>
-                <a href="#demande" className="flex items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-bold text-ink-900 transition hover:bg-brand-400">
-                  Demander un enlèvement
-                </a>
+              <div className="m-4 mt-3 rounded-2xl bg-mist p-3">
+                <p className="mb-2.5 text-center text-[11px] text-steel">Hors zone ou accès difficile ? Appelez-nous, nous trouvons une solution.</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <a href={site.phoneHref} className="flex items-center justify-center gap-1.5 rounded-full bg-ink px-3 py-2.5 text-xs font-bold text-white transition hover:bg-ink-700">
+                    <PhoneIcon size={14} /> {site.phone}
+                  </a>
+                  <a href="#demande" className="flex items-center justify-center rounded-full bg-brand px-3 py-2.5 text-center text-xs font-bold text-ink-900 transition hover:bg-brand-400">
+                    Demander un enlèvement
+                  </a>
+                </div>
               </div>
             </div>
           </Reveal>
