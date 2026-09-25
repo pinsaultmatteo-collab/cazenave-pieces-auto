@@ -41,7 +41,8 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-16 bg-ink text-white">
+    <footer className="relative mt-16 bg-night text-white">
+      <div aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand-700 via-brand-400 to-brand-700" />
       {/* Colonnes */}
       <div className="container-x grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
