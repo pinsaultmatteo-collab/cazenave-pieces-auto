@@ -10,12 +10,14 @@ type PageHeroProps = {
   imageAlt?: string;
   crumbs?: Crumb[];
   children?: ReactNode;
+  /** Bloc affiché à droite du titre sur grand écran (module de recherche, encart). */
+  aside?: ReactNode;
   /** Hauteur réduite pour les pages utilitaires. */
   compact?: boolean;
 };
 
 /** En-tête de page sombre, avec photo en fond optionnelle. */
-export function PageHero({ kicker, title, text, image, imageAlt = "", crumbs, children, compact = false }: PageHeroProps) {
+export function PageHero({ kicker, title, text, image, imageAlt = "", crumbs, children, aside, compact = false }: PageHeroProps) {
   return (
     <section className="grain relative isolate overflow-hidden bg-night text-white">
       {image && (
@@ -33,15 +35,20 @@ export function PageHero({ kicker, title, text, image, imageAlt = "", crumbs, ch
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_left,rgba(152,174,7,0.2),transparent_55%)]" />
       <div className={`container-x ${compact ? "py-10 lg:py-14" : "py-14 lg:py-24"}`}>
         {crumbs && <Breadcrumbs items={crumbs} dark />}
-        {kicker && (
-          <p className="mt-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400">
-            <span className="h-px w-10 bg-brand-400" />
-            {kicker}
-          </p>
-        )}
-        <h1 className={`display-title mt-4 max-w-4xl ${compact ? "text-4xl sm:text-5xl" : "text-5xl sm:text-6xl lg:text-7xl"}`}>{title}</h1>
-        {text && <p className="mt-5 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">{text}</p>}
-        {children}
+        <div className={aside ? "grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16" : ""}>
+          <div>
+            {kicker && (
+              <p className="mt-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400">
+                <span className="h-px w-10 bg-brand-400" />
+                {kicker}
+              </p>
+            )}
+            <h1 className={`display-title mt-4 max-w-4xl ${compact ? "text-4xl sm:text-5xl" : "text-5xl sm:text-6xl lg:text-7xl"}`}>{title}</h1>
+            {text && <p className="mt-5 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">{text}</p>}
+            {children}
+          </div>
+          {aside && <div className="lg:mt-6">{aside}</div>}
+        </div>
       </div>
     </section>
   );

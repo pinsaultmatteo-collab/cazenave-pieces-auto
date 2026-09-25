@@ -5,6 +5,7 @@ import { CatalogSection, readCatalogParams } from "@/components/catalog/catalog-
 import { getCategories, getCategoryCounts } from "@/lib/catalog";
 import { photos } from "@/lib/photos";
 import { CategoryIcon } from "@/components/svg/CategoryIcons";
+import { HeroSearch } from "@/components/home/HeroSearch";
 
 export const metadata: Metadata = {
   title: "Pièces auto d'occasion en stock",
@@ -30,6 +31,12 @@ export default async function PartsPage({ searchParams }: PageProps<"/pieces-aut
         image={photos.aisleWide}
         imageAlt="Allée de rayonnages de pièces d'occasion"
         crumbs={[{ label: "Pièces auto" }]}
+        aside={
+          <div id="recherche" className="[perspective:1200px]">
+            <HeroSearch />
+            <p className="mt-3 text-center text-xs text-white/50">Saisissez votre plaque : nous n&apos;affichons que les pièces compatibles.</p>
+          </div>
+        }
         compact
       >
         <ul className="mt-8 flex flex-wrap gap-2">
