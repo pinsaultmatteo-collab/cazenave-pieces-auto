@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/brand/logo-navbar.png";
 import { site } from "@/lib/site";
-import { CartIcon, SearchIcon, UserIcon } from "@/components/icons";
+import { SearchIcon, UserIcon } from "@/components/icons";
+import { CartLink } from "./CartLink";
 import { MobileNav } from "./MobileNav";
 import { TopBar } from "./TopBar";
 
@@ -50,13 +51,7 @@ export function Header() {
             <span className="sm:hidden">Compte</span>
             <span className="hidden sm:inline">Mon compte</span>
           </Link>
-          <Link
-            href="/panier"
-            className="flex flex-col items-center gap-0.5 rounded-lg px-2 py-1 text-[11px] font-semibold text-ink hover:text-brand-700 sm:flex-row sm:gap-2 sm:text-sm"
-          >
-            <CartIcon size={22} />
-            <span>Panier</span>
-          </Link>
+          <CartLink />
         </nav>
       </div>
 
