@@ -23,7 +23,7 @@ export function ProductGallery({ photos, alt }: { photos: string[]; alt: string 
     "absolute top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink shadow-lg shadow-black/20 backdrop-blur transition hover:bg-brand hover:text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand";
 
   return (
-    <div>
+    <div className="min-w-0">
       <div
         className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-mist shadow-xl shadow-ink/10 focus:outline-none"
         tabIndex={count > 1 ? 0 : -1}

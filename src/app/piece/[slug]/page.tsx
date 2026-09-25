@@ -90,8 +90,8 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
         <DemoNotice className="mt-4" />
       </div>
 
-      <section className="container-x grid gap-10 py-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-14 lg:py-12">
-        <div className="lg:sticky lg:top-40 lg:self-start">
+      <section className="container-x grid gap-10 py-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-start lg:gap-14 lg:py-12">
+        <div className="min-w-0 lg:sticky lg:top-40 lg:self-start">
           <ProductGallery photos={part.photos} alt={`${part.name} ${vehicleName}`} />
         </div>
 
