@@ -34,38 +34,33 @@ export function Hero() {
   const carX = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -420]);
   const carOpacity = useTransform(scrollYProgress, [0, 0.7], [1, reduce ? 1 : 0]);
   const textY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 140]);
-  const glowY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -120]);
-  const photoY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 180]);
+  const photoY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 160]);
 
   return (
     <section ref={ref} className="grain relative isolate overflow-hidden bg-night text-white">
-      {/* Fond : photo drone du parc, voile sombre, halos lumineux, grille 3D */}
+      {/* Fond : photo aérienne du bâtiment, voile sombre continu, halos lumineux */}
       <motion.div aria-hidden style={{ y: photoY }} className="absolute inset-0 -z-30 scale-110">
         <Image
-          src={photos.heroDrone}
+          src={photos.heroBuilding}
           alt=""
           fill
           priority
           sizes="100vw"
           placeholder="blur"
-          className="object-cover object-center"
+          className="object-cover object-[center_40%]"
         />
       </motion.div>
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-[linear-gradient(to_bottom,rgba(13,22,27,0.82)_0%,rgba(22,35,42,0.78)_50%,#0d161b_100%)]"
+        className="absolute inset-0 -z-20 bg-[linear-gradient(to_bottom,rgba(13,22,27,0.86)_0%,rgba(13,22,27,0.74)_55%,rgba(13,22,27,0.92)_100%)]"
       />
-      <div aria-hidden className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top_left,rgba(152,174,7,0.22),transparent_60%)]" />
-      <motion.div aria-hidden style={{ y: glowY }} className="absolute inset-0 -z-10">
-        <div className="absolute -left-40 top-0 h-[30rem] w-[30rem] animate-blob rounded-full bg-brand/20 blur-3xl motion-reduce:animate-none" />
-        <div className="absolute right-[-10rem] top-1/4 h-[26rem] w-[26rem] animate-blob rounded-full bg-brand/10 blur-3xl [animation-delay:-7s] motion-reduce:animate-none" />
-      </motion.div>
-      <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-[46%] overflow-hidden [perspective:700px]">
-        <div className="absolute -inset-x-1/2 top-0 h-[220%] origin-top animate-grid bg-[linear-gradient(to_right,rgba(152,174,7,0.18)_1px,transparent_1px),linear-gradient(to_bottom,rgba(152,174,7,0.18)_1px,transparent_1px)] bg-[size:80px_80px] [transform:rotateX(64deg)] motion-reduce:animate-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-night/70 via-night/20 to-transparent" />
+      <div aria-hidden className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top_left,rgba(152,174,7,0.2),transparent_55%)]" />
+      <div aria-hidden className="absolute inset-0 -z-10">
+        <div className="absolute -left-40 top-0 h-[30rem] w-[30rem] animate-blob rounded-full bg-brand/15 blur-3xl motion-reduce:animate-none" />
+        <div className="absolute right-[-10rem] bottom-0 h-[26rem] w-[26rem] animate-blob rounded-full bg-brand/10 blur-3xl [animation-delay:-7s] motion-reduce:animate-none" />
       </div>
 
-      <div className="container-x relative grid gap-12 pb-16 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16 lg:pb-28 lg:pt-24">
+      <div className="container-x relative grid gap-12 pb-16 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16 lg:pb-24 lg:pt-24">
         <motion.div style={{ y: textY }} className="relative">
           <motion.p
             initial={{ opacity: 0, x: -20 }}
@@ -124,8 +119,8 @@ export function Hero() {
             ))}
           </motion.ul>
 
-          {/* Voiture sur la route */}
-          <motion.div style={{ x: carX, opacity: carOpacity }} className="pointer-events-none mt-10 w-full max-w-[620px] lg:mt-14">
+          {/* Voiture */}
+          <motion.div style={{ x: carX, opacity: carOpacity }} className="pointer-events-none mt-8 w-full max-w-[640px] lg:mt-12">
             <CarLineArt className="h-auto w-full animate-float motion-reduce:animate-none" />
           </motion.div>
         </motion.div>
@@ -134,7 +129,7 @@ export function Hero() {
           initial={reduce ? false : { opacity: 0, y: 48, rotateX: 10 }}
           animate={{ opacity: 1, y: 0, rotateX: 0 }}
           transition={{ delay: 0.6, duration: 1, ease: EASE }}
-          className="[perspective:1400px] lg:sticky lg:top-40"
+          className="[perspective:1400px] lg:sticky lg:top-44"
         >
           <HeroSearch />
           <p className="mt-4 text-center text-xs text-white/50">

@@ -17,6 +17,10 @@ function base({ size = 20, ...props }: IconProps) {
   };
 }
 
+function filled({ size = 20, ...props }: IconProps) {
+  return { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": true, ...props };
+}
+
 export function SearchIcon(props: IconProps) {
   return (
     <svg {...base(props)}>
@@ -99,6 +103,92 @@ export function ClockIcon(props: IconProps) {
     <svg {...base(props)}>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3 2" />
+    </svg>
+  );
+}
+
+export function TruckIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" />
+      <circle cx="7" cy="17.5" r="1.8" />
+      <circle cx="17" cy="17.5" r="1.8" />
+    </svg>
+  );
+}
+
+export function ShieldIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
+export function LockIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </svg>
+  );
+}
+
+export function PlusIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+export function ArrowUpRightIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M7 17 17 7M9 7h8v8" />
+    </svg>
+  );
+}
+
+export function StarIcon(props: IconProps) {
+  return (
+    <svg {...filled(props)}>
+      <path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" />
+    </svg>
+  );
+}
+
+export function QuoteIcon(props: IconProps) {
+  return (
+    <svg {...filled(props)}>
+      <path d="M7.5 6C5 6 3 8 3 10.5c0 2.2 1.6 4 3.7 4.4-.4 1.5-1.4 2.6-3 3.1v2c3.6-.6 6.3-3.5 6.3-7.5V6H7.5zm10 0C15 6 13 8 13 10.5c0 2.2 1.6 4 3.7 4.4-.4 1.5-1.4 2.6-3 3.1v2c3.6-.6 6.3-3.5 6.3-7.5V6h-2.5z" />
+    </svg>
+  );
+}
+
+export function InstagramIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function TiktokIcon(props: IconProps) {
+  return (
+    <svg {...filled(props)}>
+      <path d="M16.2 2.5c.4 2.7 2 4.4 4.6 4.6v3.3c-1.7 0-3.2-.5-4.6-1.4v6.5a5.9 5.9 0 1 1-5.9-5.9c.4 0 .8 0 1.2.1v3.4a2.6 2.6 0 1 0 1.5 2.4V2.5h3.2z" />
+    </svg>
+  );
+}
+
+export function FacebookIcon(props: IconProps) {
+  return (
+    <svg {...filled(props)}>
+      <path d="M13.5 21v-7.2h2.4l.4-2.9h-2.8V9.1c0-.8.2-1.4 1.4-1.4h1.5V5.1c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.1H8v2.9h2.5V21h3z" />
     </svg>
   );
 }

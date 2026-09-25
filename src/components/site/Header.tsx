@@ -4,25 +4,12 @@ import logo from "@/assets/brand/logo-navbar.png";
 import { site } from "@/lib/site";
 import { CartIcon, SearchIcon, UserIcon } from "@/components/icons";
 import { MobileNav } from "./MobileNav";
+import { TopBar } from "./TopBar";
 
 export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white shadow-sm">
-      {/* Bandeau supérieur */}
-      <div className="bg-ink text-xs text-white">
-        <div className="container-x flex h-9 items-center justify-between gap-4">
-          <p className="hidden truncate md:block">
-            Pièces testées et garanties 12 mois · Expédition sous 24/48h · Paiement sécurisé
-          </p>
-          <p className="md:hidden">Garantie 12 mois · Expédition 24/48h</p>
-          <div className="flex shrink-0 items-center gap-4">
-            <a href={site.phoneHref} className="font-semibold hover:text-brand">
-              {site.phone}
-            </a>
-            <span className="hidden text-white/70 sm:inline">{site.hoursShort}</span>
-          </div>
-        </div>
-      </div>
+      <TopBar />
 
       {/* Barre principale */}
       <div className="container-x flex items-center gap-3 py-3 lg:gap-8">

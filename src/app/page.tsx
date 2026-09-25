@@ -2,11 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
+import { FAQ } from "@/lib/faq";
 import { PLACEHOLDER_ARTICLES, PLACEHOLDER_BRANDS } from "@/lib/placeholders";
 import { Hero } from "@/components/home/Hero";
 import { Categories } from "@/components/home/Categories";
 import { Process } from "@/components/home/Process";
 import { Stats } from "@/components/home/Stats";
+import { StockBanner } from "@/components/home/StockBanner";
+import { Reviews } from "@/components/home/Reviews";
+import { Faq } from "@/components/home/Faq";
+import { Social } from "@/components/home/Social";
 import { Marquee } from "@/components/motion/Marquee";
 import { ParallaxBanner } from "@/components/motion/ParallaxBanner";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
@@ -26,6 +31,18 @@ function SectionHeading({ kicker, title, text, href, link }: { kicker: string; t
     </div>
   );
 }
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ.flatMap((g) =>
+    g.items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  ),
+};
 
 export default function HomePage() {
   return (
@@ -70,39 +87,43 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Nouveautés (alimenté par Opisto) */}
+      <section className="border-t border-line bg-white">
+        <div className="container-x py-20 lg:py-28">
+          <Reveal>
+            <SectionHeading
+              kicker="Arrivages"
+              title="Dernières pièces ajoutées"
+              text="Notre stock se met à jour automatiquement toutes les 30 minutes."
+              href="/pieces-auto?tri=nouveautes"
+              link="Toutes les nouveautés"
+            />
+          </Reveal>
+          <Stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <StaggerItem key={i} className="overflow-hidden rounded-2xl border border-line bg-white" aria-busy="true">
+                <div className="relative aspect-[4/3] overflow-hidden bg-ink-50">
+                  <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent motion-reduce:animate-none" />
+                </div>
+                <div className="space-y-2 p-4">
+                  <div className="h-4 w-3/4 rounded bg-ink-50" />
+                  <div className="h-3 w-1/2 rounded bg-ink-50" />
+                  <div className="h-6 w-1/3 rounded bg-brand-100" />
+                </div>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
       <Process />
+
+      <StockBanner />
 
       <Stats />
 
-      {/* Bandeau photo : le stock */}
-      <ParallaxBanner
-        image={photos.cagesRed}
-        alt="Cages de pièces de carrosserie référencées dans l'entrepôt de Colomiers"
-        className="flex min-h-[60vh] items-center text-white"
-        overlayClassName="bg-gradient-to-r from-night/85 via-night/55 to-night/30"
-      >
-        <div className="container-x py-24">
-          <Reveal className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Notre stock</p>
-            <h2 className="display-title mt-4 text-5xl sm:text-6xl lg:text-7xl">
-              Chaque pièce <span className="text-outline-brand">a sa place</span>
-            </h2>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-white/80">
-              Démontée, contrôlée, référencée et photographiée avant sa mise en ligne. Ce que vous voyez sur le
-              site est exactement ce qui vous attend en rayon.
-            </p>
-            <Link
-              href="/pieces-auto"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400"
-            >
-              Explorer le stock <ChevronRightIcon size={18} />
-            </Link>
-          </Reveal>
-        </div>
-      </ParallaxBanner>
-
       {/* Enlèvement de véhicule */}
-      <section className="container-x py-20 lg:py-28">
+      <section className="container-x pb-20 lg:pb-28">
         <Reveal>
           <ParallaxBanner
             image={photos.truck}
@@ -147,34 +168,7 @@ export default function HomePage() {
         </Reveal>
       </section>
 
-      {/* Nouveautés (alimenté par Opisto) */}
-      <section className="bg-mist">
-        <div className="container-x py-20 lg:py-28">
-          <Reveal>
-            <SectionHeading
-              kicker="Arrivages"
-              title="Dernières pièces ajoutées"
-              text="Notre stock se met à jour automatiquement toutes les 30 minutes."
-              href="/pieces-auto?tri=nouveautes"
-              link="Toutes les nouveautés"
-            />
-          </Reveal>
-          <Stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <StaggerItem key={i} className="overflow-hidden rounded-2xl border border-line bg-white" aria-busy="true">
-                <div className="relative aspect-[4/3] overflow-hidden bg-ink-50">
-                  <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent motion-reduce:animate-none" />
-                </div>
-                <div className="space-y-2 p-4">
-                  <div className="h-4 w-3/4 rounded bg-ink-50" />
-                  <div className="h-3 w-1/2 rounded bg-ink-50" />
-                  <div className="h-6 w-1/3 rounded bg-brand-100" />
-                </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </div>
-      </section>
+      <Reviews />
 
       {/* Professionnels */}
       <section className="border-b border-line">
@@ -208,6 +202,11 @@ export default function HomePage() {
           </Reveal>
         </div>
       </section>
+
+      <Faq />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+
+      <Social />
 
       {/* Le Mag */}
       <section className="container-x py-20 lg:py-28">

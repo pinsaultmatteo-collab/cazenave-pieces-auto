@@ -71,8 +71,9 @@ export const site = {
   agrement: "31.00043.D",
 
   social: {
-    facebook: "https://www.facebook.com/CazenavePiecesAuto/",
-    instagram: "https://instagram.com/cazenavepiecesauto",
+    facebook: "https://www.facebook.com/CazenavePiecesAuto",
+    instagram: "https://www.instagram.com/cazenavepiecesauto/",
+    tiktok: "https://www.tiktok.com/@cazenave_auto",
     linkedin: "https://www.linkedin.com/company/cazenave-pieces-auto/",
     googleReviews:
       "https://www.google.com/search?q=cazenave+casse+auto#lrd=0x12aeb1a4fb6e306d:0x53da8547a99b3ad9,1",

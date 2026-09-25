@@ -4,20 +4,25 @@ import { motion, useReducedMotion } from "motion/react";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-// Silhouette de profil (avant à gauche), tracée en une seule ligne.
+/*
+ * Berline compacte de profil, avant à gauche (repère 720 × 320).
+ * Carrosserie en un seul tracé, vitrages, feux, rétroviseur, ligne de
+ * caisse, roues à jantes cinq branches.
+ */
 const BODY =
-  "M48 178C48 160 58 148 82 142L128 132C152 128 168 118 186 100C210 78 250 62 300 60L392 60C440 60 470 84 508 118L556 126C580 130 592 148 590 172L582 186L508 186A44 44 0 0 0 420 186L236 186A44 44 0 0 0 148 186L64 186C52 186 48 182 48 178Z";
-const FRONT_WINDOW = "M188 112C214 84 250 70 302 68L302 112Z";
-const REAR_WINDOW = "M318 68L392 68C432 68 458 88 486 112L318 112Z";
-const HEADLIGHT = "M60 150L98 142L96 158L66 162Z";
-const TAILLIGHT = "M556 132L584 140L586 158L560 152Z";
-const MIRROR = "M182 112L168 116L172 126L186 122Z";
+  "M62 230C50 222 48 200 56 186L66 176C72 168 84 164 100 162L214 150C236 146 252 138 268 122C288 100 306 90 340 86L470 84C505 84 535 96 566 120C580 130 592 140 606 146L636 150C654 154 664 172 662 196L656 226C654 236 646 240 630 240L592 240A48 48 0 0 0 496 240L252 240A48 48 0 0 0 156 240L96 240C78 240 66 238 62 230Z";
+const FRONT_WINDOW = "M272 134C292 112 310 100 342 96L392 96L392 134Z";
+const REAR_WINDOW = "M408 96L470 96C498 96 522 106 548 128L548 134L408 134Z";
+const HEADLIGHT = "M62 190C70 178 84 172 102 170L106 186C90 190 76 194 64 202Z";
+const TAILLIGHT = "M640 152C654 156 662 170 662 188L648 188C648 174 644 162 636 156Z";
+const MIRROR = "M270 138L254 142C248 144 248 152 254 154L272 150Z";
+const CHARACTER_LINE = "M300 204C400 199 540 199 630 206";
 
 type CarLineArtProps = { className?: string };
 
 /**
- * Voiture en tracé qui se dessine à l'affichage (stroke), roues qui
- * tournent et traînées de vitesse. Rendu instantané si motion réduite.
+ * Voiture en tracé qui se dessine à l'affichage, roues qui tournent et
+ * traînées de vitesse. Rendu instantané si motion réduite.
  */
 export function CarLineArt({ className }: CarLineArtProps) {
   const reduce = useReducedMotion();
@@ -31,52 +36,71 @@ export function CarLineArt({ className }: CarLineArtProps) {
     },
   });
 
+  const fade = (delay: number) => ({
+    initial: { opacity: reduce ? 1 : 0 },
+    animate: { opacity: 1 },
+    transition: { delay, duration: 0.8 },
+  });
+
   return (
-    <svg viewBox="0 0 640 260" className={className} role="img" aria-label="Silhouette d'une voiture">
+    <svg viewBox="0 0 720 320" className={className} role="img" aria-label="Silhouette d'une voiture de profil">
       <defs>
         <linearGradient id="car-stroke" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor="#ffffff" stopOpacity="0.95" />
           <stop offset="1" stopColor="#b8cf1f" />
         </linearGradient>
+        <linearGradient id="car-glass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.16" />
+          <stop offset="1" stopColor="#ffffff" stopOpacity="0.02" />
+        </linearGradient>
         <radialGradient id="car-shadow" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#98ae07" stopOpacity="0.55" />
+          <stop offset="0" stopColor="#98ae07" stopOpacity="0.5" />
           <stop offset="1" stopColor="#98ae07" stopOpacity="0" />
         </radialGradient>
       </defs>
 
-      {/* Halo au sol */}
-      <motion.ellipse
-        cx="320"
-        cy="234"
-        rx="300"
-        ry="14"
-        fill="url(#car-shadow)"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 1 }}
+      {/* Halo au sol et ligne de route */}
+      <motion.ellipse cx="360" cy="288" rx="330" ry="14" fill="url(#car-shadow)" {...fade(1.8)} />
+      <motion.line
+        x1="40"
+        x2="680"
+        y1="284"
+        y2="284"
+        stroke="#ffffff"
+        strokeOpacity="0.25"
+        strokeWidth="1.5"
+        strokeDasharray="18 14"
+        {...fade(2)}
       />
 
+      {/* Vitrages (remplissage) */}
+      <motion.path d={FRONT_WINDOW} fill="url(#car-glass)" {...fade(1.6)} />
+      <motion.path d={REAR_WINDOW} fill="url(#car-glass)" {...fade(1.7)} />
+
       <g fill="none" stroke="url(#car-stroke)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <motion.path d={BODY} {...draw(0.2, 2.2)} />
+        <motion.path d={BODY} {...draw(0.2, 2.4)} />
         <motion.path d={FRONT_WINDOW} {...draw(1.1)} />
         <motion.path d={REAR_WINDOW} {...draw(1.2)} />
-        <motion.path d="M302 112V180" {...draw(1.4, 0.6)} />
-        <motion.path d="M322 136H344" {...draw(1.6, 0.4)} />
+        <motion.path d="M400 134V236" {...draw(1.4, 0.6)} />
+        <motion.path d="M556 142V232" {...draw(1.5, 0.6)} />
+        <motion.path d="M420 170H444M572 170H592" {...draw(1.7, 0.5)} />
+        <motion.path d={CHARACTER_LINE} {...draw(1.6, 0.9)} />
         <motion.path d={MIRROR} {...draw(1.4, 0.5)} />
+        <motion.path d="M56 208L70 206M58 218L72 216" {...draw(1.8, 0.4)} />
         <motion.path d={HEADLIGHT} stroke="#b8cf1f" {...draw(1.5, 0.6)} />
         <motion.path d={TAILLIGHT} stroke="#b8cf1f" {...draw(1.5, 0.6)} />
       </g>
 
-      <Wheel cx={192} cy={186} delay={1.0} reduce={reduce} />
-      <Wheel cx={464} cy={186} delay={1.15} reduce={reduce} />
+      <Wheel cx={204} cy={240} delay={1.0} reduce={reduce} />
+      <Wheel cx={544} cy={240} delay={1.15} reduce={reduce} />
 
       {/* Traînées de vitesse derrière la voiture */}
       {!reduce && (
         <g stroke="#98ae07" strokeWidth="2.5" strokeLinecap="round">
           {[
-            { y: 120, x: 596, len: 40, delay: 2.2 },
-            { y: 150, x: 606, len: 28, delay: 2.6 },
-            { y: 176, x: 600, len: 34, delay: 2.4 },
+            { y: 150, x: 672, len: 42, delay: 2.4 },
+            { y: 182, x: 682, len: 28, delay: 2.8 },
+            { y: 214, x: 676, len: 36, delay: 2.6 },
           ].map((s) => (
             <motion.line
               key={s.y}
@@ -97,22 +121,20 @@ export function CarLineArt({ className }: CarLineArtProps) {
 
 function Wheel({ cx, cy, delay, reduce }: { cx: number; cy: number; delay: number; reduce: boolean | null }) {
   const spokes = Array.from({ length: 5 }, (_, i) => {
-    const a = (i * 72 * Math.PI) / 180;
-    return { x2: cx + Math.cos(a) * 30, y2: cy + Math.sin(a) * 30 };
+    const a = ((i * 72 - 90) * Math.PI) / 180;
+    return { x2: cx + Math.cos(a) * 26, y2: cy + Math.sin(a) * 26 };
+  });
+  const drawCircle = (r: number, d: number) => ({
+    initial: reduce ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 },
+    animate: { pathLength: 1, opacity: 1 },
+    transition: { pathLength: { delay: d, duration: 1, ease: EASE }, opacity: { delay: d, duration: 0.2 } },
+    r,
   });
   return (
     <g>
-      <motion.circle
-        cx={cx}
-        cy={cy}
-        r="40"
-        fill="none"
-        stroke="#ffffff"
-        strokeWidth="2.5"
-        initial={reduce ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ pathLength: { delay, duration: 1, ease: EASE }, opacity: { delay, duration: 0.2 } }}
-      />
+      {/* Pneu */}
+      <motion.circle cx={cx} cy={cy} fill="none" stroke="#ffffff" strokeWidth="3" {...drawCircle(42, delay)} />
+      {/* Jante et branches, en rotation */}
       <motion.g
         className="animate-spin-slow motion-reduce:animate-none"
         style={{ transformOrigin: `${cx}px ${cy}px` }}
@@ -124,7 +146,8 @@ function Wheel({ cx, cy, delay, reduce }: { cx: number; cy: number; delay: numbe
         strokeWidth="2.5"
         strokeLinecap="round"
       >
-        <circle cx={cx} cy={cy} r="11" />
+        <circle cx={cx} cy={cy} r="30" />
+        <circle cx={cx} cy={cy} r="7" />
         {spokes.map((s, i) => (
           <line key={i} x1={cx} y1={cy} x2={s.x2} y2={s.y2} />
         ))}

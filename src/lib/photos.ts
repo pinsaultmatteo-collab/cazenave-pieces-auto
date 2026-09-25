@@ -4,6 +4,7 @@
  * flou de chargement gérés automatiquement par next/image.
  */
 import heroDrone from "@/assets/photos/hero-drone.jpg";
+import heroBuilding from "@/assets/photos/hero-building.jpg";
 import facadeSunset from "@/assets/photos/facade-sunset.jpg";
 import facade from "@/assets/photos/facade.jpg";
 import aisle from "@/assets/photos/aisle.jpg";
@@ -31,6 +32,7 @@ import firefighters from "@/assets/photos/firefighters.jpg";
 
 export const photos = {
   heroDrone,
+  heroBuilding,
   facadeSunset,
   facade,
   aisle,
