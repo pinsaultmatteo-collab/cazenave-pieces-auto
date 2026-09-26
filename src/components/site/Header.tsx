@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/brand/logo-navbar.png";
-import { SearchIcon, UserIcon } from "@/components/icons";
+import { UserIcon } from "@/components/icons";
 import { CartLink } from "./CartLink";
 import { MobileNav } from "./MobileNav";
 import { NavLinks } from "./NavLinks";
+import { SearchBox } from "./SearchBox";
 import { TopBar } from "./TopBar";
 
 export function Header() {
@@ -20,27 +21,7 @@ export function Header() {
           <Image src={logo} alt="Cazenave Pièces Auto" priority className="h-9 w-auto sm:h-10 lg:h-12" />
         </Link>
 
-        <form action="/recherche" method="get" role="search" className="hidden flex-1 md:flex">
-          <label htmlFor="header-search" className="sr-only">
-            Rechercher une pièce
-          </label>
-          <div className="flex w-full overflow-hidden rounded-full border border-line bg-mist transition focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/30">
-            <input
-              id="header-search"
-              name="q"
-              type="search"
-              placeholder="Rechercher une pièce, une référence constructeur…"
-              className="w-full bg-transparent px-5 py-2.5 text-sm outline-none placeholder:text-steel"
-            />
-            <button
-              type="submit"
-              className="flex items-center bg-ink px-5 text-white transition hover:bg-ink-700"
-              aria-label="Rechercher"
-            >
-              <SearchIcon />
-            </button>
-          </div>
-        </form>
+        <SearchBox id="header-search" className="hidden flex-1 md:block" />
 
         <nav aria-label="Compte et panier" className="ml-auto flex items-center gap-1 sm:gap-3">
           <Link

@@ -386,3 +386,38 @@ export async function getVehicle(id: number): Promise<Vehicle | null> {
   const [row] = await db.select().from(vehicles).where(eq(vehicles.id, id)).limit(1);
   return row ? toVehicle(row) : null;
 }
+
+/** Marques et sous-catégories dont le nom contient le texte saisi (recherche instantanée). */
+export async function suggest(q: string): Promise<{ brands: Brand[]; models: (VehicleModel & { brandSlug: string; brandName: string })[]; categories: Category[] }> {
+  const term = normalize(q).trim();
+  if (term.length < 2) return { brands: [], models: [], categories: [] };
+  const like = `%${escapeLike(term)}%`;
+  const db = await getDb();
+  const [groups, subs, rangeRows] = await Promise.all([
+    brandGroups(),
+    db
+      .select()
+      .from(subcategories)
+      .where(and(sql`lower(${subcategories.name}) like ${like}`, sql`exists (select 1 from ${parts} where ${parts.subCategoryId} = ${subcategories.id} and ${LIVE})`))
+      .orderBy(asc(subcategories.name))
+      .limit(4),
+    db
+      .select({ range: ranges, brandName: brands.name, brandSlug: brands.slug })
+      .from(ranges)
+      .innerJoin(brands, eq(brands.id, ranges.brandId))
+      .where(and(sql`lower(${ranges.name}) like ${like}`, sql`exists (select 1 from ${parts} where ${parts.rangeId} = ${ranges.id} and ${LIVE})`))
+      .orderBy(asc(ranges.name), asc(ranges.id))
+      .limit(6),
+  ]);
+  const brandsFound = [...groups.entries()]
+    .filter(([slug, g]) => slug.includes(term.replace(/[^a-z0-9]+/g, "-")) || normalize(g.name).includes(term))
+    .slice(0, 3)
+    .map(([slug, g]) => ({ id: g.id, slug, name: g.name }));
+  // Un modèle par libellé (les gammes en doublon chez Opisto sont regroupées)
+  const seen = new Set<string>();
+  const models = rangeRows
+    .filter((r) => (seen.has(`${r.brandSlug}/${r.range.slug}`) ? false : (seen.add(`${r.brandSlug}/${r.range.slug}`), true)))
+    .slice(0, 4)
+    .map((r) => ({ ...toModel(r.range), brandSlug: r.brandSlug, brandName: r.brandName }));
+  return { brands: brandsFound, models, categories: subs.map(toSubCategory) };
+}

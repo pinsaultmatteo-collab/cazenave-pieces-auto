@@ -134,3 +134,20 @@ export async function getCategoryShowcase(): Promise<Record<number, { photo: str
   }
   return out;
 }
+
+/** Marques et catégories dont le nom contient le texte saisi (jeu de démonstration). */
+export async function suggest(q: string): Promise<{ brands: Brand[]; models: (VehicleModel & { brandSlug: string; brandName: string })[]; categories: Category[] }> {
+  const term = normalize(q).trim();
+  if (term.length < 2) return { brands: [], models: [], categories: [] };
+  const models = DEMO_MODELS.filter((m) => normalize(m.name).includes(term))
+    .slice(0, 4)
+    .map((m) => {
+      const b = DEMO_BRANDS.find((x) => x.id === m.brandId);
+      return { ...m, brandSlug: b?.slug ?? "", brandName: b?.name ?? "" };
+    });
+  return {
+    brands: DEMO_BRANDS.filter((b) => normalize(b.name).includes(term)).slice(0, 3),
+    models,
+    categories: DEMO_CATEGORIES.filter((c) => normalize(c.name).includes(term)).slice(0, 4),
+  };
+}

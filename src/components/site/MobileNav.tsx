@@ -4,8 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { activeNavHref } from "./NavLinks";
+import { SearchBox } from "./SearchBox";
 import { site } from "@/lib/site";
-import { CloseIcon, MenuIcon, PhoneIcon, SearchIcon } from "@/components/icons";
+import { CloseIcon, MenuIcon, PhoneIcon } from "@/components/icons";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -29,23 +30,9 @@ export function MobileNav() {
           id="mobile-menu"
           className="absolute inset-x-0 top-full max-h-[calc(100vh-6rem)] overflow-y-auto border-t border-line bg-white shadow-lg"
         >
-          <form action="/recherche" method="get" role="search" className="p-4">
-            <label htmlFor="mobile-search" className="sr-only">
-              Rechercher une pièce
-            </label>
-            <div className="flex overflow-hidden rounded-full border border-line bg-mist">
-              <input
-                id="mobile-search"
-                name="q"
-                type="search"
-                placeholder="Rechercher une pièce…"
-                className="w-full bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-steel"
-              />
-              <button type="submit" className="bg-ink px-4 text-white" aria-label="Rechercher">
-                <SearchIcon />
-              </button>
-            </div>
-          </form>
+          <div className="p-4">
+            <SearchBox id="mobile-search" inline placeholder="Rechercher une pièce…" />
+          </div>
 
           <ul className="divide-y divide-line border-t border-line">
             {site.nav.map((item) => (
