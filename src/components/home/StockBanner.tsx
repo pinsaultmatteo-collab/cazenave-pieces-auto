@@ -32,12 +32,12 @@ export function StockBanner() {
       amount={110}
     >
       <div className="container-x grid items-center gap-14 py-24 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16 lg:py-32">
-        <Reveal>
+        <Reveal className="text-center lg:text-left">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Notre stock</p>
           <h2 className="display-title mt-4 text-5xl sm:text-6xl lg:text-7xl">
             Chaque pièce <span className="text-outline-brand">a sa place</span>
           </h2>
-          <p className="mt-5 max-w-xl text-lg leading-8 text-white/80">
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-white/80 lg:mx-0">
             Des kilomètres de rayonnages, des moteurs aux rétroviseurs. Ce que vous voyez sur le site est
             exactement ce qui vous attend en rayon à Colomiers.
           </p>
@@ -45,14 +45,14 @@ export function StockBanner() {
             {POINTS.map((p) => (
               <li
                 key={p}
-                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm font-semibold backdrop-blur-sm"
+                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-left text-sm font-semibold backdrop-blur-sm"
               >
                 <CheckIcon size={18} className="mt-0.5 shrink-0 text-brand-400" />
                 {p}
               </li>
             ))}
           </ul>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
             <Link
               href="/pieces-auto"
               className="inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400"

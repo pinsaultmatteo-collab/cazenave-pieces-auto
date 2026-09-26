@@ -56,11 +56,11 @@ export function Faq() {
   return (
     <section id="faq" className="bg-mist">
       <div className="container-x py-20 lg:py-28">
-        <Reveal className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <Reveal className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">Questions fréquentes</p>
             <h2 className="display-title mt-3 text-4xl text-ink sm:text-5xl">On vous répond</h2>
-            <p className="mt-3 max-w-xl text-steel">
+            <p className="mx-auto mt-3 max-w-xl text-steel sm:mx-0">
               Enlèvement de véhicule, compatibilité, garantie, livraison : l&apos;essentiel avant de commander.
             </p>
           </div>

@@ -21,32 +21,41 @@ const COMMITMENTS = [
   "Le réemploi de pièces d'occasion plutôt que l'achat de pièces neuves",
 ];
 
-/** Engagement écologique : compteur piloté par le scroll et chiffres animés. */
+/**
+ * Engagement écologique : compteur piloté par le scroll et chiffres animés.
+ * Sur mobile, tout est centré et le compteur vient juste sous le titre ;
+ * sur ordinateur, le compteur occupe la colonne de gauche.
+ */
 export function Stats() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "center 45%"] });
   const progress = useSpring(scrollYProgress, { stiffness: 80, damping: 20, mass: 0.8 });
 
   return (
-    <section ref={ref} id="engagement" className="container-x grid items-center gap-12 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:py-28">
-      <Reveal className="relative mx-auto w-full max-w-md">
+    <section
+      ref={ref}
+      id="engagement"
+      className="container-x grid items-center gap-8 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:grid-rows-[auto_auto] lg:gap-x-16 lg:gap-y-0 lg:py-28"
+    >
+      <Reveal className="text-center lg:col-start-2 lg:row-start-1 lg:text-left">
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">Notre engagement écologique</p>
+        <h2 className="display-title mt-4 text-4xl text-ink sm:text-5xl">Bien loin de la casse auto telle qu&apos;on l&apos;imagine</h2>
+      </Reveal>
+
+      <Reveal className="relative mx-auto w-full max-w-[17rem] sm:max-w-sm lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:max-w-md">
         <div aria-hidden className="absolute inset-0 -z-10 rounded-full bg-brand-100 blur-3xl" />
         <SpeedGauge progress={progress} className="h-auto w-full drop-shadow-xl" />
         <div className="pointer-events-none absolute inset-x-0 bottom-[8%] text-center">
-          <p className="display-title text-5xl text-ink sm:text-6xl">
+          <p className="display-title text-4xl text-ink sm:text-5xl lg:text-6xl">
             <Counter to={95} suffix=" %" />
           </p>
-          <p className="mt-1 text-xs font-bold uppercase tracking-[0.25em] text-steel">de valorisation</p>
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-steel sm:text-xs">de valorisation</p>
         </div>
       </Reveal>
 
-      <div>
+      <div className="text-center lg:col-start-2 lg:row-start-2 lg:text-left">
         <Reveal>
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">Notre engagement écologique</p>
-          <h2 className="display-title mt-4 text-4xl text-ink sm:text-5xl">
-            Bien loin de la casse auto telle qu&apos;on l&apos;imagine
-          </h2>
-          <p className="mt-5 leading-7 text-steel">
+          <p className="leading-7 text-steel lg:mt-5">
             Notre centre de recyclage pour véhicules hors d&apos;usage permet le réemploi des pièces auto
             d&apos;occasion et le recyclage à près de 95 % des véhicules. Cazenave Pièces Auto est un centre agréé
             VHU par la préfecture de Haute-Garonne, dans une logique d&apos;économie circulaire encadrée par
@@ -54,7 +63,7 @@ export function Stats() {
           </p>
           <ul className="mt-5 space-y-2 text-sm font-semibold text-ink">
             {COMMITMENTS.map((t) => (
-              <li key={t} className="flex items-start gap-2">
+              <li key={t} className="flex items-start justify-center gap-2 text-left lg:justify-start">
                 <CheckIcon size={18} className="mt-0.5 shrink-0 text-brand" />
                 {t}
               </li>
@@ -64,7 +73,7 @@ export function Stats() {
 
         <Stagger className="mt-10 grid grid-cols-2 gap-4" stagger={0.1}>
           {FIGURES.map((f) => (
-            <StaggerItem key={f.label} className="rounded-2xl border border-line bg-mist p-5">
+            <StaggerItem key={f.label} className="rounded-2xl border border-line bg-mist p-4 sm:p-5">
               <p className="display-title text-4xl text-brand-700 sm:text-5xl">
                 <Counter to={f.to} suffix={f.suffix} />
               </p>

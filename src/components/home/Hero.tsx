@@ -62,13 +62,13 @@ export function Hero() {
         <div className="absolute right-[-10rem] bottom-0 h-[26rem] w-[26rem] animate-blob rounded-full bg-brand/10 blur-3xl [animation-delay:-7s] motion-reduce:animate-none" />
       </div>
 
-      <div className="container-x relative grid gap-12 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16 lg:pt-24">
-        <motion.div style={{ y: textY }} className="relative">
+      <div className="container-x relative grid gap-6 pt-8 sm:gap-8 sm:pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:grid-rows-[auto_auto] lg:items-start lg:gap-x-16 lg:gap-y-0 lg:pt-24">
+        <motion.div style={{ y: textY }} className="relative text-center lg:col-start-1 lg:row-start-1 lg:text-left">
           <motion.p
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: EASE }}
-            className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400"
+            className="flex items-center justify-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400 lg:justify-start"
           >
             <span className="h-px w-10 bg-brand-400" />
             Casse auto à Colomiers, près de Toulouse
@@ -78,7 +78,7 @@ export function Hero() {
             variants={container}
             initial={reduce ? "show" : "hidden"}
             animate="show"
-            className="display-title mt-6 text-[3.4rem] leading-[0.92] sm:text-7xl lg:text-[5.6rem]"
+            className="display-title mt-4 text-[2.7rem] leading-[0.9] sm:mt-5 sm:text-7xl lg:mt-6 lg:text-[5.6rem]"
           >
             {LINES.map((line) => (
               <span key={line.words.join(" ")} className="block [perspective:800px]">
@@ -101,38 +101,40 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.8, ease: EASE }}
-            className="mt-7 max-w-xl text-base leading-7 text-white/75 sm:text-lg"
+            className="mx-auto mt-4 max-w-xl text-[15px] leading-6 text-white/75 sm:mt-6 sm:text-lg sm:leading-7 lg:mx-0 lg:mt-7"
           >
             Trouvez simplement et rapidement votre pièce auto d&apos;occasion pas cher, testée et garantie
             12 mois. Expédition sous 24/48h partout en France, ou retrait sur place.
           </motion.p>
 
-          <motion.ul
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-            className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold"
-          >
-            {ARGUMENTS.map((t) => (
-              <li key={t} className="flex items-center gap-2">
-                <CheckIcon size={18} className="text-brand-400" />
-                {t}
-              </li>
-            ))}
-          </motion.ul>
         </motion.div>
 
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 48, rotateX: 10 }}
           animate={{ opacity: 1, y: 0, rotateX: 0 }}
           transition={{ delay: 0.6, duration: 1, ease: EASE }}
-          className="[perspective:1400px] lg:sticky lg:top-44"
+          className="[perspective:1400px] lg:sticky lg:top-44 lg:col-start-2 lg:row-span-2 lg:row-start-1"
         >
           <HeroSearch />
           <p className="mt-4 text-center text-xs text-white/50">
             Stock synchronisé en temps réel avec notre atelier de Colomiers.
           </p>
         </motion.div>
+
+        <motion.ul
+          style={{ y: textY }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-semibold lg:col-start-1 lg:row-start-2 lg:mt-7 lg:justify-start"
+        >
+          {ARGUMENTS.map((t) => (
+            <li key={t} className="flex items-center gap-2">
+              <CheckIcon size={18} className="text-brand-400" />
+              {t}
+            </li>
+          ))}
+        </motion.ul>
       </div>
 
       {/* Petit coupé qui roule sur sa ligne de route, sous le titre */}

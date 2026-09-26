@@ -69,7 +69,7 @@ export function Process() {
     <section ref={ref} className="grain relative overflow-hidden bg-night text-white">
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_bottom,#223139_0%,#0d161b_60%)]" />
       <div className="container-x py-20 lg:py-28">
-        <Reveal className="max-w-2xl">
+        <Reveal className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Notre méthode</p>
           <h2 className="display-title mt-4 text-4xl sm:text-5xl lg:text-6xl">
             De l&apos;épave <span className="text-outline-brand">à votre porte</span>
@@ -128,7 +128,7 @@ export function Process() {
           {STEPS.map((s, i) => (
             <Reveal key={s.n} delay={i * 0.12}>
               <li className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] transition-colors duration-500 hover:border-brand-400/60">
-                <div className="relative aspect-[16/10] overflow-hidden">
+                <div className="relative aspect-[16/8] overflow-hidden lg:aspect-[16/10]">
                   <Image
                     src={s.photo}
                     alt={s.alt}
@@ -140,9 +140,9 @@ export function Process() {
                   <div className="absolute inset-0 bg-gradient-to-t from-night/90 to-transparent" />
                   <span className="absolute bottom-3 left-4 font-display text-4xl font-bold text-brand-400 lg:hidden">{s.n}</span>
                 </div>
-                <div className="p-5">
+                <div className="p-4 lg:p-5">
                   <h3 className="font-display text-2xl font-semibold uppercase leading-none">{s.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-white/65">{s.text}</p>
+                  <p className="mt-2 text-sm leading-6 text-white/65 lg:mt-3">{s.text}</p>
                 </div>
               </li>
             </Reveal>

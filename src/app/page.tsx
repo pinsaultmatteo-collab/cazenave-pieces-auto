@@ -24,11 +24,11 @@ export const revalidate = 1800;
 
 function SectionHeading({ kicker, title, text, href, link }: { kicker: string; title: string; text: string; href: string; link: string }) {
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">{kicker}</p>
         <h2 className="display-title mt-3 text-4xl text-ink sm:text-5xl">{title}</h2>
-        <p className="mt-3 max-w-xl text-steel">{text}</p>
+        <p className="mx-auto mt-3 max-w-xl text-steel sm:mx-0">{text}</p>
       </div>
       <Link href={href} className="inline-flex shrink-0 items-center gap-1 text-sm font-bold text-brand-700 hover:underline">
         {link} <ChevronRightIcon size={18} />
@@ -268,10 +268,10 @@ export default async function HomePage() {
       {/* Professionnels */}
       <section className="border-b border-line">
         <div className="container-x grid items-center gap-10 py-20 lg:grid-cols-2 lg:py-24">
-          <Reveal>
+          <Reveal className="text-center lg:text-left">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">Espace pro</p>
             <h2 className="display-title mt-3 text-4xl text-ink sm:text-5xl">Professionnel de l&apos;automobile ?</h2>
-            <p className="mt-4 max-w-xl leading-7 text-steel">
+            <p className="mx-auto mt-4 max-w-xl leading-7 text-steel lg:mx-0">
               Garages, carrossiers, concessionnaires, assureurs, fourrières : créez votre compte professionnel
               pour bénéficier de conditions dédiées et d&apos;un interlocuteur unique, au comptoir comme en ligne.
             </p>

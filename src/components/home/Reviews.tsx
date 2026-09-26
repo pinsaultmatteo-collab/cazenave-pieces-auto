@@ -34,15 +34,15 @@ export function Reviews({ reviews = SAMPLE_REVIEWS }: { reviews?: Review[] }) {
   return (
     <section className="bg-mist">
       <div className="container-x py-20 lg:py-28">
-        <Reveal className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+        <Reveal className="grid gap-8 text-center lg:grid-cols-[1fr_auto] lg:items-end lg:text-left">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">Avis clients</p>
             <h2 className="display-title mt-3 text-4xl text-ink sm:text-5xl">Ils nous font confiance</h2>
-            <p className="mt-3 max-w-xl text-steel">
+            <p className="mx-auto mt-3 max-w-xl text-steel lg:mx-0">
               Particuliers, garages, assureurs : depuis 1974, la même exigence au comptoir et en ligne.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start">
             <a
               href={site.social.googleReviews}
               target="_blank"
