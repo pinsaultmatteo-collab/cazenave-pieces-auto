@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { runSync, syncStatus, type SyncMode } from "@/lib/opisto/sync";
 
@@ -41,6 +42,8 @@ export async function POST(request: Request) {
   const budgetMs = Number.isFinite(budgetParam) && budgetParam > 0 ? Math.min(budgetParam, maxDuration * 1000 - 8_000) : undefined;
   try {
     const report = await runSync({ mode, budgetMs });
+    // L'accueil est mis en cache 30 min : on le rafraîchit dès que le stock a bougé.
+    if (report.done && (report.partsUpserted > 0 || report.partsDeleted > 0)) revalidatePath("/");
     return NextResponse.json(report);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
