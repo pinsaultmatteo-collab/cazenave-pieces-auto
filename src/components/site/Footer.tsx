@@ -103,23 +103,39 @@ export function Footer() {
         ))}
       </div>
 
-      {/* Ligne légale et signature de l'agence */}
+      {/* Signature de l'agence : bandeau bien visible, avec l'accord du client */}
+      <div className="border-t border-white/10 bg-gradient-to-r from-night via-[#171a2e] to-night">
+        <a
+          href="https://www.agence-pmc-marketing.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="PMC Marketing, agence digitale et IA à Toulouse"
+          className="group container-x flex flex-col items-center justify-center gap-4 py-8 text-center md:flex-row md:gap-10 md:py-9"
+        >
+          <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/70 transition group-hover:text-white sm:text-sm">
+            Site conçu et réalisé par
+          </span>
+          <Image
+            src={logoPmc}
+            alt="PMC Marketing, agence digitale et IA à Toulouse"
+            className="h-16 w-auto drop-shadow-[0_0_24px_rgba(139,92,246,0.35)] transition-transform duration-300 group-hover:scale-105 sm:h-20"
+          />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#8b5cf6]/60 bg-[#8b5cf6]/15 px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-white transition group-hover:bg-[#8b5cf6]/35 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.45)]">
+            Découvrir l&apos;agence
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M7 17 17 7M8 7h9v9" />
+            </svg>
+          </span>
+        </a>
+      </div>
+
+      {/* Ligne légale */}
       <div className="border-t border-white/10">
-        <div className="container-x flex flex-col items-center justify-between gap-3 py-4 text-center text-[11px] text-white/60 md:flex-row md:py-5 md:text-left md:text-xs">
+        <div className="container-x flex flex-col items-center justify-between gap-2 py-4 text-center text-[11px] text-white/60 md:flex-row md:py-5 md:text-left md:text-xs">
           <p>
             © {year} {site.name} · Tous droits réservés · Agrément préfectoral {site.agrement}
           </p>
-          <a
-            href="https://www.agence-pmc-marketing.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="PMC Marketing, agence digitale et IA à Toulouse"
-            className="group flex items-center gap-2 text-white/60 transition hover:text-white md:order-3"
-          >
-            <span>Site réalisé par</span>
-            <Image src={logoPmc} alt="PMC Marketing" className="h-6 w-auto opacity-90 transition group-hover:opacity-100" />
-          </a>
-          <div className="flex items-center gap-4 md:order-2">
+          <div className="flex items-center gap-4">
             <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-white">
               Facebook
             </a>
