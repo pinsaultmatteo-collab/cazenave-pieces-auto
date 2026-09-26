@@ -8,7 +8,7 @@ import { getBrandCounts, getBrands, getCategories, getCategoryCounts, getCategor
 import { PartCard } from "@/components/catalog/PartCard";
 import { Hero } from "@/components/home/Hero";
 import { Categories } from "@/components/home/Categories";
-import { BrandsBand } from "@/components/home/BrandsBand";
+import { BrandsMarquee } from "@/components/home/BrandsMarquee";
 import { Process } from "@/components/home/Process";
 import { Stats } from "@/components/home/Stats";
 import { StockBanner } from "@/components/home/StockBanner";
@@ -70,11 +70,9 @@ export default async function HomePage() {
     { key: "boite", label: "Boîte de vitesses", href: "/pieces-auto?categorie=boite-de-vitesses", x: 300, y: 236 },
     { key: "feu-arriere", label: "Feu arrière", href: "/pieces-auto?q=feu+arriere", x: 652, y: 172 },
   ].map((h) => ({ ...h, count: hotspotCounts[h.key] ?? 0 }));
-  const brandChips = brands
+  const marqueeBrands = brands
     .map((b) => ({ slug: b.slug, name: b.name, count: brandCounts[b.id] ?? 0 }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 12);
-  const totalParts = Object.values(brandCounts).reduce((sum, n) => sum + n, 0);
+    .sort((a, b) => b.count - a.count);
   const demo = isDemoData();
   const categoryTiles = categories
     .filter((c) => demo || (counts[c.id] ?? 0) > 0)
@@ -90,8 +88,8 @@ export default async function HomePage() {
     <>
       <Hero hotspots={hotspots} />
 
-      {/* Marques en stock : chiffres réels et plaques des marques les plus fournies */}
-      <BrandsBand brands={brandChips} totalBrands={brands.length} totalParts={totalParts} />
+      {/* Défilé des marques en stock, logo et nom, dans l'ordre du nombre de pièces */}
+      <BrandsMarquee brands={marqueeBrands} />
 
       {/* Réassurance */}
       <section aria-label="Nos engagements" className="border-b border-line bg-white">
