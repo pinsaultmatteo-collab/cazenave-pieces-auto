@@ -3,18 +3,18 @@ import Link from "next/link";
 import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
 import { FAQ } from "@/lib/faq";
-import { CATEGORY_COVERS, categoryVisual, PLACEHOLDER_ARTICLES, PLACEHOLDER_BRANDS } from "@/lib/placeholders";
-import { getCategories, getCategoryCounts, getCategoryShowcase, getLatestParts, isDemoData } from "@/lib/catalog";
+import { CATEGORY_COVERS, categoryVisual, PLACEHOLDER_ARTICLES } from "@/lib/placeholders";
+import { getBrandCounts, getBrands, getCategories, getCategoryCounts, getCategoryShowcase, getLatestParts, isDemoData } from "@/lib/catalog";
 import { PartCard } from "@/components/catalog/PartCard";
 import { Hero } from "@/components/home/Hero";
 import { Categories } from "@/components/home/Categories";
+import { BrandsBand } from "@/components/home/BrandsBand";
 import { Process } from "@/components/home/Process";
 import { Stats } from "@/components/home/Stats";
 import { StockBanner } from "@/components/home/StockBanner";
 import { Reviews } from "@/components/home/Reviews";
 import { Faq } from "@/components/home/Faq";
 import { Social } from "@/components/home/Social";
-import { Marquee } from "@/components/motion/Marquee";
 import { ParallaxBanner } from "@/components/motion/ParallaxBanner";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
@@ -50,7 +50,19 @@ const faqJsonLd = {
 };
 
 export default async function HomePage() {
-  const [categories, counts, latest, showcase] = await Promise.all([getCategories(), getCategoryCounts(), getLatestParts(4), getCategoryShowcase()]);
+  const [categories, counts, latest, showcase, brands, brandCounts] = await Promise.all([
+    getCategories(),
+    getCategoryCounts(),
+    getLatestParts(4),
+    getCategoryShowcase(),
+    getBrands(),
+    getBrandCounts(),
+  ]);
+  const brandChips = brands
+    .map((b) => ({ slug: b.slug, name: b.name, count: brandCounts[b.id] ?? 0 }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 12);
+  const totalParts = Object.values(brandCounts).reduce((sum, n) => sum + n, 0);
   const demo = isDemoData();
   const categoryTiles = categories
     .filter((c) => demo || (counts[c.id] ?? 0) > 0)
@@ -66,10 +78,8 @@ export default async function HomePage() {
     <>
       <Hero />
 
-      {/* Défilé des marques */}
-      <div className="border-b border-white/10 bg-night py-5 text-white/80">
-        <Marquee items={PLACEHOLDER_BRANDS} />
-      </div>
+      {/* Marques en stock : chiffres réels et plaques des marques les plus fournies */}
+      <BrandsBand brands={brandChips} totalBrands={brands.length} totalParts={totalParts} />
 
       {/* Réassurance */}
       <section aria-label="Nos engagements" className="border-b border-line bg-white">
