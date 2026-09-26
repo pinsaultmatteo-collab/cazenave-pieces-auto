@@ -147,7 +147,7 @@ export default async function HomePage() {
 
       {/* Enlèvement de véhicule : encart un peu plus large que la colonne de contenu */}
       <section className="container-x pb-20 lg:pb-28">
-        <Reveal className="lg:-mx-8 xl:-mx-14">
+        <Reveal className="lg:-mx-4 xl:-mx-12 2xl:-mx-16">
           <ParallaxBanner
             image={photos.truck}
             alt="Camion plateau Cazenave Pièces Auto pour l'enlèvement de véhicules"
