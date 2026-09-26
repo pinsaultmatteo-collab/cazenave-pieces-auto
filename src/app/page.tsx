@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
 import { FAQ } from "@/lib/faq";
 import { CATEGORY_COVERS, categoryVisual, PLACEHOLDER_ARTICLES } from "@/lib/placeholders";
-import { getBrandCounts, getBrands, getCategories, getCategoryCounts, getCategoryShowcase, getHotspotCounts, getLatestParts, isDemoData } from "@/lib/catalog";
+import { getBrandCounts, getBrands, getCategories, getCategoryCounts, getCategoryShowcase, getHotspotCounts, getHotspotSamples, getLatestParts, isDemoData } from "@/lib/catalog";
 import { PartCard } from "@/components/catalog/PartCard";
 import { Hero } from "@/components/home/Hero";
 import { Categories } from "@/components/home/Categories";
@@ -50,7 +50,7 @@ const faqJsonLd = {
 };
 
 export default async function HomePage() {
-  const [categories, counts, latest, showcase, brands, brandCounts, hotspotCounts] = await Promise.all([
+  const [categories, counts, latest, showcase, brands, brandCounts, hotspotCounts, hotspotSamples] = await Promise.all([
     getCategories(),
     getCategoryCounts(),
     getLatestParts(4),
@@ -58,18 +58,22 @@ export default async function HomePage() {
     getBrands(),
     getBrandCounts(),
     getHotspotCounts(),
+    getHotspotSamples(),
   ]);
-  // Points chauds sur la voiture du hero (repère 720 × 320 du dessin, avant à gauche)
-  const hotspots = [
-    { key: "phare", label: "Phare avant", href: "/pieces-auto?q=optique+avant", x: 84, y: 184 },
-    { key: "pare-chocs", label: "Pare-chocs avant", href: "/pieces-auto?q=pare+choc+avant", x: 60, y: 222 },
-    { key: "capot", label: "Capot", href: "/pieces-auto?categorie=capot", x: 170, y: 156 },
-    { key: "moteur", label: "Moteur", href: "/pieces-auto?categorie=moteur", x: 150, y: 206 },
-    { key: "retroviseur", label: "Rétroviseur", href: "/pieces-auto?q=retroviseur", x: 258, y: 146 },
-    { key: "porte", label: "Porte avant", href: "/pieces-auto?q=porte+avant", x: 340, y: 192 },
-    { key: "boite", label: "Boîte de vitesses", href: "/pieces-auto?categorie=boite-de-vitesses", x: 300, y: 236 },
-    { key: "feu-arriere", label: "Feu arrière", href: "/pieces-auto?q=feu+arriere", x: 652, y: 172 },
-  ].map((h) => ({ ...h, count: hotspotCounts[h.key] ?? 0 }));
+  // Cartes de pièces réelles du hero : une photo récente par famille de pièce, avec le nombre en stock
+  const heroParts = [
+    { key: "moteur", label: "Moteur", href: "/pieces-auto?categorie=moteur" },
+    { key: "phare", label: "Phare avant", href: "/pieces-auto?q=optique+avant" },
+    { key: "retroviseur", label: "Rétroviseur", href: "/pieces-auto?q=retroviseur" },
+    { key: "boite", label: "Boîte de vitesses", href: "/pieces-auto?categorie=boite-de-vitesses" },
+    { key: "porte", label: "Porte avant", href: "/pieces-auto?q=porte+avant" },
+    { key: "feu-arriere", label: "Feu arrière", href: "/pieces-auto?q=feu+arriere" },
+    { key: "capot", label: "Capot", href: "/pieces-auto?categorie=capot" },
+    { key: "pare-chocs", label: "Pare-chocs avant", href: "/pieces-auto?q=pare+choc+avant" },
+  ]
+    .filter((h) => hotspotSamples[h.key])
+    .map((h) => ({ ...h, count: hotspotCounts[h.key] ?? 0, photo: hotspotSamples[h.key].photo }))
+    .slice(0, 6);
   const marqueeBrands = brands
     .map((b) => ({ slug: b.slug, name: b.name, count: brandCounts[b.id] ?? 0 }))
     .sort((a, b) => b.count - a.count);
@@ -86,7 +90,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero hotspots={hotspots} />
+      <Hero parts={heroParts} />
 
       {/* Défilé des marques en stock, logo et nom, dans l'ordre du nombre de pièces */}
       <BrandsMarquee brands={marqueeBrands} />

@@ -173,3 +173,23 @@ export async function getHotspotCounts(): Promise<Record<string, number>> {
   for (const [k, pats] of Object.entries(patterns)) out[k] = DEMO_PARTS.filter((x) => x.available && pats.some((pt) => like(x.name, pt))).length;
   return out;
 }
+
+/** Une pièce photographiée par point chaud (jeu de démonstration). */
+export async function getHotspotSamples(): Promise<Record<string, { photo: string; name: string; id: number; slug: string }>> {
+  const words: Record<string, string[]> = {
+    phare: ["phare", "optique"],
+    "pare-chocs": ["pare-chocs", "pare choc"],
+    capot: ["capot"],
+    moteur: ["moteur"],
+    retroviseur: ["retroviseur", "rétroviseur"],
+    porte: ["porte"],
+    boite: ["boite", "boîte"],
+    "feu-arriere": ["feu arri"],
+  };
+  const out: Record<string, { photo: string; name: string; id: number; slug: string }> = {};
+  for (const [k, ws] of Object.entries(words)) {
+    const p = DEMO_PARTS.find((x) => x.available && x.photos[0] && ws.some((w) => normalize(x.name).includes(normalize(w))));
+    if (p) out[k] = { photo: p.photos[0], name: p.name, id: p.id, slug: p.slug };
+  }
+  return out;
+}

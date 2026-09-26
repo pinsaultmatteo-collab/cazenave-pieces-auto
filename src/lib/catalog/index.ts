@@ -45,5 +45,6 @@ export const getRelatedParts: typeof db.getRelatedParts = (...a) => impl().getRe
 export const listPartLinks: typeof db.listPartLinks = (...a) => impl().listPartLinks(...a);
 export const suggest: typeof db.suggest = (...a) => impl().suggest(...a);
 export const getHotspotCounts: typeof db.getHotspotCounts = (...a) => impl().getHotspotCounts(...a);
+export const getHotspotSamples: typeof db.getHotspotSamples = (...a) => impl().getHotspotSamples(...a);
 export const getVehicles: typeof db.getVehicles = (...a) => impl().getVehicles(...a);
 export const getVehicle: typeof db.getVehicle = (...a) => impl().getVehicle(...a);

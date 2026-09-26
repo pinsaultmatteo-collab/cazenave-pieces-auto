@@ -452,3 +452,21 @@ export async function getHotspotCounts(): Promise<Record<string, number>> {
   for (const k of keys) out[k] = Number(row?.[k] ?? 0);
   return out;
 }
+
+/** Pour chaque point chaud, la pièce photographiée la plus récente (photo moyenne et nom). */
+export async function getHotspotSamples(): Promise<Record<string, { photo: string; name: string; id: number; slug: string }>> {
+  const db = await getDb();
+  const out: Record<string, { photo: string; name: string; id: number; slug: string }> = {};
+  await Promise.all(
+    Object.entries(HOTSPOT_PATTERNS).map(async ([key, pats]) => {
+      const [row] = await db
+        .select({ id: parts.id, slug: parts.slug, name: parts.name, photo: sql<string>`coalesce(${parts.photosMedium}->>0, ${parts.photos}->>0)` })
+        .from(parts)
+        .where(and(LIVE, HAS_PHOTO, or(...pats.map((pat) => sql`lower(${parts.subCategoryName}) like ${pat}`))))
+        .orderBy(sql`${parts.opistoCreatedAt} desc nulls last`, desc(parts.id))
+        .limit(1);
+      if (row?.photo) out[key] = { photo: row.photo, name: row.name, id: row.id, slug: row.slug };
+    }),
+  );
+  return out;
+}

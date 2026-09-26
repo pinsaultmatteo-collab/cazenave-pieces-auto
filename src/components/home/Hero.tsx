@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "motion/react";
 import { HeroSearch } from "./HeroSearch";
-import { CarHotspots, type Hotspot } from "./CarHotspots";
+import { FloatingParts, type FloatingPart } from "./FloatingParts";
 import { CheckIcon } from "@/components/icons";
 import { EASE } from "@/components/motion/Reveal";
 import { photos } from "@/lib/photos";
@@ -27,7 +27,7 @@ const word: Variants = {
 
 const ARGUMENTS = ["Jusqu'à 70 % moins cher que le neuf", "Pièces testées et garanties 12 mois", "Centre VHU agréé"];
 
-export function Hero({ hotspots }: { hotspots: Hotspot[] }) {
+export function Hero({ parts }: { parts: FloatingPart[] }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
@@ -133,18 +133,18 @@ export function Hero({ hotspots }: { hotspots: Hotspot[] }) {
         </motion.div>
       </div>
 
-      {/* Voiture interactive : chaque point désigne une pièce disponible */}
-      <motion.div style={{ y: carY, opacity: carOpacity }} className="container-x relative mt-10 pb-10 lg:mt-6 lg:pb-14">
+      {/* Pièces réelles du stock qui flottent sous le titre */}
+      <motion.div style={{ y: carY, opacity: carOpacity }} className="container-x relative mt-10 pb-12 lg:mt-4 lg:pb-16">
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: reduce ? 0 : 2.6, duration: 0.8 }}
-          className="mb-2 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400 lg:mb-0"
+          transition={{ delay: reduce ? 0 : 1.2, duration: 0.8 }}
+          className="mb-4 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400"
         >
           <span className="h-px w-10 bg-brand-400" />
-          Cliquez sur la pièce qu&apos;il vous faut
+          En rayon aujourd&apos;hui à Colomiers
         </motion.p>
-        <CarHotspots hotspots={hotspots} />
+        <FloatingParts parts={parts} />
       </motion.div>
 
       {/* Indice de défilement */}
