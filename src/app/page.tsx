@@ -22,7 +22,7 @@ import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@
 /** Rendu mis en cache et rafraîchi au plus toutes les 30 minutes (stock synchronisé depuis Opisto). */
 export const revalidate = 1800;
 
-function SectionHeading({ kicker, title, text, href, link }: { kicker: string; title: string; text: string; href: string; link: string }) {
+function SectionHeading({ kicker, title, text, href, link }: { kicker: string; title: React.ReactNode; text: string; href: string; link: string }) {
   return (
     <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
       <div>
@@ -111,7 +111,12 @@ export default async function HomePage() {
           <Reveal>
             <SectionHeading
               kicker="Le catalogue"
-              title="Nos pièces d'occasion par catégorie"
+              title={
+                <>
+                  Nos pièces d&apos;occasion
+                  <br className="sm:hidden" /> par catégorie
+                </>
+              }
               text="Chaque pièce est démontée, contrôlée et photographiée dans notre centre de Colomiers."
               href="/pieces-auto"
               link="Voir tout le stock"

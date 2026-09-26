@@ -43,7 +43,7 @@ export function Stats() {
       </Reveal>
 
       <Reveal className="relative mx-auto w-full max-w-[17rem] sm:max-w-sm lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:max-w-md">
-        <div aria-hidden className="absolute inset-0 -z-10 rounded-full bg-brand-100 blur-3xl" />
+        <div aria-hidden className="absolute inset-0 -z-10 hidden rounded-full bg-brand-100 blur-3xl lg:block" />
         <SpeedGauge progress={progress} className="h-auto w-full drop-shadow-xl" />
         <div className="pointer-events-none absolute inset-x-0 bottom-[8%] text-center">
           <p className="display-title text-4xl text-ink sm:text-5xl lg:text-6xl">
@@ -61,9 +61,9 @@ export function Stats() {
             VHU par la préfecture de Haute-Garonne, dans une logique d&apos;économie circulaire encadrée par
             l&apos;article R543-153 du code de l&apos;environnement.
           </p>
-          <ul className="mt-5 space-y-2 text-sm font-semibold text-ink">
+          <ul className="mx-auto mt-5 max-w-md space-y-2 text-left text-sm font-semibold text-ink lg:mx-0 lg:max-w-none">
             {COMMITMENTS.map((t) => (
-              <li key={t} className="flex items-start justify-center gap-2 text-left lg:justify-start">
+              <li key={t} className="flex items-start gap-2">
                 <CheckIcon size={18} className="mt-0.5 shrink-0 text-brand" />
                 {t}
               </li>

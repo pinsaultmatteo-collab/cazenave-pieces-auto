@@ -36,6 +36,8 @@ export function Hero() {
   const coupeLeft = useTransform(scrollYProgress, [0, 0.7], ["0%", reduce ? "0%" : "100%"]);
   const coupeX = useTransform(scrollYProgress, [0, 0.7], ["0%", reduce ? "0%" : "-100%"]);
   const textY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 140]);
+  // Sur mobile les arguments restent fixes (ils sont placés après la recherche).
+  const bulletsY = useTransform(textY, (v) => (typeof window !== "undefined" && window.innerWidth >= 1024 ? v : 0));
   const photoY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 160]);
 
   return (
@@ -125,7 +127,7 @@ export function Hero() {
         </motion.div>
 
         <motion.ul
-          style={{ y: textY }}
+          style={{ y: bulletsY }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.8 }}

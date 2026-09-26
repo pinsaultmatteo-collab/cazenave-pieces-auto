@@ -41,12 +41,12 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-16 bg-night text-white">
+    <footer className="relative mt-16 flex flex-col bg-night text-white">
       <div aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand-700 via-brand-400 to-brand-700" />
       {/* Colonnes */}
       <div className="container-x grid grid-cols-2 gap-x-6 gap-y-7 py-8 md:gap-10 md:py-14 lg:grid-cols-5">
-        <div className="col-span-2 lg:col-span-2">
-          <Image src={logoWhite} alt="Cazenave Pièces Auto" className="h-12 w-auto" />
+        <div className="col-span-2 text-center md:text-left lg:col-span-2">
+          <Image src={logoWhite} alt="Cazenave Pièces Auto" className="mx-auto h-12 w-auto md:mx-0" />
           <p className="mt-5 hidden text-sm leading-6 text-white/80 md:block">
             {site.tagline}. Centre VHU agréé, casse auto à {site.address.city}, près de Toulouse.
           </p>
@@ -102,8 +102,8 @@ export function Footer() {
         ))}
       </div>
 
-      {/* Ligne légale */}
-      <div className="border-t border-white/10">
+      {/* Ligne légale (après les certifications sur mobile) */}
+      <div className="order-3 border-t border-white/10 md:order-2">
         <div className="container-x flex flex-col items-center justify-between gap-2 py-4 text-center text-[11px] text-white/60 md:flex-row md:py-5 md:text-left md:text-xs">
           <p>
             © {year} {site.name} · Tous droits réservés · Agrément préfectoral {site.agrement}
@@ -123,7 +123,7 @@ export function Footer() {
       </div>
 
       {/* Certifications et partenaires (obligatoires, avec liens) : bandeau blanc sous le pied de page */}
-      <div className="bg-white text-ink">
+      <div className="order-2 bg-white text-ink md:order-3">
         <div className="container-x py-4 md:py-6">
           <div className="flex flex-col items-center gap-3 md:gap-4 lg:flex-row lg:justify-between">
             <p className="shrink-0 text-[11px] font-bold uppercase tracking-[0.25em] text-steel">Certifications et partenaires</p>

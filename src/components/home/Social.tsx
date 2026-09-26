@@ -50,7 +50,8 @@ export function Social() {
           <Reveal className="text-center lg:text-left">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Réseaux sociaux</p>
             <h2 className="display-title mt-4 text-4xl sm:text-5xl">
-              Suivez l&apos;atelier <span className="text-outline-brand">au quotidien</span>
+              Suivez l&apos;atelier <br className="sm:hidden" />
+              <span className="text-outline-brand">au quotidien</span>
             </h2>
             <p className="mx-auto mt-4 max-w-lg leading-7 text-white/70 lg:mx-0">
               Arrivages, démontages, coulisses du parc et de l&apos;atelier : on partage tout, presque en direct.

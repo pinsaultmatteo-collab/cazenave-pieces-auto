@@ -35,7 +35,8 @@ export function StockBanner() {
         <Reveal className="text-center lg:text-left">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Notre stock</p>
           <h2 className="display-title mt-4 text-5xl sm:text-6xl lg:text-7xl">
-            Chaque pièce <span className="text-outline-brand">a sa place</span>
+            Chaque pièce <br className="sm:hidden" />
+            <span className="text-outline-brand">a sa place</span>
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-white/80 lg:mx-0">
             Des kilomètres de rayonnages, des moteurs aux rétroviseurs. Ce que vous voyez sur le site est
