@@ -41,6 +41,8 @@ const nextConfig: NextConfig = {
       { source: "/mon-panier/:path*", destination: "/panier", permanent: true },
       { source: "/mon-compte/:path+", destination: "/mon-compte", permanent: true },
       { source: "/article/:slug", destination: "/mag/:slug", permanent: true },
+      // Questionnaire client de 2022, clos : la page a été retirée
+      { source: "/mag/questionnaire-de-letude-du-comportement-client", destination: "/mag", permanent: true },
       // Anciennes pages de tags et catégories du Mag
       ...OLD_MAG_TAGS.map((tag) => ({ source: `/mag/${tag}`, destination: "/mag", permanent: true })),
     ];

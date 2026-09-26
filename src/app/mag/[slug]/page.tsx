@@ -22,7 +22,12 @@ export async function generateMetadata({ params }: PageProps<"/mag/[slug]">): Pr
     title: article.title,
     description: article.description,
     alternates: { canonical: `/mag/${article.slug}` },
-    openGraph: { type: "article", publishedTime: article.date, images: article.cover ? [{ url: article.cover }] : undefined },
+    openGraph: {
+      type: "article",
+      publishedTime: article.date,
+      modifiedTime: article.updated ?? article.date,
+      images: article.cover ? [{ url: article.cover }] : undefined,
+    },
   };
 }
 
@@ -44,6 +49,7 @@ export default async function ArticlePage({ params }: PageProps<"/mag/[slug]">) 
     "@type": "Article",
     headline: article.title,
     datePublished: article.date,
+    dateModified: article.updated ?? article.date,
     image: article.cover ? [`${site.url}${article.cover}`] : undefined,
     author: { "@type": "Organization", name: site.name },
     publisher: { "@type": "Organization", name: site.name },
@@ -71,14 +77,10 @@ export default async function ArticlePage({ params }: PageProps<"/mag/[slug]">) 
         </p>
         <h1 className="display-title mt-4 text-4xl text-ink sm:text-5xl lg:text-6xl">{article.title}</h1>
         {article.excerpt && <p className="mt-5 max-w-2xl text-lg leading-8 text-steel">{article.excerpt}</p>}
-        {article.tags.length > 0 && (
-          <ul className="mt-5 flex flex-wrap gap-2">
-            {article.tags.map((t) => (
-              <li key={t} className="rounded-full bg-mist px-3 py-1 text-xs font-semibold text-steel">
-                #{t}
-              </li>
-            ))}
-          </ul>
+        {article.updated && (
+          <p className="mt-3 text-xs text-steel">
+            Mis à jour le <time dateTime={article.updated}>{formatDate(article.updated)}</time>
+          </p>
         )}
       </header>
 
@@ -95,7 +97,16 @@ export default async function ArticlePage({ params }: PageProps<"/mag/[slug]">) 
         <div className="min-w-0 max-w-3xl">
           <Prose html={html} />
 
-          <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-line pt-6">
+          {article.tags.length > 0 && (
+            <ul className="mt-10 flex flex-wrap gap-2">
+              {article.tags.map((t) => (
+                <li key={t} className="rounded-full bg-mist px-3 py-1 text-xs font-semibold text-steel">
+                  #{t}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-6">
             <span className="text-xs font-bold uppercase tracking-[0.25em] text-steel">Partager</span>
             <ShareLinks url={url} title={article.title} />
           </div>

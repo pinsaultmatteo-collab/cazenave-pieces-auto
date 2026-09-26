@@ -6,6 +6,8 @@ export type Article = {
   title: string;
   /** ISO 8601 */
   date: string;
+  /** Date de dernière mise à jour du contenu (ISO 8601), si l'article a été enrichi */
+  updated?: string;
   category: string;
   tags: string[];
   cover: string | null;
