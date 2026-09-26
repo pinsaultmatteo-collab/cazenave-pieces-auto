@@ -4,7 +4,6 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "motion/react";
 import { HeroSearch } from "./HeroSearch";
-import { FloatingParts, type FloatingPart } from "./FloatingParts";
 import { SportCar } from "@/components/svg/SportCar";
 import { CheckIcon } from "@/components/icons";
 import { EASE } from "@/components/motion/Reveal";
@@ -28,11 +27,10 @@ const word: Variants = {
 
 const ARGUMENTS = ["Jusqu'à 70 % moins cher que le neuf", "Pièces testées et garanties 12 mois", "Centre VHU agréé"];
 
-export function Hero({ parts }: { parts: FloatingPart[] }) {
+export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const carY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 80]);
   const carOpacity = useTransform(scrollYProgress, [0.5, 0.9], [1, reduce ? 1 : 0]);
   // Le petit coupé traverse l'écran de gauche à droite pendant le défilement du hero.
   const coupeLeft = useTransform(scrollYProgress, [0, 0.7], ["0%", reduce ? "0%" : "100%"]);
@@ -137,22 +135,8 @@ export function Hero({ parts }: { parts: FloatingPart[] }) {
         </motion.div>
       </div>
 
-      {/* Pièces réelles du stock qui flottent sous le titre */}
-      <motion.div style={{ y: carY, opacity: carOpacity }} className="container-x relative mt-10 pb-12 lg:mt-4 lg:pb-16">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: reduce ? 0 : 1.2, duration: 0.8 }}
-          className="mb-4 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400"
-        >
-          <span className="h-px w-10 bg-brand-400" />
-          En rayon aujourd&apos;hui à Colomiers
-        </motion.p>
-        <FloatingParts parts={parts} />
-      </motion.div>
-
-      {/* Petit coupé qui roule sur sa ligne de route, sous les pièces */}
-      <div aria-hidden className="pointer-events-none relative h-20 w-full sm:h-24 lg:h-28">
+      {/* Petit coupé qui roule sur sa ligne de route, sous le titre */}
+      <div aria-hidden className="pointer-events-none relative mt-10 h-24 w-full sm:h-28 lg:mt-6 lg:h-32">
         <div className="absolute inset-x-0 bottom-3 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
         <motion.div style={{ left: coupeLeft, x: coupeX, opacity: carOpacity }} className="absolute bottom-0 w-[min(58vw,220px)] will-change-transform sm:w-[min(40vw,260px)] lg:w-[300px]">
           <SportCar className="h-auto w-full animate-float motion-reduce:animate-none [animation-duration:5s]" />
