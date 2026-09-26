@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "motion/react";
 import { HeroSearch } from "./HeroSearch";
 import { FloatingParts, type FloatingPart } from "./FloatingParts";
+import { SportCar } from "@/components/svg/SportCar";
 import { CheckIcon } from "@/components/icons";
 import { EASE } from "@/components/motion/Reveal";
 import { photos } from "@/lib/photos";
@@ -33,6 +34,9 @@ export function Hero({ parts }: { parts: FloatingPart[] }) {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const carY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 80]);
   const carOpacity = useTransform(scrollYProgress, [0.5, 0.9], [1, reduce ? 1 : 0]);
+  // Le petit coupé traverse l'écran de gauche à droite pendant le défilement du hero.
+  const coupeLeft = useTransform(scrollYProgress, [0, 0.7], ["0%", reduce ? "0%" : "100%"]);
+  const coupeX = useTransform(scrollYProgress, [0, 0.7], ["0%", reduce ? "0%" : "-100%"]);
   const textY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 140]);
   const photoY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 160]);
 
@@ -146,6 +150,14 @@ export function Hero({ parts }: { parts: FloatingPart[] }) {
         </motion.p>
         <FloatingParts parts={parts} />
       </motion.div>
+
+      {/* Petit coupé qui roule sur sa ligne de route, sous les pièces */}
+      <div aria-hidden className="pointer-events-none relative h-20 w-full sm:h-24 lg:h-28">
+        <div className="absolute inset-x-0 bottom-3 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+        <motion.div style={{ left: coupeLeft, x: coupeX, opacity: carOpacity }} className="absolute bottom-0 w-[min(58vw,220px)] will-change-transform sm:w-[min(40vw,260px)] lg:w-[300px]">
+          <SportCar className="h-auto w-full animate-float motion-reduce:animate-none [animation-duration:5s]" />
+        </motion.div>
+      </div>
 
       {/* Indice de défilement */}
       <div aria-hidden className="absolute bottom-5 right-8 hidden flex-col items-center gap-2 text-white/50 lg:flex">
