@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/brand/logo-navbar.png";
-import { site } from "@/lib/site";
 import { SearchIcon, UserIcon } from "@/components/icons";
 import { CartLink } from "./CartLink";
 import { MobileNav } from "./MobileNav";
+import { NavLinks } from "./NavLinks";
 import { TopBar } from "./TopBar";
 
 export function Header() {
@@ -58,15 +58,7 @@ export function Header() {
       {/* Navigation principale (ordinateur) */}
       <div className="hidden border-t border-line lg:block">
         <div className="container-x flex h-12 items-center justify-between">
-          <ul className="flex items-center gap-7 text-sm font-semibold">
-            {site.nav.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="py-3 transition hover:text-brand-700">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <NavLinks />
           <Link
             href="/espace-pro"
             className="rounded-full bg-brand px-4 py-1.5 text-sm font-bold text-ink-900 transition hover:bg-brand-600"

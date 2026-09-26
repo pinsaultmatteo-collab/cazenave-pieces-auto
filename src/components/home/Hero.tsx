@@ -136,12 +136,15 @@ export function Hero() {
       </div>
 
       {/* Voiture : piste pleine largeur, elle traverse l'écran au défilement */}
-      <div aria-hidden className="pointer-events-none relative mt-6 h-40 w-full sm:h-48 lg:mt-2 lg:h-64">
+      <div aria-hidden className="pointer-events-none relative mt-14 h-40 w-full sm:h-48 lg:mt-12 lg:h-64">
         <motion.div
           style={{ left: carLeft, x: carX, opacity: carOpacity }}
           className="absolute bottom-2 w-[min(88vw,560px)] will-change-transform lg:w-[min(46vw,720px)]"
         >
-          <CarLineArt className="h-auto w-full animate-float motion-reduce:animate-none" />
+          {/* Retournée : le dessin regarde vers la gauche, elle doit avancer vers la droite */}
+          <div className="-scale-x-100">
+            <CarLineArt className="h-auto w-full animate-float motion-reduce:animate-none" />
+          </div>
         </motion.div>
         {/* Route */}
         <div className="absolute inset-x-0 bottom-2 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />

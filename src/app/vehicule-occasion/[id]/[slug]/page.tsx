@@ -58,7 +58,7 @@ export default async function VehiclePage({ params }: PageProps<"/vehicule-occas
       </div>
 
       <section className="container-x grid gap-10 py-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-start lg:gap-14 lg:py-12">
-        <div className="min-w-0 lg:sticky lg:top-40 lg:self-start">
+        <div className="min-w-0 lg:sticky lg:top-48 lg:self-start">
           <ProductGallery photos={v.photos} alt={label} />
         </div>
         <div>

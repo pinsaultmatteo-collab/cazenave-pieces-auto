@@ -215,3 +215,9 @@ html.lenis body {
   padding-left: 1.25rem;
   font-style: italic;
 }
+
+/* Titres d'articles : ancres visibles sous l'en-tête collant */
+.prose-cz h2,
+.prose-cz h3 {
+  scroll-margin-top: 12rem;
+}

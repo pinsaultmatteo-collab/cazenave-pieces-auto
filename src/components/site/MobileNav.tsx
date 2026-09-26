@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { activeNavHref } from "./NavLinks";
 import { site } from "@/lib/site";
 import { CloseIcon, MenuIcon, PhoneIcon, SearchIcon } from "@/components/icons";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const active = activeNavHref(usePathname());
 
   return (
     <div className="lg:hidden">
@@ -50,7 +53,10 @@ export function MobileNav() {
                 <Link
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="block px-5 py-3.5 text-base font-semibold hover:bg-mist"
+                  aria-current={item.href === active ? "page" : undefined}
+                  className={`block border-l-4 px-5 py-3.5 text-base font-semibold hover:bg-mist ${
+                    item.href === active ? "border-brand bg-brand-50 text-brand-700" : "border-transparent"
+                  }`}
                 >
                   {item.label}
                 </Link>

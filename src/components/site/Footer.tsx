@@ -124,13 +124,13 @@ export function Footer() {
 
       {/* Certifications et partenaires (obligatoires, avec liens) : bandeau blanc sous le pied de page */}
       <div className="bg-white text-ink">
-        <div className="container-x py-6">
-          <div className="flex flex-col items-center gap-4 lg:flex-row lg:justify-between">
+        <div className="container-x py-7">
+          <div className="flex flex-col items-center gap-5 lg:flex-row lg:justify-between">
             <p className="shrink-0 text-[11px] font-bold uppercase tracking-[0.25em] text-steel">Certifications et partenaires</p>
-            <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 lg:justify-end">
+            <ul className="flex flex-wrap items-center justify-center gap-x-9 gap-y-5 lg:justify-end">
               {site.partners.map((p) => {
                 const external = p.href.startsWith("http");
-                const img = <Image src={p.logo} alt={p.name} className="h-10 w-auto object-contain transition hover:scale-105" />;
+                const img = <Image src={p.logo} alt={p.name} className="h-14 w-auto object-contain transition hover:scale-105" />;
                 return (
                   <li key={p.name}>
                     {external ? (
@@ -147,7 +147,7 @@ export function Footer() {
               })}
               {site.certifications.map((c) => (
                 <li key={c.name} title={c.name}>
-                  <Image src={c.logo} alt={c.name} className="h-10 w-auto object-contain" />
+                  <Image src={c.logo} alt={c.name} className="h-14 w-auto object-contain" />
                 </li>
               ))}
             </ul>

@@ -158,7 +158,7 @@ export default function RemovalPage() {
         </div>
 
         {/* Carte fixe */}
-        <aside className="lg:sticky lg:top-40 lg:self-start">
+        <aside className="lg:sticky lg:top-48 lg:self-start">
           <Reveal delay={0.15}>
             <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-xl shadow-ink/10">
               <div className="flex items-baseline justify-between gap-3 border-b border-line px-5 py-3.5">
