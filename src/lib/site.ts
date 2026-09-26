@@ -4,7 +4,6 @@ import logoAdeme from "@/assets/brand/logo-ademe.png";
 import logoQualicert from "@/assets/brand/logo-qualicert.png";
 import logoGoodbyeCar from "@/assets/brand/goodbyecar.png";
 import certSiv from "@/assets/brand/cert-siv.png";
-import certValorauto from "@/assets/brand/cert-valorauto.png";
 import certIndraExpert from "@/assets/brand/cert-indra-expert.jpg";
 import pictoHoraire from "@/assets/brand/picto-horaire.svg";
 import pictoGarantie from "@/assets/brand/picto-garantie.svg";
@@ -114,7 +113,6 @@ export const site = {
   certifications: [
     { name: "Centre agréé S.I.V", logo: certSiv },
     { name: "Indra Centre Expert : traitement des véhicules électriques et hybrides", logo: certIndraExpert },
-    { name: "Réseau Valorauto Stellantis", logo: certValorauto },
   ],
 
   /** Partenaires cités en texte sur le site actuel. */
