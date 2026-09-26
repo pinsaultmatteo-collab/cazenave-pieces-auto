@@ -102,52 +102,6 @@ export function Footer() {
         ))}
       </div>
 
-      {/* Certifications et partenaires (obligatoires, avec liens) */}
-      <div className="border-t border-white/10">
-        <div className="container-x py-8">
-          <p className="text-center text-xs font-semibold uppercase tracking-wide text-white/60">
-            Certifications et partenaires
-          </p>
-          <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
-            {site.partners.map((p) => {
-              const external = p.href.startsWith("http");
-              const img = (
-                <Image src={p.logo} alt={p.name} className="h-12 w-auto object-contain" />
-              );
-              return (
-                <li key={p.name} className="rounded-lg bg-white px-4 py-2">
-                  {external ? (
-                    <a href={p.href} target="_blank" rel="noopener noreferrer" title={p.name}>
-                      {img}
-                    </a>
-                  ) : (
-                    <Link href={p.href} title={p.name}>
-                      {img}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-            {site.certifications.map((c) => (
-              <li key={c.name} className="rounded-lg bg-white px-4 py-2" title={c.name}>
-                <Image src={c.logo} alt={c.name} className="h-12 w-auto object-contain" />
-              </li>
-            ))}
-          </ul>
-          <p className="mt-6 text-center text-xs text-white/60">
-            Nos partenaires recyclage :{" "}
-            {site.textPartners.map((p, i) => (
-              <span key={p.name}>
-                <a href={p.href} target="_blank" rel="noopener noreferrer" className="underline hover:text-white">
-                  {p.name}
-                </a>
-                {i < site.textPartners.length - 1 ? ", " : "."}
-              </span>
-            ))}
-          </p>
-        </div>
-      </div>
-
       {/* Ligne légale */}
       <div className="border-t border-white/10">
         <div className="container-x flex flex-col items-center justify-between gap-3 py-5 text-xs text-white/60 md:flex-row">
@@ -165,6 +119,50 @@ export function Footer() {
               LinkedIn
             </a>
           </div>
+        </div>
+      </div>
+
+      {/* Certifications et partenaires (obligatoires, avec liens) : bandeau blanc sous le pied de page */}
+      <div className="bg-white text-ink">
+        <div className="container-x py-6">
+          <div className="flex flex-col items-center gap-4 lg:flex-row lg:justify-between">
+            <p className="shrink-0 text-[11px] font-bold uppercase tracking-[0.25em] text-steel">Certifications et partenaires</p>
+            <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 lg:justify-end">
+              {site.partners.map((p) => {
+                const external = p.href.startsWith("http");
+                const img = <Image src={p.logo} alt={p.name} className="h-10 w-auto object-contain transition hover:scale-105" />;
+                return (
+                  <li key={p.name}>
+                    {external ? (
+                      <a href={p.href} target="_blank" rel="noopener noreferrer" title={p.name}>
+                        {img}
+                      </a>
+                    ) : (
+                      <Link href={p.href} title={p.name}>
+                        {img}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
+              {site.certifications.map((c) => (
+                <li key={c.name} title={c.name}>
+                  <Image src={c.logo} alt={c.name} className="h-10 w-auto object-contain" />
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p className="mt-4 text-center text-xs text-steel lg:text-right">
+            Nos partenaires recyclage :{" "}
+            {site.textPartners.map((p, i) => (
+              <span key={p.name}>
+                <a href={p.href} target="_blank" rel="noopener noreferrer" className="underline hover:text-ink">
+                  {p.name}
+                </a>
+                {i < site.textPartners.length - 1 ? ", " : "."}
+              </span>
+            ))}
+          </p>
         </div>
       </div>
     </footer>

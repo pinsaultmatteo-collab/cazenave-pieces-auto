@@ -3,7 +3,7 @@ import Link from "next/link";
 import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
 import { FAQ } from "@/lib/faq";
-import { categoryVisual, PLACEHOLDER_ARTICLES, PLACEHOLDER_BRANDS } from "@/lib/placeholders";
+import { CATEGORY_COVERS, categoryVisual, PLACEHOLDER_ARTICLES, PLACEHOLDER_BRANDS } from "@/lib/placeholders";
 import { getCategories, getCategoryCounts, getCategoryShowcase, getLatestParts, isDemoData } from "@/lib/catalog";
 import { PartCard } from "@/components/catalog/PartCard";
 import { Hero } from "@/components/home/Hero";
@@ -17,7 +17,7 @@ import { Social } from "@/components/home/Social";
 import { Marquee } from "@/components/motion/Marquee";
 import { ParallaxBanner } from "@/components/motion/ParallaxBanner";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
-import { ChevronRightIcon } from "@/components/icons";
+import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
 
 /** Rendu mis en cache et rafraîchi au plus toutes les 30 minutes (stock synchronisé depuis Opisto). */
 export const revalidate = 1800;
@@ -57,8 +57,9 @@ export default async function HomePage() {
     .slice(0, 9)
     .map((c) => {
       const visual = categoryVisual(c.slug);
-      const shot = showcase[c.id];
-      return { slug: c.slug, name: c.name, count: counts[c.id] ?? 0, icon: visual.icon, photo: shot?.photo ?? visual.photo, photoLabel: shot?.name };
+      const cover = CATEGORY_COVERS[c.slug];
+      const shot = cover ? undefined : showcase[c.id];
+      return { slug: c.slug, name: c.name, count: counts[c.id] ?? 0, icon: visual.icon, photo: cover ?? shot?.photo ?? visual.photo, photoLabel: shot?.name };
     });
 
   return (
@@ -151,39 +152,91 @@ export default async function HomePage() {
             image={photos.truck}
             alt="Camion plateau Cazenave Pièces Auto pour l'enlèvement de véhicules"
             className="rounded-3xl text-white shadow-2xl shadow-ink/20"
-            overlayClassName="bg-gradient-to-r from-night/95 via-night/80 to-night/35"
+            overlayClassName="bg-gradient-to-r from-night/95 via-night/85 to-night/50"
             amount={60}
           >
-            <div className="grid items-center gap-8 px-6 py-12 sm:px-10 lg:grid-cols-[1.2fr_1fr] lg:px-14 lg:py-16">
+            <div className="grid gap-10 px-6 py-12 sm:px-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-14 lg:px-14 lg:py-16">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-400">Pour professionnels et particuliers</p>
-                <h2 className="display-title mt-4 text-4xl sm:text-5xl">
-                  Nous rachetons votre véhicule et vous en débarrassons gratuitement*
+                <p className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400">
+                  Enlèvement de véhicule
+                  <span className="rounded-full bg-brand px-2.5 py-1 text-[10px] tracking-[0.2em] text-ink-900">Gratuit*</span>
+                </p>
+                <h2 className="display-title mt-4 text-4xl sm:text-5xl lg:text-6xl">
+                  Nous rachetons votre véhicule <span className="text-brand-400">et vous en débarrassons</span>
                 </h2>
                 <p className="mt-5 max-w-2xl leading-7 text-white/80">
-                  Vous ne savez pas quoi faire de votre vieille voiture ? Vous changez de véhicule et souhaitez
-                  bénéficier de la prime à la casse ? Nous rachetons votre véhicule : faites-le estimer auprès de
-                  nos services. Véhicule stationné sur la voie publique et menacé d&apos;amende ? À réception du
-                  dossier complet, nous nous occupons de tout.
+                  Voiture hors d&apos;usage, accidentée, en panne ou simplement en fin de vie : nous venons la
+                  chercher avec notre camion plateau, nous la rachetons si elle a de la valeur et nous prenons en
+                  charge toutes les démarches. Particuliers comme professionnels.
                 </p>
-                <p className="mt-3 text-xs text-white/50">
-                  * Sous conditions. Contactez nos services pour savoir si vous êtes éligible à l&apos;enlèvement
-                  gratuit. Intervention en régions Occitanie et Nouvelle-Aquitaine.
+
+                <ol className="mt-8 grid gap-4 sm:grid-cols-3">
+                  {[
+                    { n: "1", title: "Estimation", text: "Décrivez votre véhicule, nous vous répondons sous 24h ouvrées avec une offre de reprise." },
+                    { n: "2", title: "Enlèvement", text: "Rendez-vous à votre domicile ou sur le lieu de stationnement, en Occitanie et Nouvelle-Aquitaine." },
+                    { n: "3", title: "Démarches", text: "Certificat de cession et de destruction, déclaration en préfecture : nous nous occupons de tout." },
+                  ].map((s) => (
+                    <li key={s.n} className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-sm">
+                      <span className="font-display text-3xl font-semibold text-brand-400">{s.n}</span>
+                      <p className="mt-1 font-bold">{s.title}</p>
+                      <p className="mt-1 text-sm leading-6 text-white/70">{s.text}</p>
+                    </li>
+                  ))}
+                </ol>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Link
+                    href="/enlevement-vehicule"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-8 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_40px_rgba(152,174,7,0.45)]"
+                  >
+                    Faire estimer mon véhicule <ChevronRightIcon size={18} />
+                  </Link>
+                  <a
+                    href={site.phoneHref}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-night/40 px-8 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10"
+                  >
+                    <PhoneIcon size={18} className="text-brand-400" /> {site.phone}
+                  </a>
+                </div>
+                <p className="mt-4 text-xs text-white/50">
+                  * Sous conditions : véhicule complet et dossier administratif à jour. Contactez-nous pour vérifier votre éligibilité.
                 </p>
               </div>
-              <div className="flex flex-col gap-3 lg:items-end">
-                <Link
-                  href="/enlevement-vehicule"
-                  className="inline-flex items-center justify-center rounded-full bg-brand px-8 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_40px_rgba(152,174,7,0.45)]"
-                >
-                  Faire estimer mon véhicule
-                </Link>
-                <a
-                  href={site.phoneHref}
-                  className="inline-flex items-center justify-center rounded-full border border-white/30 bg-night/40 px-8 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10"
-                >
-                  {site.phone}
-                </a>
+
+              <div className="rounded-3xl border border-white/15 bg-night/60 p-6 shadow-2xl shadow-black/30 backdrop-blur-md sm:p-8">
+                <p className="text-xs font-bold uppercase tracking-[0.25em] text-brand-400">Ce que nous prenons en charge</p>
+                <ul className="mt-5 space-y-3.5 text-sm">
+                  {[
+                    { icon: TruckIcon, text: "Déplacement avec notre camion plateau, véhicule roulant ou non" },
+                    { icon: CheckIcon, text: "Rachat au meilleur prix des véhicules réparables ou valorisables" },
+                    { icon: ShieldIcon, text: "Certificat de destruction officiel : votre responsabilité est levée" },
+                    { icon: CheckIcon, text: "Prime à la conversion : nous fournissons les justificatifs" },
+                    { icon: CheckIcon, text: "Véhicule sur la voie publique menacé d'amende : intervention rapide" },
+                  ].map(({ icon: Icon, text }) => (
+                    <li key={text} className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/15 text-brand-400">
+                        <Icon size={15} />
+                      </span>
+                      <span className="leading-6 text-white/85">{text}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 flex items-center gap-4 border-t border-white/10 pt-5">
+                  <div className="text-center">
+                    <p className="font-display text-4xl font-semibold text-brand-400">24h</p>
+                    <p className="text-[11px] uppercase tracking-wide text-white/60">pour une offre</p>
+                  </div>
+                  <div className="h-10 w-px bg-white/10" />
+                  <div className="text-center">
+                    <p className="font-display text-4xl font-semibold text-brand-400">0 €</p>
+                    <p className="text-[11px] uppercase tracking-wide text-white/60">de frais d&apos;enlèvement*</p>
+                  </div>
+                  <div className="h-10 w-px bg-white/10" />
+                  <div className="text-center">
+                    <p className="font-display text-4xl font-semibold text-brand-400">VHU</p>
+                    <p className="text-[11px] uppercase tracking-wide text-white/60">centre agréé</p>
+                  </div>
+                </div>
               </div>
             </div>
           </ParallaxBanner>

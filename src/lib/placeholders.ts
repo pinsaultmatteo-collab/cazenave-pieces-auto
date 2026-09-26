@@ -1,4 +1,7 @@
 import { photos } from "@/lib/photos";
+import coverGrosseMecanique from "@/assets/photos/categories/grosse-mecanique.webp";
+import coverInterieure from "@/assets/photos/categories/carrosserie-interieure.jpg";
+import coverExterieure from "@/assets/photos/categories/carrosserie-exterieure.jpg";
 
 /**
  * Données provisoires affichées tant que la base locale n'est pas
@@ -40,6 +43,17 @@ export const PLACEHOLDER_CATEGORIES = [
 ] as const;
 
 export const CATEGORY_FALLBACK = { photo: photos.aisle, icon: "mecanique" } as const;
+
+/**
+ * Couvertures imposées pour certaines familles sur l'accueil (choix de
+ * Mattéo, sept. 2026). Les autres familles prennent une photo de pièce du
+ * stock, puis la photo locale de repli.
+ */
+export const CATEGORY_COVERS: Record<string, (typeof photos)[keyof typeof photos]> = {
+  "grosse-mecanique": coverGrosseMecanique,
+  "carrosserie-interieure-et-divers": coverInterieure,
+  "carrosserie-exterieure": coverExterieure,
+};
 
 /** Photo et pictogramme d'une catégorie, d'après son adresse. */
 export function categoryVisual(slug: string): { photo: (typeof PLACEHOLDER_CATEGORIES)[number]["photo"]; icon: string } {

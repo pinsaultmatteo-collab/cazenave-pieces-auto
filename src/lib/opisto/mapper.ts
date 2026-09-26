@@ -50,6 +50,13 @@ export function shortVersion(id: { CommercialDesignation?: string; Finish?: stri
   return v.length ? v : null;
 }
 
+/** Nombre de photos prises de la pièce elle-même (hors photos du véhicule donneur). */
+export function ownPhotoCount(p: OpistoPart): number {
+  const scaled = p.ScaledPhotos ?? [];
+  if (scaled.length) return scaled.filter((s) => s.IsPart && isRealPhoto(s.UrlLargePhoto || s.Url)).length;
+  return (p.Photos ?? []).filter((u) => isRealPhoto(u) && !/vhu_photo|vehic/i.test(u)).length;
+}
+
 export function vehicleSlug(v: OpistoVehicle): string {
   const id = v.Identification;
   return slugify([id?.Brand?.Name, id?.Range?.Name ?? id?.Model?.Name, id?.CommercialDesignation].filter(Boolean).join(" ")) || `vehicule-${v.Id}`;
@@ -146,6 +153,7 @@ export function mapPart(p: OpistoPart, casse: number, family: { id: number; name
     shippings: p.Shippings ?? [],
     photos,
     photosMedium: photoUrls(p, "medium"),
+    ownPhotos: ownPhotoCount(p),
     vignette: photoUrls(p, "medium")[0] || (isRealPhoto(p.Vignette) ? p.Vignette : null),
     available: p.Available !== false,
     inStock: p.IsInStock !== false,

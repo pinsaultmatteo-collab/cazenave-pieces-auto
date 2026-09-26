@@ -31,8 +31,10 @@ export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const carX = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -420]);
-  const carOpacity = useTransform(scrollYProgress, [0, 0.7], [1, reduce ? 1 : 0]);
+  // La voiture traverse tout l'écran, de gauche à droite, pendant le défilement du hero.
+  const carLeft = useTransform(scrollYProgress, [0, 0.75], ["0%", reduce ? "0%" : "100%"]);
+  const carX = useTransform(scrollYProgress, [0, 0.75], ["0%", reduce ? "0%" : "-100%"]);
+  const carOpacity = useTransform(scrollYProgress, [0.75, 0.95], [1, reduce ? 1 : 0]);
   const textY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 140]);
   const photoY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 160]);
 
@@ -60,7 +62,7 @@ export function Hero() {
         <div className="absolute right-[-10rem] bottom-0 h-[26rem] w-[26rem] animate-blob rounded-full bg-brand/10 blur-3xl [animation-delay:-7s] motion-reduce:animate-none" />
       </div>
 
-      <div className="container-x relative grid gap-12 pb-16 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16 lg:pb-24 lg:pt-24">
+      <div className="container-x relative grid gap-12 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16 lg:pt-24">
         <motion.div style={{ y: textY }} className="relative">
           <motion.p
             initial={{ opacity: 0, x: -20 }}
@@ -118,11 +120,6 @@ export function Hero() {
               </li>
             ))}
           </motion.ul>
-
-          {/* Voiture */}
-          <motion.div style={{ x: carX, opacity: carOpacity }} className="pointer-events-none mt-8 w-full max-w-[640px] lg:mt-12">
-            <CarLineArt className="h-auto w-full animate-float motion-reduce:animate-none" />
-          </motion.div>
         </motion.div>
 
         <motion.div
@@ -138,8 +135,20 @@ export function Hero() {
         </motion.div>
       </div>
 
+      {/* Voiture : piste pleine largeur, elle traverse l'écran au défilement */}
+      <div aria-hidden className="pointer-events-none relative mt-6 h-40 w-full sm:h-48 lg:mt-2 lg:h-64">
+        <motion.div
+          style={{ left: carLeft, x: carX, opacity: carOpacity }}
+          className="absolute bottom-2 w-[min(88vw,560px)] will-change-transform lg:w-[min(46vw,720px)]"
+        >
+          <CarLineArt className="h-auto w-full animate-float motion-reduce:animate-none" />
+        </motion.div>
+        {/* Route */}
+        <div className="absolute inset-x-0 bottom-2 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+      </div>
+
       {/* Indice de défilement */}
-      <div aria-hidden className="absolute bottom-5 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-white/50 lg:flex">
+      <div aria-hidden className="absolute bottom-5 right-8 hidden flex-col items-center gap-2 text-white/50 lg:flex">
         <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Découvrir</span>
         <span className="h-8 w-px overflow-hidden bg-white/20">
           <span className="block h-4 w-px animate-cue bg-brand-400" />

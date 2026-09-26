@@ -1,3 +1,4 @@
+import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { site } from "@/lib/site";
 import {
   ClockIcon,
@@ -29,7 +30,7 @@ export function TopBar() {
   const row = [...promises, ...promises];
   return (
     <div className="relative bg-night text-white">
-      <div aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand-700 via-brand-400 to-brand-700" />
+      <ScrollProgress />
       <div className="container-x flex h-11 items-center gap-6 text-[12px]">
         {/* Ordinateur : promesses alignées */}
         <ul className="hidden items-center gap-6 whitespace-nowrap lg:flex">

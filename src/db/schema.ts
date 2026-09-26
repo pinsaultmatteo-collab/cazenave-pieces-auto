@@ -137,6 +137,8 @@ export const parts = pgTable(
     shippings: jsonb("shippings").$type<unknown[]>().notNull().default([]),
     photos: jsonb("photos").$type<string[]>().notNull().default([]),
     photosMedium: jsonb("photos_medium").$type<string[]>().notNull().default([]),
+    /** Photos de la pièce elle-même (les suivantes dans `photos` sont celles du véhicule donneur) */
+    ownPhotos: integer("own_photos").notNull().default(0),
     vignette: text("vignette"),
     available: boolean("available").notNull().default(true),
     inStock: boolean("in_stock").notNull().default(true),

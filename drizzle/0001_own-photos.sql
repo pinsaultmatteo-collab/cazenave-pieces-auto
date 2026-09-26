@@ -1,0 +1,1 @@
+ALTER TABLE "parts" ADD COLUMN "own_photos" integer DEFAULT 0 NOT NULL;

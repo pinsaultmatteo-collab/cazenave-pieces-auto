@@ -17,8 +17,8 @@ const iso = (d: Date | null | undefined): string | null => (d ? d.toISOString() 
 /** Pièce visible sur le site : présente chez Opisto, disponible, en stock, non bloquée. */
 const LIVE = and(isNull(parts.deletedAt), eq(parts.available, true), eq(parts.inStock, true), eq(parts.blocked, false))!;
 
-/** Pièce avec au moins une vraie photo (le visuel générique Opisto « no-photos » est exclu). */
-const HAS_PHOTO = sql`jsonb_array_length(${parts.photos}) > 0 and ${parts.photos}::text not ilike '%no-photo%'`;
+/** Pièce photographiée elle-même (pas seulement son véhicule donneur, ni le visuel générique Opisto). */
+const HAS_PHOTO = sql`${parts.ownPhotos} > 0 and ${parts.photos}::text not ilike '%no-photo%'`;
 
 const normalize = (s: string) =>
   s
