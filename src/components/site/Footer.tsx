@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import logoWhite from "@/assets/brand/logo-white.png";
+import logoPmc from "@/assets/brand/pmc-marketing.png";
 import { site } from "@/lib/site";
 
 const columns = [
@@ -41,7 +42,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-16 flex flex-col bg-night text-white">
+    <footer className="relative mt-16 bg-night text-white">
       <div aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand-700 via-brand-400 to-brand-700" />
       {/* Colonnes */}
       <div className="container-x grid grid-cols-2 gap-x-6 gap-y-7 py-8 md:gap-10 md:py-14 lg:grid-cols-5">
@@ -102,13 +103,23 @@ export function Footer() {
         ))}
       </div>
 
-      {/* Ligne légale (après les certifications sur mobile) */}
-      <div className="order-3 border-t border-white/10 md:order-2">
-        <div className="container-x flex flex-col items-center justify-between gap-2 py-4 text-center text-[11px] text-white/60 md:flex-row md:py-5 md:text-left md:text-xs">
+      {/* Ligne légale et signature de l'agence */}
+      <div className="border-t border-white/10">
+        <div className="container-x flex flex-col items-center justify-between gap-3 py-4 text-center text-[11px] text-white/60 md:flex-row md:py-5 md:text-left md:text-xs">
           <p>
             © {year} {site.name} · Tous droits réservés · Agrément préfectoral {site.agrement}
           </p>
-          <div className="flex items-center gap-4">
+          <a
+            href="https://www.agence-pmc-marketing.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="PMC Marketing, agence digitale et IA à Toulouse"
+            className="group flex items-center gap-2 text-white/60 transition hover:text-white md:order-3"
+          >
+            <span>Site réalisé par</span>
+            <Image src={logoPmc} alt="PMC Marketing" className="h-6 w-auto opacity-90 transition group-hover:opacity-100" />
+          </a>
+          <div className="flex items-center gap-4 md:order-2">
             <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-white">
               Facebook
             </a>
@@ -123,7 +134,7 @@ export function Footer() {
       </div>
 
       {/* Certifications et partenaires (obligatoires, avec liens) : bandeau blanc sous le pied de page */}
-      <div className="order-2 bg-white text-ink md:order-3">
+      <div className="bg-white text-ink">
         <div className="container-x py-4 md:py-6">
           <div className="flex flex-col items-center gap-3 md:gap-4 lg:flex-row lg:justify-between">
             <p className="shrink-0 text-[11px] font-bold uppercase tracking-[0.25em] text-steel">Certifications et partenaires</p>
