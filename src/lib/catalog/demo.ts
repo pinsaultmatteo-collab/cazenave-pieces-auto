@@ -151,3 +151,25 @@ export async function suggest(q: string): Promise<{ brands: Brand[]; models: (Ve
     categories: DEMO_CATEGORIES.filter((c) => normalize(c.name).includes(term)).slice(0, 4),
   };
 }
+
+/** Nombre de pièces par point chaud de la voiture (jeu de démonstration). */
+export async function getHotspotCounts(): Promise<Record<string, number>> {
+  const like = (name: string, pat: string) => {
+    const n = normalize(name);
+    const p = pat.replace(/%$/, "");
+    return pat.endsWith("%") ? n.startsWith(p) : n === p;
+  };
+  const patterns: Record<string, string[]> = {
+    phare: ["optique avant principal%", "phare%"],
+    "pare-chocs": ["pare-chocs avant%", "pare choc avant%"],
+    capot: ["capot"],
+    moteur: ["moteur"],
+    retroviseur: ["retroviseur%"],
+    porte: ["porte avant%"],
+    boite: ["boite de vitesses"],
+    "feu-arriere": ["feu arriere%"],
+  };
+  const out: Record<string, number> = {};
+  for (const [k, pats] of Object.entries(patterns)) out[k] = DEMO_PARTS.filter((x) => x.available && pats.some((pt) => like(x.name, pt))).length;
+  return out;
+}

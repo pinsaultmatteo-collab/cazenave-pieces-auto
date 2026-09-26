@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "motion/react";
 import { HeroSearch } from "./HeroSearch";
-import { CarLineArt } from "@/components/svg/CarLineArt";
+import { CarHotspots, type Hotspot } from "./CarHotspots";
 import { CheckIcon } from "@/components/icons";
 import { EASE } from "@/components/motion/Reveal";
 import { photos } from "@/lib/photos";
@@ -27,14 +27,12 @@ const word: Variants = {
 
 const ARGUMENTS = ["Jusqu'à 70 % moins cher que le neuf", "Pièces testées et garanties 12 mois", "Centre VHU agréé"];
 
-export function Hero() {
+export function Hero({ hotspots }: { hotspots: Hotspot[] }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  // La voiture traverse tout l'écran, de gauche à droite, pendant le défilement du hero.
-  const carLeft = useTransform(scrollYProgress, [0, 0.75], ["0%", reduce ? "0%" : "100%"]);
-  const carX = useTransform(scrollYProgress, [0, 0.75], ["0%", reduce ? "0%" : "-100%"]);
-  const carOpacity = useTransform(scrollYProgress, [0.75, 0.95], [1, reduce ? 1 : 0]);
+  const carY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 80]);
+  const carOpacity = useTransform(scrollYProgress, [0.5, 0.9], [1, reduce ? 1 : 0]);
   const textY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 140]);
   const photoY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 160]);
 
@@ -135,20 +133,19 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* Voiture : piste pleine largeur, elle traverse l'écran au défilement */}
-      <div aria-hidden className="pointer-events-none relative mt-14 h-40 w-full sm:h-48 lg:mt-12 lg:h-64">
-        <motion.div
-          style={{ left: carLeft, x: carX, opacity: carOpacity }}
-          className="absolute bottom-2 w-[min(88vw,560px)] will-change-transform lg:w-[min(46vw,720px)]"
+      {/* Voiture interactive : chaque point désigne une pièce disponible */}
+      <motion.div style={{ y: carY, opacity: carOpacity }} className="container-x relative mt-10 pb-10 lg:mt-6 lg:pb-14">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: reduce ? 0 : 2.6, duration: 0.8 }}
+          className="mb-2 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400 lg:mb-0"
         >
-          {/* Retournée : le dessin regarde vers la gauche, elle doit avancer vers la droite */}
-          <div className="-scale-x-100">
-            <CarLineArt className="h-auto w-full animate-float motion-reduce:animate-none" />
-          </div>
-        </motion.div>
-        {/* Route */}
-        <div className="absolute inset-x-0 bottom-2 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
-      </div>
+          <span className="h-px w-10 bg-brand-400" />
+          Cliquez sur la pièce qu&apos;il vous faut
+        </motion.p>
+        <CarHotspots hotspots={hotspots} />
+      </motion.div>
 
       {/* Indice de défilement */}
       <div aria-hidden className="absolute bottom-5 right-8 hidden flex-col items-center gap-2 text-white/50 lg:flex">

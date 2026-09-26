@@ -421,3 +421,34 @@ export async function suggest(q: string): Promise<{ brands: Brand[]; models: (Ve
     .map((r) => ({ ...toModel(r.range), brandSlug: r.brandSlug, brandName: r.brandName }));
   return { brands: brandsFound, models, categories: subs.map(toSubCategory) };
 }
+
+/** Points chauds de la voiture de l'accueil : motifs de sous-catégorie (minuscules, LIKE). */
+export const HOTSPOT_PATTERNS: Record<string, string[]> = {
+  phare: ["optique avant principal%"],
+  "pare-chocs": ["pare choc avant%", "pare-chocs avant%"],
+  capot: ["capot"],
+  moteur: ["moteur"],
+  retroviseur: ["retroviseur gauche", "retroviseur droit"],
+  porte: ["porte avant%"],
+  boite: ["boite de vitesses"],
+  "feu-arriere": ["feu arriere principal%"],
+};
+
+/** Nombre de pièces en stock pour chaque point chaud de la voiture. */
+export async function getHotspotCounts(): Promise<Record<string, number>> {
+  const db = await getDb();
+  const keys = Object.keys(HOTSPOT_PATTERNS);
+  const selects = Object.fromEntries(
+    keys.map((k) => [
+      k,
+      sql<number>`count(*) filter (where ${sql.join(
+        HOTSPOT_PATTERNS[k].map((pat) => sql`lower(${parts.subCategoryName}) like ${pat}`),
+        sql` or `,
+      )})::int`,
+    ]),
+  );
+  const [row] = await db.select(selects).from(parts).where(LIVE);
+  const out: Record<string, number> = {};
+  for (const k of keys) out[k] = Number(row?.[k] ?? 0);
+  return out;
+}

@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
 import { FAQ } from "@/lib/faq";
 import { CATEGORY_COVERS, categoryVisual, PLACEHOLDER_ARTICLES } from "@/lib/placeholders";
-import { getBrandCounts, getBrands, getCategories, getCategoryCounts, getCategoryShowcase, getLatestParts, isDemoData } from "@/lib/catalog";
+import { getBrandCounts, getBrands, getCategories, getCategoryCounts, getCategoryShowcase, getHotspotCounts, getLatestParts, isDemoData } from "@/lib/catalog";
 import { PartCard } from "@/components/catalog/PartCard";
 import { Hero } from "@/components/home/Hero";
 import { Categories } from "@/components/home/Categories";
@@ -50,14 +50,26 @@ const faqJsonLd = {
 };
 
 export default async function HomePage() {
-  const [categories, counts, latest, showcase, brands, brandCounts] = await Promise.all([
+  const [categories, counts, latest, showcase, brands, brandCounts, hotspotCounts] = await Promise.all([
     getCategories(),
     getCategoryCounts(),
     getLatestParts(4),
     getCategoryShowcase(),
     getBrands(),
     getBrandCounts(),
+    getHotspotCounts(),
   ]);
+  // Points chauds sur la voiture du hero (repère 720 × 320 du dessin, avant à gauche)
+  const hotspots = [
+    { key: "phare", label: "Phare avant", href: "/pieces-auto?q=optique+avant", x: 84, y: 184 },
+    { key: "pare-chocs", label: "Pare-chocs avant", href: "/pieces-auto?q=pare+choc+avant", x: 60, y: 222 },
+    { key: "capot", label: "Capot", href: "/pieces-auto?categorie=capot", x: 170, y: 156 },
+    { key: "moteur", label: "Moteur", href: "/pieces-auto?categorie=moteur", x: 150, y: 206 },
+    { key: "retroviseur", label: "Rétroviseur", href: "/pieces-auto?q=retroviseur", x: 258, y: 146 },
+    { key: "porte", label: "Porte avant", href: "/pieces-auto?q=porte+avant", x: 340, y: 192 },
+    { key: "boite", label: "Boîte de vitesses", href: "/pieces-auto?categorie=boite-de-vitesses", x: 300, y: 236 },
+    { key: "feu-arriere", label: "Feu arrière", href: "/pieces-auto?q=feu+arriere", x: 652, y: 172 },
+  ].map((h) => ({ ...h, count: hotspotCounts[h.key] ?? 0 }));
   const brandChips = brands
     .map((b) => ({ slug: b.slug, name: b.name, count: brandCounts[b.id] ?? 0 }))
     .sort((a, b) => b.count - a.count)
@@ -76,7 +88,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero />
+      <Hero hotspots={hotspots} />
 
       {/* Marques en stock : chiffres réels et plaques des marques les plus fournies */}
       <BrandsBand brands={brandChips} totalBrands={brands.length} totalParts={totalParts} />
@@ -85,11 +97,22 @@ export default async function HomePage() {
       <section aria-label="Nos engagements" className="border-b border-line bg-white">
         <Stagger className="container-x grid grid-cols-2 gap-6 py-10 sm:grid-cols-3 lg:grid-cols-6" stagger={0.07}>
           {site.reassurance.map((r) => (
-            <StaggerItem key={r.title} className="flex items-start gap-3">
-              <Image src={r.icon} alt="" unoptimized className="h-9 w-9 shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-ink">{r.title}</p>
-                <p className="mt-0.5 text-xs leading-5 text-steel">{r.text}</p>
+            <StaggerItem key={r.title}>
+              <div className="group -m-3 flex items-start gap-3 rounded-2xl p-3 transition duration-300 hover:-translate-y-1 hover:bg-mist hover:shadow-lg hover:shadow-ink/10">
+                <span className="relative shrink-0">
+                  <span aria-hidden className="absolute inset-0 scale-75 rounded-full bg-brand/25 opacity-0 blur-md transition duration-500 group-hover:scale-150 group-hover:opacity-100" />
+                  <Image
+                    src={r.icon}
+                    alt=""
+                    unoptimized
+                    className="relative h-9 w-9 transition-transform duration-500 ease-out group-hover:-rotate-6 group-hover:scale-125"
+                  />
+                </span>
+                <div>
+                  <p className="text-sm font-bold text-ink transition-colors group-hover:text-brand-700">{r.title}</p>
+                  <p className="mt-0.5 text-xs leading-5 text-steel">{r.text}</p>
+                  <span aria-hidden className="mt-1.5 block h-0.5 w-0 rounded-full bg-brand transition-all duration-500 group-hover:w-10" />
+                </div>
               </div>
             </StaggerItem>
           ))}
