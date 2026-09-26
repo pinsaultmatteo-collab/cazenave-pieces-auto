@@ -78,7 +78,7 @@ export function Hero() {
             variants={container}
             initial={reduce ? "show" : "hidden"}
             animate="show"
-            className="display-title mt-4 text-[2.25rem] leading-[0.92] sm:mt-5 sm:text-7xl lg:mt-6 lg:text-[5.6rem]"
+            className="display-title mt-4 text-[2.25rem] leading-[0.92] sm:mt-5 sm:text-7xl lg:mt-6 lg:text-[4.6rem] xl:text-[5.6rem]"
           >
             {LINES.map((line) => (
               <span key={line.words.join(" ")} className={`[perspective:800px] ${line.accent ? "inline lg:block" : "block"}`}>
