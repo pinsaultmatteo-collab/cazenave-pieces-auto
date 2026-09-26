@@ -68,9 +68,9 @@ export function Hero() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: EASE }}
-            className="flex items-center justify-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400 lg:justify-start"
+            className="flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-400 sm:text-xs sm:tracking-[0.3em] lg:justify-start"
           >
-            <span className="h-px w-10 bg-brand-400" />
+            <span className="hidden h-px w-10 bg-brand-400 lg:block" />
             Casse auto à Colomiers, près de Toulouse
           </motion.p>
 
@@ -78,11 +78,11 @@ export function Hero() {
             variants={container}
             initial={reduce ? "show" : "hidden"}
             animate="show"
-            className="display-title mt-4 text-[2.7rem] leading-[0.9] sm:mt-5 sm:text-7xl lg:mt-6 lg:text-[5.6rem]"
+            className="display-title mt-4 text-[2.25rem] leading-[0.92] sm:mt-5 sm:text-7xl lg:mt-6 lg:text-[5.6rem]"
           >
             {LINES.map((line) => (
-              <span key={line.words.join(" ")} className="block [perspective:800px]">
-                {line.words.map((w) => (
+              <span key={line.words.join(" ")} className={`[perspective:800px] ${line.accent ? "inline lg:block" : "block"}`}>
+                {line.words.map((w, i) => (
                   <motion.span
                     key={w}
                     variants={word}
@@ -90,9 +90,12 @@ export function Hero() {
                       line.accent === "brand" ? "text-brand-400" : line.accent === "outline" ? "text-outline-brand" : ""
                     }`}
                   >
-                    {w}&nbsp;
+                    {w}
+                    {i < line.words.length - 1 ? "\u00a0" : ""}
                   </motion.span>
                 ))}
+                {/* Sur mobile, « d'occasion » et « depuis 1974 » se suivent sur la même ligne */}
+                {line.accent ? " " : null}
               </span>
             ))}
           </motion.h1>
@@ -101,7 +104,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.8, ease: EASE }}
-            className="mx-auto mt-4 max-w-xl text-[15px] leading-6 text-white/75 sm:mt-6 sm:text-lg sm:leading-7 lg:mx-0 lg:mt-7"
+            className="mx-auto mt-4 max-w-xl text-justify text-[15px] leading-6 text-white/75 [text-align-last:center] sm:mt-6 sm:text-lg sm:leading-7 lg:mx-0 lg:mt-7 lg:text-left lg:[text-align-last:auto]"
           >
             Trouvez simplement et rapidement votre pièce auto d&apos;occasion pas cher, testée et garantie
             12 mois. Expédition sous 24/48h partout en France, ou retrait sur place.
