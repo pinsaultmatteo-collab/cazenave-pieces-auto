@@ -145,9 +145,9 @@ export default async function HomePage() {
 
       <Stats />
 
-      {/* Enlèvement de véhicule */}
+      {/* Enlèvement de véhicule : encart un peu plus large que la colonne de contenu */}
       <section className="container-x pb-20 lg:pb-28">
-        <Reveal>
+        <Reveal className="lg:-mx-8 xl:-mx-14">
           <ParallaxBanner
             image={photos.truck}
             alt="Camion plateau Cazenave Pièces Auto pour l'enlèvement de véhicules"
@@ -155,57 +155,58 @@ export default async function HomePage() {
             overlayClassName="bg-gradient-to-r from-night/95 via-night/85 to-night/50"
             amount={60}
           >
-            <div className="grid gap-10 px-6 py-12 sm:px-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-14 lg:px-14 lg:py-16">
+            <div className="grid gap-8 px-6 py-9 sm:px-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-12 lg:px-12 lg:py-10">
               <div>
                 <p className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-brand-400">
                   Enlèvement de véhicule
                   <span className="rounded-full bg-brand px-2.5 py-1 text-[10px] tracking-[0.2em] text-ink-900">Gratuit*</span>
                 </p>
-                <h2 className="display-title mt-4 text-4xl sm:text-5xl lg:text-6xl">
+                <h2 className="display-title mt-3 text-4xl sm:text-5xl">
                   Nous rachetons votre véhicule <span className="text-brand-400">et vous en débarrassons</span>
                 </h2>
-                <p className="mt-5 max-w-2xl leading-7 text-white/80">
+                <p className="mt-4 max-w-2xl text-[15px] leading-7 text-white/80">
                   Voiture hors d&apos;usage, accidentée, en panne ou simplement en fin de vie : nous venons la
                   chercher avec notre camion plateau, nous la rachetons si elle a de la valeur et nous prenons en
                   charge toutes les démarches. Particuliers comme professionnels.
                 </p>
 
-                <ol className="mt-8 grid gap-4 sm:grid-cols-3">
+                <ol className="mt-6 grid gap-3 sm:grid-cols-3">
                   {[
                     { n: "1", title: "Estimation", text: "Décrivez votre véhicule, nous vous répondons sous 24h ouvrées avec une offre de reprise." },
                     { n: "2", title: "Enlèvement", text: "Rendez-vous à votre domicile ou sur le lieu de stationnement, en Occitanie et Nouvelle-Aquitaine." },
                     { n: "3", title: "Démarches", text: "Certificat de cession et de destruction, déclaration en préfecture : nous nous occupons de tout." },
                   ].map((s) => (
-                    <li key={s.n} className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-sm">
-                      <span className="font-display text-3xl font-semibold text-brand-400">{s.n}</span>
-                      <p className="mt-1 font-bold">{s.title}</p>
-                      <p className="mt-1 text-sm leading-6 text-white/70">{s.text}</p>
+                    <li key={s.n} className="rounded-2xl border border-white/10 bg-white/[0.06] p-3.5 backdrop-blur-sm">
+                      <p className="flex items-center gap-2 font-bold">
+                        <span className="font-display text-2xl font-semibold text-brand-400">{s.n}</span> {s.title}
+                      </p>
+                      <p className="mt-1 text-[13px] leading-5 text-white/70">{s.text}</p>
                     </li>
                   ))}
                 </ol>
 
-                <div className="mt-8 flex flex-wrap gap-3">
+                <div className="mt-6 flex flex-wrap gap-3">
                   <Link
                     href="/enlevement-vehicule"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-8 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_40px_rgba(152,174,7,0.45)]"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_40px_rgba(152,174,7,0.45)]"
                   >
                     Faire estimer mon véhicule <ChevronRightIcon size={18} />
                   </Link>
                   <a
                     href={site.phoneHref}
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-night/40 px-8 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10"
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-night/40 px-7 py-3.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10"
                   >
                     <PhoneIcon size={18} className="text-brand-400" /> {site.phone}
                   </a>
                 </div>
-                <p className="mt-4 text-xs text-white/50">
+                <p className="mt-3 text-xs text-white/50">
                   * Sous conditions : véhicule complet et dossier administratif à jour. Contactez-nous pour vérifier votre éligibilité.
                 </p>
               </div>
 
-              <div className="rounded-3xl border border-white/15 bg-night/60 p-6 shadow-2xl shadow-black/30 backdrop-blur-md sm:p-8">
+              <div className="rounded-3xl border border-white/15 bg-night/60 p-5 shadow-2xl shadow-black/30 backdrop-blur-md sm:p-6">
                 <p className="text-xs font-bold uppercase tracking-[0.25em] text-brand-400">Ce que nous prenons en charge</p>
-                <ul className="mt-5 space-y-3.5 text-sm">
+                <ul className="mt-4 space-y-2.5 text-sm">
                   {[
                     { icon: TruckIcon, text: "Déplacement avec notre camion plateau, véhicule roulant ou non" },
                     { icon: CheckIcon, text: "Rachat au meilleur prix des véhicules réparables ou valorisables" },
@@ -214,26 +215,26 @@ export default async function HomePage() {
                     { icon: CheckIcon, text: "Véhicule sur la voie publique menacé d'amende : intervention rapide" },
                   ].map(({ icon: Icon, text }) => (
                     <li key={text} className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/15 text-brand-400">
-                        <Icon size={15} />
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand/15 text-brand-400">
+                        <Icon size={14} />
                       </span>
-                      <span className="leading-6 text-white/85">{text}</span>
+                      <span className="text-[13px] leading-5 text-white/85">{text}</span>
                     </li>
                   ))}
                 </ul>
-                <div className="mt-6 flex items-center gap-4 border-t border-white/10 pt-5">
+                <div className="mt-4 flex items-center justify-around gap-3 border-t border-white/10 pt-4">
                   <div className="text-center">
-                    <p className="font-display text-4xl font-semibold text-brand-400">24h</p>
+                    <p className="font-display text-3xl font-semibold text-brand-400">24h</p>
                     <p className="text-[11px] uppercase tracking-wide text-white/60">pour une offre</p>
                   </div>
                   <div className="h-10 w-px bg-white/10" />
                   <div className="text-center">
-                    <p className="font-display text-4xl font-semibold text-brand-400">0 €</p>
+                    <p className="font-display text-3xl font-semibold text-brand-400">0 €</p>
                     <p className="text-[11px] uppercase tracking-wide text-white/60">de frais d&apos;enlèvement*</p>
                   </div>
                   <div className="h-10 w-px bg-white/10" />
                   <div className="text-center">
-                    <p className="font-display text-4xl font-semibold text-brand-400">VHU</p>
+                    <p className="font-display text-3xl font-semibold text-brand-400">VHU</p>
                     <p className="text-[11px] uppercase tracking-wide text-white/60">centre agréé</p>
                   </div>
                 </div>
