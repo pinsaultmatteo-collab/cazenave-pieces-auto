@@ -75,7 +75,7 @@ export function Footer() {
         </div>
 
         {columns.map((col, i) => (
-          <div key={col.title} className={i === 2 ? "col-span-2 md:col-span-1" : ""}>
+          <div key={col.title} className={`text-center md:text-left ${i === 2 ? "col-span-2 md:col-span-1" : ""}`}>
             <h2 className="text-sm font-bold uppercase tracking-wide text-brand">{col.title}</h2>
             <ul className={`mt-3 space-y-1.5 text-[13px] md:mt-4 md:space-y-2.5 md:text-sm ${i === 2 ? "columns-2 gap-6 md:columns-1" : ""}`}>
               {col.links.map((link) =>
