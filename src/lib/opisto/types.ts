@@ -136,3 +136,56 @@ export type OpistoPart = {
 
 export type OpistoPartsPage = { Parts: OpistoPart[]; PartsNumber?: number; Vehicles?: OpistoVehicle[]; FiltersAvailable?: unknown[] };
 export type OpistoVehiclesPage = { Vehicles: OpistoVehicle[]; VehiclesNumber?: number; Parts?: OpistoPart[] };
+
+/* ---------- clients et commandes ---------- */
+
+export type OpistoCreateResult = { Id?: number; Value?: number; Success?: boolean; ErrorCode?: number; ErrorMessage?: string; Errors?: unknown };
+
+export type OpistoClient = { Id: number; Email?: string; Firstname?: string; Lastname?: string };
+
+export type OpistoReadClients = { Clients?: OpistoClient[]; ClientsNumber?: number; Value?: OpistoClient[] } | OpistoClient[];
+
+export type OpistoOrderAddress = {
+  Firstname: string;
+  Lastname: string;
+  Phone: string;
+  Street: string;
+  StreetAdditionnal?: string;
+  PostCode: string;
+  City: string;
+  CountryId: number;
+  Email: string;
+};
+
+export type OpistoCreateOrderDto = {
+  CasseId: number;
+  ClientId: number;
+  BillingAddress: OpistoOrderAddress;
+  DeliveryAddress?: OpistoOrderAddress;
+  Parts: { Id: number; ShippingId?: number | null; Discount?: number }[];
+  ToSend: boolean;
+  IsFreeShipping: boolean;
+};
+
+export type OpistoCreateOrderResult = {
+  OrderId?: number | null;
+  PaymentId?: number | null;
+  ErrorMessage?: string | null;
+  ErrorCode?: number | null;
+  PartsWithError?: number[] | null;
+};
+
+export type OpistoOrder = {
+  Id: number;
+  Status?: number;
+  Total?: number;
+  TotalExcludingTaxes?: number;
+  TotalVAT?: number;
+  PartsTotalWithReduction?: number;
+  WantSend?: boolean;
+  Shipping?: { CalculatedTotalCost?: number };
+  Payments?: { Id: number; Amount: number; TypePayment: number; TransactionNumber?: string }[];
+};
+
+/** PaymentType Opisto */
+export const OPISTO_PAYMENT_CB = 2;

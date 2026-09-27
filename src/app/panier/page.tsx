@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/site/PageHero";
 import { CartView } from "@/components/catalog/CartView";
+import { isPaymentConfigured } from "@/lib/payment";
 
 export const metadata: Metadata = {
   title: "Mon panier",
@@ -12,7 +13,7 @@ export default function CartPage() {
     <>
       <PageHero kicker="Commande" title="Mon panier" crumbs={[{ label: "Panier" }]} compact />
       <div className="container-x py-10 lg:py-14">
-        <CartView />
+        <CartView paymentEnabled={isPaymentConfigured()} />
       </div>
     </>
   );

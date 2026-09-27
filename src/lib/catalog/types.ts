@@ -100,6 +100,8 @@ export type Part = {
   shippingAvailable: boolean;
   /** Frais de port TTC du mode de livraison par défaut (Shipping.Cost) */
   shippingCost: number | null;
+  /** Identifiant Opisto du mode de livraison par défaut (Shipping.ShippingId) */
+  shippingId?: number | null;
   characteristics: Characteristic[];
   engineCode: string | null;
   gearboxCode: string | null;

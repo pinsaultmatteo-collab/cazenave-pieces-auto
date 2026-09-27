@@ -2,7 +2,20 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { opistoTokens } from "@/db/schema";
-import type { OpistoCategory, OpistoPart, OpistoPartsPage, OpistoQuotas, OpistoToken, OpistoVehiclesPage } from "./types";
+import type {
+  OpistoCategory,
+  OpistoClient,
+  OpistoCreateOrderDto,
+  OpistoCreateOrderResult,
+  OpistoCreateResult,
+  OpistoOrder,
+  OpistoPart,
+  OpistoPartsPage,
+  OpistoQuotas,
+  OpistoReadClients,
+  OpistoToken,
+  OpistoVehiclesPage,
+} from "./types";
 
 /**
  * Client HTTP de l'API Opisto v2.15.
@@ -130,6 +143,31 @@ export async function opistoGet<T>(route: string, retry = true): Promise<T> {
   }
 }
 
+/** Appel POST/PUT authentifié avec corps JSON. Renvoie le JSON, ou le texte brut si la réponse n'en est pas. */
+export async function opistoSend<T>(method: "POST" | "PUT", route: string, body: unknown, retry = true): Promise<T> {
+  const token = await getToken();
+  await throttle();
+  const res = await fetch(`${BASES[opistoEnv()].ops}${route}`, {
+    method,
+    headers: { Token: token, Accept: "application/json", "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    cache: "no-store",
+    signal: AbortSignal.timeout(60_000),
+  });
+  const text = await res.text();
+  if ((res.status === 401 || (res.status === 403 && /token|jeton|-312/i.test(text))) && retry) {
+    memoryToken = null;
+    await getToken(true);
+    return opistoSend<T>(method, route, body, false);
+  }
+  if (!res.ok) throw new OpistoError(`Opisto ${method} ${route} → ${res.status}`, res.status, text.slice(0, 800));
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return text as unknown as T;
+  }
+}
+
 export async function opistoQuotas(): Promise<OpistoQuotas> {
   const token = await getToken();
   await throttle();
@@ -176,4 +214,43 @@ export function fetchPart(id: number) {
 
 export function fetchVehicles(page: number, itemsPerPage = 50) {
   return opistoGet<OpistoVehiclesPage>(`/vehicles?page=${page}&itemsPerPage=${itemsPerPage}`);
+}
+
+/* ---------- clients et commandes ---------- */
+
+/** Clients Opisto dont l'e-mail correspond exactement. */
+export async function findClientsByEmail(email: string): Promise<OpistoClient[]> {
+  const json = await opistoGet<OpistoReadClients>(`/clients?email=${encodeURIComponent(email)}&itemsPerPage=50`);
+  const list = Array.isArray(json) ? json : (json.Clients ?? json.Value ?? []);
+  return list.filter((c) => c && typeof c.Id === "number" && (!c.Email || c.Email.toLowerCase() === email.toLowerCase()));
+}
+
+/** Crée un client particulier ; renvoie son identifiant. */
+export async function createClient(input: { email: string; firstname: string; lastname: string; password: string; nationality?: string }): Promise<number> {
+  const json = await opistoSend<OpistoCreateResult | number>("POST", "/clients", {
+    Email: input.email,
+    Firstname: input.firstname,
+    Lastname: input.lastname,
+    Nationality: input.nationality ?? "FR",
+    Password: input.password,
+    AcceptNewsCasse: false,
+    AcceptNewsProfessional: false,
+  });
+  if (typeof json === "number") return json;
+  const id = json.Id ?? json.Value;
+  if (typeof id === "number" && id > 0) return id;
+  throw new OpistoError(`Création du client Opisto sans identifiant : ${JSON.stringify(json).slice(0, 300)}`, 200);
+}
+
+export function createOrder(dto: OpistoCreateOrderDto) {
+  return opistoSend<OpistoCreateOrderResult>("POST", "/ordersV2", dto);
+}
+
+export function getOrder(orderId: number) {
+  return opistoGet<OpistoOrder>(`/orders/${orderId}`);
+}
+
+/** Marque le règlement de la commande comme encaissé (carte bancaire). */
+export function updatePayment(orderId: number, paymentId: number, body: { Amount: number; TransactionNumber: string; TypePayment: number }) {
+  return opistoSend<unknown>("PUT", `/orders/${orderId}/payments/${paymentId}`, body);
 }

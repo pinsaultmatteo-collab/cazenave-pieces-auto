@@ -5,7 +5,7 @@
  * Les identifiants sont ceux d'Opisto. Les montants sont stockés en
  * numérique (euros), les dates en timestamp UTC.
  */
-import { boolean, index, integer, jsonb, numeric, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, index, integer, jsonb, numeric, pgTable, serial, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 /** Familles Opisto (« Carrosserie extérieure », « Grosse mécanique »…). */
 export const categories = pgTable(
@@ -184,6 +184,79 @@ export const parts = pgTable(
     index("parts_ref_idx").on(t.manufacturerReference),
   ],
 );
+
+/** Adresse de facturation ou de livraison d'une commande. */
+export type OrderAddress = {
+  firstname: string;
+  lastname: string;
+  company?: string | null;
+  phone: string;
+  street: string;
+  streetAdditional?: string | null;
+  postcode: string;
+  city: string;
+  /** Code pays ISO 3166-1 alpha-2 */
+  country: string;
+};
+
+/** Pièce figée au moment de la commande (le stock bouge après). */
+export type OrderItem = {
+  id: number;
+  name: string;
+  brandName: string | null;
+  modelName: string | null;
+  reference: string | null;
+  priceTtc: number;
+  vatRate: number;
+  shippingCost: number | null;
+  shippingId: number | null;
+  photo: string | null;
+  href: string;
+};
+
+/**
+ * Commandes du site. Statuts :
+ *   pending        créée, en attente de paiement
+ *   paid           payée, transmission à Opisto en cours
+ *   completed      payée et enregistrée chez Opisto (commande + règlement)
+ *   opisto_failed  payée mais non enregistrée chez Opisto : traitement manuel
+ *   cancelled      paiement abandonné ou refusé
+ */
+export const orders = pgTable(
+  "orders",
+  {
+    id: serial("id").primaryKey(),
+    /** Référence publique (ex. CZ-K3H7Q2) */
+    ref: text("ref").notNull(),
+    status: text("status").notNull().default("pending"),
+    email: text("email").notNull(),
+    customer: jsonb("customer").$type<{ firstname: string; lastname: string; phone: string; company?: string | null; vatNumber?: string | null }>().notNull(),
+    billing: jsonb("billing").$type<OrderAddress>().notNull(),
+    delivery: jsonb("delivery").$type<OrderAddress | null>(),
+    deliveryMode: text("delivery_mode").notNull().default("pickup"),
+    items: jsonb("items").$type<OrderItem[]>().notNull().default([]),
+    subtotalTtc: numeric("subtotal_ttc", { precision: 10, scale: 2 }).notNull(),
+    shippingTtc: numeric("shipping_ttc", { precision: 10, scale: 2 }).notNull().default("0"),
+    totalTtc: numeric("total_ttc", { precision: 10, scale: 2 }).notNull(),
+    currency: text("currency").notNull().default("eur"),
+    note: text("note"),
+    paymentProvider: text("payment_provider").notNull().default("stripe"),
+    paymentSessionId: text("payment_session_id"),
+    paymentIntentId: text("payment_intent_id"),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    opistoClientId: integer("opisto_client_id"),
+    opistoOrderId: integer("opisto_order_id"),
+    opistoPaymentId: integer("opisto_payment_id"),
+    opistoError: text("opisto_error"),
+    customerEmailSentAt: timestamp("customer_email_sent_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("orders_ref_idx").on(t.ref), index("orders_email_idx").on(t.email), index("orders_status_idx").on(t.status), index("orders_session_idx").on(t.paymentSessionId)],
+);
+
+export type OrderRow = typeof orders.$inferSelect;
+export type NewOrderRow = typeof orders.$inferInsert;
 
 /** Valeurs de suivi de la synchronisation (curseurs, dates). */
 export const syncState = pgTable("sync_state", {

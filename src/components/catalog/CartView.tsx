@@ -13,7 +13,7 @@ import { CloseIcon, LockIcon, TruckIcon } from "@/components/icons";
 type State = { loading: boolean; parts: Part[] };
 
 /** Contenu du panier (identifiants en local, détails via l'API). */
-export function CartView() {
+export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }) {
   const [state, setState] = useState<State>({ loading: true, parts: [] });
 
   useEffect(() => {
@@ -109,11 +109,20 @@ export function CartView() {
             <dd className="display-title text-3xl text-ink">{formatPrice(subtotal + (needsQuote ? 0 : shipping))}</dd>
           </div>
         </dl>
-        <button type="button" disabled className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-ink-100 px-6 py-4 text-sm font-bold uppercase tracking-wide text-steel" title="Le paiement en ligne sera disponible à l'ouverture du site">
-          <LockIcon size={18} /> Paiement en ligne bientôt disponible
-        </button>
+        {paymentEnabled ? (
+          <Link
+            href="/commande"
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_30px_rgba(152,174,7,0.4)]"
+          >
+            <LockIcon size={18} /> Commander et payer
+          </Link>
+        ) : (
+          <button type="button" disabled className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-ink-100 px-6 py-4 text-sm font-bold uppercase tracking-wide text-steel" title="Le paiement en ligne sera disponible à l'ouverture du site">
+            <LockIcon size={18} /> Paiement en ligne bientôt disponible
+          </button>
+        )}
         <p className="mt-4 text-xs leading-5 text-steel">
-          En attendant, réservez ces pièces par téléphone au{" "}
+          {paymentEnabled ? "Paiement sécurisé par carte bancaire. Vous pouvez aussi réserver" : "En attendant, réservez"} ces pièces par téléphone au{" "}
           <a href={site.phoneHref} className="font-bold text-ink">
             {site.phone}
           </a>{" "}

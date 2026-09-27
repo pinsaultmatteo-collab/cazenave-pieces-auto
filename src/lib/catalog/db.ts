@@ -70,6 +70,7 @@ function toPart(r: PartRow): Part {
     inStock: r.inStock,
     shippingAvailable: r.shippingAvailable,
     shippingCost: num(r.shippingCost),
+    shippingId: r.shippingId,
     characteristics: r.characteristics,
     engineCode: r.engineCode,
     gearboxCode: r.gearboxCode,
