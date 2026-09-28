@@ -42,4 +42,18 @@ export const SAMPLE_REVIEWS: Review[] = [
     text: "Bon rapport qualité-prix sur une porte d'occasion. Livraison un peu longue mais équipe réactive au téléphone.",
     source: "Google",
   },
+  {
+    author: "Exemple · carrossier",
+    rating: 5,
+    date: "Mai 2026",
+    text: "Optique et pare-chocs trouvés dans la couleur d'origine, photos fidèles. Gain de temps et d'argent pour nos clients.",
+    source: "Google",
+  },
+  {
+    author: "Exemple · client particulier",
+    rating: 5,
+    date: "Avril 2026",
+    text: "Accueil au comptoir très pro, ils ont vérifié la compatibilité avec ma carte grise avant de me vendre la boîte de vitesses.",
+    source: "Google",
+  },
 ];

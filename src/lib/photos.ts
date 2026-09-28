@@ -27,6 +27,7 @@ import truck from "@/assets/photos/truck.jpg";
 import truckSunset from "@/assets/photos/truck-sunset.jpg";
 import parcRows from "@/assets/photos/parc-rows.jpg";
 import parcRows2 from "@/assets/photos/parc-rows-2.jpg";
+import parcAerial from "@/assets/photos/parc-aerial.jpg";
 import workshop from "@/assets/photos/workshop.jpg";
 import firefighters from "@/assets/photos/firefighters.jpg";
 
@@ -55,6 +56,7 @@ export const photos = {
   truckSunset,
   parcRows,
   parcRows2,
+  parcAerial,
   workshop,
   firefighters,
 } as const;

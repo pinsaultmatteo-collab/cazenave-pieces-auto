@@ -221,3 +221,20 @@ html.lenis body {
 .prose-cz h3 {
   scroll-margin-top: 12rem;
 }
+
+/* Petite sonnerie de l'icône téléphone au survol */
+@keyframes ring {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-14deg); }
+  40% { transform: rotate(12deg); }
+  60% { transform: rotate(-8deg); }
+  80% { transform: rotate(6deg); }
+}
+
+/* Défilement horizontal sans barre visible (carrousels) */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

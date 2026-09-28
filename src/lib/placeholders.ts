@@ -71,7 +71,7 @@ export const PLACEHOLDER_ARTICLES = [
     title: "Gestion du parc chez Cazenave Pièces Auto",
     excerpt: "De la réception du véhicule à la mise en rayon de la pièce : les coulisses du parc.",
     href: "/mag/gestion-du-parc-chez-cazenave-piece-auto",
-    photo: photos.parcRows2,
+    photo: photos.parcAerial,
   },
   {
     title: "Fonctionnement d'une expertise automobile",

@@ -1,39 +1,16 @@
 import { site } from "@/lib/site";
 import { SAMPLE_REVIEWS, type Review } from "@/lib/reviews";
-import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
-import { ArrowUpRightIcon, QuoteIcon, StarIcon } from "@/components/icons";
+import { Reveal } from "@/components/motion/Reveal";
+import { ArrowUpRightIcon, StarIcon } from "@/components/icons";
+import { ReviewsCarousel } from "./ReviewsCarousel";
 
-function Stars({ rating }: { rating: number }) {
-  return (
-    <span className="flex items-center gap-0.5" aria-label={`${rating} étoiles sur 5`}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <StarIcon key={i} size={16} className={i < rating ? "text-brand" : "text-ink-100"} />
-      ))}
-    </span>
-  );
-}
-
-function ReviewCard({ review }: { review: Review }) {
-  return (
-    <article className="relative flex h-full flex-col rounded-2xl border border-line bg-white p-6 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/10">
-      <QuoteIcon size={28} className="absolute right-5 top-5 text-brand-100" />
-      <Stars rating={review.rating} />
-      <p className="mt-4 flex-1 text-sm leading-6 text-ink">{review.text}</p>
-      <footer className="mt-5 flex items-center justify-between gap-3 border-t border-line pt-4 text-xs">
-        <span className="font-bold text-ink">{review.author}</span>
-        <span className="text-steel">
-          {review.date} · {review.source}
-        </span>
-      </footer>
-    </article>
-  );
-}
-
-/** Bloc avis clients : mise en avant Google et cartes d'avis. */
+/** Bloc avis clients : mise en avant Google et carrousel d'avis. */
 export function Reviews({ reviews = SAMPLE_REVIEWS }: { reviews?: Review[] }) {
   return (
-    <section className="bg-mist">
-      <div className="container-x py-20 lg:py-28">
+    <section className="relative overflow-clip bg-mist">
+      <div aria-hidden className="pointer-events-none absolute -right-32 top-10 h-96 w-96 rounded-full bg-brand/10 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-brand/10 blur-3xl" />
+      <div className="container-x relative py-20 lg:py-28">
         <Reveal className="grid gap-8 text-center lg:grid-cols-[1fr_auto] lg:items-end lg:text-left">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">Avis clients</p>
@@ -68,13 +45,7 @@ export function Reviews({ reviews = SAMPLE_REVIEWS }: { reviews?: Review[] }) {
           </div>
         </Reveal>
 
-        <Stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
-          {reviews.map((r, i) => (
-            <StaggerItem key={i}>
-              <ReviewCard review={r} />
-            </StaggerItem>
-          ))}
-        </Stagger>
+        <ReviewsCarousel reviews={reviews} />
       </div>
     </section>
   );
