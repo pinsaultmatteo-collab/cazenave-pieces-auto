@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
+import { SCROLL_LOCK_EVENT } from "@/lib/scroll-lock";
 
 /**
  * Défilement fluide (inertie douce) sur tout le site, et retour en haut de
@@ -28,7 +29,12 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     };
     frame = requestAnimationFrame(loop);
 
+    // Volets et fenêtres : pause du défilement fluide pendant l'ouverture
+    const onLock = (e: Event) => ((e as CustomEvent<boolean>).detail ? lenis.stop() : lenis.start());
+    window.addEventListener(SCROLL_LOCK_EVENT, onLock);
+
     return () => {
+      window.removeEventListener(SCROLL_LOCK_EVENT, onLock);
       cancelAnimationFrame(frame);
       lenis.destroy();
       lenisRef.current = null;

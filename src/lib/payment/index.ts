@@ -25,9 +25,7 @@ export function paymentProvider(): PaymentProvider {
   return fake.provider;
 }
 
-export function isPaymentConfigured(): boolean {
-  return Boolean(process.env.STRIPE_SECRET_KEY) || process.env.VERCEL_ENV !== "production";
-}
+export { isPaymentConfigured } from "./config";
 
 export function checkoutUrls(ref: string) {
   const base = site.url;

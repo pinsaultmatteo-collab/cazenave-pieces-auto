@@ -3,6 +3,7 @@ import Link from "next/link";
 import logo from "@/assets/brand/logo-navbar.png";
 import { UserIcon } from "@/components/icons";
 import { CartLink } from "./CartLink";
+import { isPaymentConfigured } from "@/lib/payment/config";
 import { MobileNav } from "./MobileNav";
 import { NavLinks } from "./NavLinks";
 import { SearchBox } from "./SearchBox";
@@ -32,7 +33,7 @@ export function Header() {
             <span className="sm:hidden">Compte</span>
             <span className="hidden sm:inline">Mon compte</span>
           </Link>
-          <CartLink />
+          <CartLink paymentEnabled={isPaymentConfigured()} />
         </nav>
       </div>
 
