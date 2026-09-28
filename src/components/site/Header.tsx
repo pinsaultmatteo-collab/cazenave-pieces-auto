@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/brand/logo-navbar.png";
-import { UserIcon } from "@/components/icons";
+import { TruckIcon } from "@/components/icons";
 import { CartLink } from "./CartLink";
 import { isPaymentConfigured } from "@/lib/payment/config";
 import { MobileNav } from "./MobileNav";
@@ -26,12 +26,12 @@ export function Header() {
 
         <nav aria-label="Compte et panier" className="ml-auto flex items-center gap-1 sm:gap-3">
           <Link
-            href="/mon-compte"
-            className="flex flex-col items-center gap-0.5 rounded-lg px-2 py-1 text-[11px] font-semibold text-ink hover:text-brand-700 sm:flex-row sm:gap-2 sm:text-sm"
+            href="/suivi-commande"
+            className="group flex flex-col items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-1 text-[11px] font-semibold text-ink transition hover:text-brand-700 sm:flex-row sm:gap-2 sm:text-sm"
           >
-            <UserIcon size={22} />
-            <span className="sm:hidden">Compte</span>
-            <span className="hidden sm:inline">Mon compte</span>
+            <TruckIcon size={22} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+            <span className="sm:hidden">Suivi</span>
+            <span className="hidden sm:inline">Suivi de commande</span>
           </Link>
           <CartLink paymentEnabled={isPaymentConfigured()} />
         </nav>

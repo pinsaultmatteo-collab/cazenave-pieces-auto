@@ -183,7 +183,9 @@ export type OpistoOrder = {
   TotalVAT?: number;
   PartsTotalWithReduction?: number;
   WantSend?: boolean;
-  Shipping?: { CalculatedTotalCost?: number };
+  HasInvoice?: boolean;
+  DeliveryInfos?: { DeliveryNumber?: string | null; Status?: number; Transporter?: string | null } | null;
+  Shipping?: { CalculatedTotalCost?: number; DelayMin?: number; DelayMax?: number };
   Payments?: { Id: number; Amount: number; TypePayment: number; TransactionNumber?: string }[];
 };
 

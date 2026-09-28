@@ -170,6 +170,7 @@ export async function sendOrderEmails(order: OrderRow) {
       "",
       summary,
       "",
+      `Suivre votre commande : ${site.url}/suivi-commande?ref=${order.ref} (avec l'e-mail ${order.email}).`,
       `Une question ? ${site.phone} ou par SMS au ${site.sms}.`,
       `${site.name}`,
     ].join("\n");

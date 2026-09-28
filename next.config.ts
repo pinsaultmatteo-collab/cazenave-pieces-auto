@@ -39,7 +39,9 @@ const nextConfig: NextConfig = {
       { source: "/mentions-legales.php", destination: "/mentions-legales", permanent: true },
       { source: "/mon-panier", destination: "/panier", permanent: true },
       { source: "/mon-panier/:path*", destination: "/panier", permanent: true },
-      { source: "/mon-compte/:path+", destination: "/mon-compte", permanent: true },
+      // Espace client : en attendant les comptes, le suivi de commande en tient lieu
+      { source: "/mon-compte", destination: "/suivi-commande", permanent: false },
+      { source: "/mon-compte/:path+", destination: "/suivi-commande", permanent: false },
       { source: "/article/:slug", destination: "/mag/:slug", permanent: true },
       // Questionnaire client de 2022, clos : la page a été retirée
       { source: "/mag/questionnaire-de-letude-du-comportement-client", destination: "/mag", permanent: true },

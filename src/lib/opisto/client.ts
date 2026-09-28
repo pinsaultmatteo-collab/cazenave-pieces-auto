@@ -254,3 +254,14 @@ export function getOrder(orderId: number) {
 export function updatePayment(orderId: number, paymentId: number, body: { Amount: number; TransactionNumber: string; TypePayment: number }) {
   return opistoSend<unknown>("PUT", `/orders/${orderId}/payments/${paymentId}`, body);
 }
+
+/** URL de la facture d'une commande (disponible une fois imprimée depuis Opisto 360), ou null. */
+export async function getOrderInvoiceUrl(orderId: number): Promise<string | null> {
+  try {
+    const json = await opistoGet<{ Value?: string | null } | string>(`/orders/users/${orderId}/invoice`);
+    const url = typeof json === "string" ? json : json?.Value;
+    return url && /^https?:\/\//.test(url) ? url : null;
+  } catch {
+    return null;
+  }
+}

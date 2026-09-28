@@ -31,8 +31,7 @@ const columns = [
     links: [
       { label: "Livraison et retours", href: "/livraison-et-retours" },
       { label: "Garantie 12 mois", href: "/garantie" },
-      { label: "Mon compte", href: "/mon-compte" },
-      { label: "Mes commandes", href: "/mon-compte/commandes" },
+      { label: "Suivi de commande", href: "/suivi-commande" },
       { label: "Conditions générales de vente", href: "/conditions-generales-de-vente" },
       { label: "Mentions légales", href: "/mentions-legales" },
     ],

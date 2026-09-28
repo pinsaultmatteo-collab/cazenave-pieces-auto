@@ -149,7 +149,15 @@ export default async function ConfirmationPage({ searchParams }: PageProps<"/com
               <CheckIcon size={14} /> Réglé par carte bancaire
             </p>
           )}
-          <Link href="/pieces-auto" className="mt-6 inline-flex w-full items-center justify-center rounded-full border border-line px-6 py-3 text-sm font-bold text-ink transition hover:border-brand hover:text-brand-700">
+          {paid && (
+            <Link
+              href={`/suivi-commande?ref=${encodeURIComponent(summary.ref)}`}
+              className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-ink px-6 py-3 text-sm font-bold text-white transition hover:bg-ink-700"
+            >
+              Suivre ma commande
+            </Link>
+          )}
+          <Link href="/pieces-auto" className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-line px-6 py-3 text-sm font-bold text-ink transition hover:border-brand hover:text-brand-700">
             Continuer mes achats
           </Link>
         </aside>
