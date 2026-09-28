@@ -21,7 +21,7 @@ export function NavLinks() {
   const active = activeNavHref(pathname);
 
   return (
-    <ul className="flex items-center gap-7 text-sm font-semibold">
+    <ul className="flex items-center gap-4 whitespace-nowrap text-[13px] font-semibold xl:gap-7 xl:text-sm">
       {site.nav.map((item) => {
         const current = item.href === active;
         return (

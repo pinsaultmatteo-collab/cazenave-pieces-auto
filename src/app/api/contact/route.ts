@@ -9,7 +9,7 @@ import { z } from "zod";
 const optional = z.string().trim().max(200).optional().or(z.literal(""));
 
 const schema = z.object({
-  kind: z.enum(["contact", "enlevement", "candidature"]).default("contact"),
+  kind: z.enum(["contact", "enlevement", "candidature", "batterie"]).default("contact"),
   name: z.string().trim().min(2).max(120),
   email: z.string().trim().email().max(200),
   phone: optional,
@@ -20,6 +20,10 @@ const schema = z.object({
   city: optional,
   rolling: optional,
   accessible: optional,
+  company: optional,
+  activity: optional,
+  need: optional,
+  volume: optional,
   message: z.string().trim().max(5000),
   consent: z.literal(true, { error: "Le consentement est requis" }),
   /** Champ piège anti-robots : doit rester vide. */
@@ -35,6 +39,7 @@ const LABELS: Record<z.infer<typeof schema>["kind"], string> = {
   contact: "Message depuis le site",
   enlevement: "Demande d'enlèvement de véhicule",
   candidature: "Candidature",
+  batterie: "Batteries VE à usage industriel",
 };
 
 const PREF_LABELS: Record<string, string> = { telephone: "téléphone", sms: "SMS", email: "e-mail" };
@@ -70,6 +75,9 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "Merci de vérifier les champs du formulaire." }, { status: 422 });
   }
   const d = parsed.data;
+  if (d.kind === "batterie" && !d.company) {
+    return Response.json({ ok: false, error: "Indiquez le nom de votre société." }, { status: 422 });
+  }
   if (d.kind !== "enlevement" && d.message.length < 5) {
     return Response.json({ ok: false, error: "Merci de nous écrire quelques mots." }, { status: 422 });
   }
@@ -91,6 +99,10 @@ export async function POST(request: Request) {
     d.city && `Lieu : ${d.city}`,
     d.rolling && `Véhicule roulant : ${d.rolling}`,
     d.accessible && `Accessible à la dépanneuse : ${d.accessible}`,
+    d.company && `Société : ${d.company}`,
+    d.activity && `Activité : ${d.activity}`,
+    d.need && `Besoin : ${d.need}`,
+    d.volume && `Volume estimé : ${d.volume}`,
     file && `Pièce jointe : ${file.name} (${Math.round(file.size / 1024)} Ko)`,
     "",
     d.message || "(aucune précision)",

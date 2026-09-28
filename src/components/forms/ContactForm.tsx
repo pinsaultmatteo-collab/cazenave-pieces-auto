@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { site } from "@/lib/site";
 import { CheckIcon, PhoneIcon, PinIcon, UserIcon } from "@/components/icons";
 
-type Kind = "contact" | "enlevement" | "candidature";
+type Kind = "contact" | "enlevement" | "candidature" | "batterie";
 type Status = { state: "idle" | "sending" | "sent" | "error"; message?: string };
 type Errors = Record<string, string | undefined>;
 
@@ -15,6 +15,9 @@ const PREFS = [
   { value: "sms", label: "SMS" },
   { value: "email", label: "E-mail" },
 ];
+
+const BATTERY_ACTIVITIES = ["Stockage d'énergie stationnaire", "Intégrateur ou fabricant", "Reconditionnement de batteries", "Recherche, laboratoire, école", "Autre activité"];
+const BATTERY_NEEDS = ["Modules", "Batteries complètes", "Approvisionnement régulier", "Autre besoin"];
 
 const MESSAGE_MAX = 2000;
 const CV_MAX_MB = 5;
@@ -39,6 +42,10 @@ function validateField(name: string, value: string, kind: Kind): string | undefi
       return kind === "enlevement" && v.length < 3 ? "Indiquez la commune du véhicule." : undefined;
     case "subject":
       return kind === "contact" && !v ? "Choisissez un sujet." : undefined;
+    case "company":
+      return kind === "batterie" && v.length < 2 ? "Indiquez le nom de votre société." : undefined;
+    case "need":
+      return kind === "batterie" && !v ? "Précisez votre besoin." : undefined;
     case "message":
       if (kind === "enlevement") return undefined;
       return v.length < 10 ? "Quelques mots de plus nous aideront à vous répondre." : v.length > MESSAGE_MAX ? "Message trop long." : undefined;
@@ -118,6 +125,7 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
 
   const isRemoval = kind === "enlevement";
   const isJob = kind === "candidature";
+  const isBattery = kind === "batterie";
 
   /** Validation d'un champ à la sortie (ou au changement pour les listes). */
   function onBlur(e: { target: { name: string; value: string } }) {
@@ -145,7 +153,7 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
 
     // validation complète avant envoi
     const next: Errors = {};
-    for (const key of ["name", "email", "phone", "plate", "vehicle", "city", "subject", "message"]) {
+    for (const key of ["name", "email", "phone", "plate", "vehicle", "city", "subject", "company", "need", "message"]) {
       const err = validateField(key, String(fd.get(key) ?? ""), kind);
       if (err) next[key] = err;
     }
@@ -193,12 +201,14 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
           <CheckIcon size={28} />
         </motion.span>
         <p className="mt-4 font-display text-3xl font-semibold uppercase text-ink">
-          {isRemoval ? "Demande enregistrée" : isJob ? "Candidature envoyée" : "Message envoyé"}
+          {isRemoval ? "Demande enregistrée" : isJob ? "Candidature envoyée" : isBattery ? "Demande envoyée" : "Message envoyé"}
         </p>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink">
           {isRemoval
             ? "Notre service enlèvement vous rappelle sous un jour ouvré pour confirmer l'éligibilité et fixer une date."
-            : "Merci, nous vous répondons du lundi au vendredi, de 9h à 17h. Pour une urgence, appelez-nous."}
+            : isBattery
+              ? "Merci, notre équipe vous recontacte avec les batteries disponibles correspondant à votre besoin."
+              : "Merci, nous vous répondons du lundi au vendredi, de 9h à 17h. Pour une urgence, appelez-nous."}
         </p>
         <button type="button" onClick={() => setStatus({ state: "idle" })} className="mt-5 text-sm font-bold text-brand-700 underline underline-offset-4">
           Envoyer un autre message
@@ -310,6 +320,49 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
         </Section>
       )}
 
+      {isBattery && (
+        <Section n="02" title="Votre projet" hint="Pour vous proposer les batteries et modules adaptés.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field id="company" label="Société" required error={errors.company}>
+              <input id="company" name="company" autoComplete="organization" placeholder="Nom de votre entreprise" onBlur={onBlur} className={`${inputBase} h-12`} {...invalid("company")} />
+            </Field>
+            <Field id="activity" label="Activité" error={errors.activity}>
+              <select id="activity" name="activity" defaultValue="" className={`${inputBase} h-12 appearance-none pr-10`}>
+                <option value="">Choisissez</option>
+                {BATTERY_ACTIVITIES.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+              <span aria-hidden className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-steel">
+                ▾
+              </span>
+            </Field>
+          </div>
+          <div data-invalid={errors.need ? "true" : undefined}>
+            <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-steel">
+              Vous recherchez
+              <span className="ml-0.5 text-brand-700">*</span>
+            </p>
+            <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Vous recherchez">
+              {BATTERY_NEEDS.map((n) => (
+                <label key={n} className="cursor-pointer">
+                  <input type="radio" name="need" value={n} className="peer sr-only" onChange={() => setErrors((p) => ({ ...p, need: undefined }))} />
+                  <span className="inline-flex h-10 items-center rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink transition peer-checked:border-brand peer-checked:bg-brand peer-checked:text-ink-900 peer-focus-visible:ring-4 peer-focus-visible:ring-brand/20">
+                    {n}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {errors.need && <p role="alert" className="mt-1.5 text-xs font-semibold text-red-600">{errors.need}</p>}
+          </div>
+          <Field id="volume" label="Volume ou quantité estimée" hint="Nombre de modules, capacité visée en kWh, fréquence…">
+            <input id="volume" name="volume" placeholder="Ex. : 40 modules, 60 kWh, chaque trimestre" className={`${inputBase} h-12`} />
+          </Field>
+        </Section>
+      )}
+
       {isJob && (
         <Section n="02" title="Votre CV" hint="PDF ou Word, 5 Mo maximum. Facultatif si vous vous présentez ci-dessous.">
           <label
@@ -329,10 +382,10 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
         </Section>
       )}
 
-      <Section n={isRemoval || kind === "contact" || isJob ? "03" : "02"} title={isRemoval ? "Précisions" : isJob ? "Présentez-vous" : "Votre message"}>
+      <Section n="03" title={isRemoval ? "Précisions" : isJob ? "Présentez-vous" : isBattery ? "Votre demande" : "Votre message"}>
         <Field
           id="message"
-          label={isRemoval ? "Informations utiles" : isJob ? "Parcours, motivations, disponibilités" : "Message"}
+          label={isRemoval ? "Informations utiles" : isJob ? "Parcours, motivations, disponibilités" : isBattery ? "Usage prévu, contraintes techniques, délais" : "Message"}
           required={!isRemoval}
           error={errors.message}
         >
@@ -341,7 +394,15 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
             name="message"
             rows={5}
             maxLength={MESSAGE_MAX}
-            placeholder={isRemoval ? "Véhicule dans un garage fermé, disponible en semaine après 17h…" : isJob ? "Mécanicien depuis 5 ans, disponible immédiatement…" : "Décrivez votre besoin : pièce recherchée, véhicule, numéro de commande…"}
+            placeholder={
+              isRemoval
+                ? "Véhicule dans un garage fermé, disponible en semaine après 17h…"
+                : isJob
+                  ? "Mécanicien depuis 5 ans, disponible immédiatement…"
+                  : isBattery
+                    ? "Stockage stationnaire pour un site industriel, chimie NMC recherchée, livraison sur Toulouse…"
+                    : "Décrivez votre besoin : pièce recherchée, véhicule, numéro de commande…"
+            }
             onBlur={onBlur}
             onChange={(e) => setMessageLength(e.target.value.length)}
             className={`${inputBase} py-3 leading-6`}
@@ -390,7 +451,7 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
             className="inline-flex h-13 items-center justify-center gap-2 rounded-full bg-brand px-8 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_30px_rgba(152,174,7,0.35)] disabled:cursor-wait disabled:opacity-70"
           >
             {status.state === "sending" ? <Spinner /> : <CheckIcon size={18} />}
-            {status.state === "sending" ? "Envoi en cours…" : isRemoval ? "Demander l'enlèvement" : isJob ? "Envoyer ma candidature" : "Envoyer le message"}
+            {status.state === "sending" ? "Envoi en cours…" : isRemoval ? "Demander l'enlèvement" : isJob ? "Envoyer ma candidature" : isBattery ? "Envoyer ma demande" : "Envoyer le message"}
           </button>
           <p className="text-xs text-steel">Réponse sous un jour ouvré · {site.hoursShort}</p>
         </div>

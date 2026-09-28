@@ -42,7 +42,7 @@ export function Header() {
           <NavLinks />
           <Link
             href="/espace-pro"
-            className="rounded-full bg-brand px-4 py-1.5 text-sm font-bold text-ink-900 transition hover:bg-brand-600"
+            className="shrink-0 whitespace-nowrap rounded-full bg-brand px-4 py-1.5 text-[13px] font-bold text-ink-900 transition hover:bg-brand-600 xl:text-sm"
           >
             Espace pro
           </Link>

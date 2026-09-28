@@ -11,6 +11,7 @@ const columns = [
       { label: "Toutes nos pièces d'occasion", href: "/pieces-auto" },
       { label: "Rechercher par marque", href: "/pieces-auto/marques" },
       { label: "Véhicules d'occasion", href: "/vehicules-occasion" },
+      { label: "Batteries VE", href: "/batteries-ve" },
       { label: "Enlèvement de véhicule", href: "/enlevement-vehicule" },
       { label: "Espace professionnel", href: "/espace-pro" },
     ],

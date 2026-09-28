@@ -61,6 +61,10 @@ export async function searchParts(params: PartSearch = {}): Promise<Paginated<Pa
   if (params.brand) items = items.filter((p) => p.brandName && slugify(p.brandName) === params.brand);
   if (params.model) items = items.filter((p) => p.modelName && slugify(p.modelName) === params.model);
   if (params.vehicleId) items = items.filter((p) => p.vehicleId === params.vehicleId);
+  if (params.name) {
+    const n = normalize(params.name);
+    items = items.filter((p) => normalize(p.name).includes(n));
+  }
   if (params.ref) {
     const ref = normalize(params.ref).replace(/[^a-z0-9]/g, "");
     items = items.filter((p) =>

@@ -218,6 +218,7 @@ async function buildConditions(params: PartSearch): Promise<SQL[] | null> {
     conds.push(inArray(parts.rangeId, models.map((m) => m.id)));
   }
   if (params.vehicleId) conds.push(eq(parts.vehicleId, params.vehicleId));
+  if (params.name) conds.push(sql`lower(${parts.name}) like ${`%${escapeLike(normalize(params.name))}%`}`);
   if (params.ref) {
     const ref = normalize(params.ref).replace(/[^a-z0-9]/g, "");
     if (ref) {

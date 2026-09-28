@@ -81,6 +81,7 @@ export const site = {
   nav: [
     { label: "Pièces auto", href: "/pieces-auto" },
     { label: "Véhicules d'occasion", href: "/vehicules-occasion" },
+    { label: "Batteries VE", href: "/batteries-ve" },
     { label: "Enlèvement de véhicule", href: "/enlevement-vehicule" },
     { label: "Qui sommes-nous", href: "/qui-sommes-nous" },
     { label: "Le Mag", href: "/mag" },

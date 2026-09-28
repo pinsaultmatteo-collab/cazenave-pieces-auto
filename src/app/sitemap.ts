@@ -15,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/pieces-auto`, lastModified: now, changeFrequency: "hourly", priority: 0.9 },
     { url: `${base}/pieces-auto/marques`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { url: `${base}/vehicules-occasion`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
+    { url: `${base}/batteries-ve`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
     { url: `${base}/enlevement-vehicule`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/qui-sommes-nous`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/espace-pro`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },

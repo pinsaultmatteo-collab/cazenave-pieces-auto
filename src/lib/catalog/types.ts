@@ -131,6 +131,8 @@ export type PartSearch = {
   brand?: string;
   model?: string;
   vehicleId?: number;
+  /** Nom de pièce contenant ce texte (ex. « batterie de traction ») */
+  name?: string;
   sort?: PartSort;
   page?: number;
   perPage?: number;
