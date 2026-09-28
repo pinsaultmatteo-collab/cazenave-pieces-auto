@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { addToCart, isInCart, subscribeCart } from "@/lib/cart";
+import { addToCart, isInCart, openCartDrawer, subscribeCart } from "@/lib/cart";
 import { CartIcon, CheckIcon } from "@/components/icons";
 
 export function AddToCartButton({ partId, available }: { partId: number; available: boolean }) {
@@ -28,9 +27,13 @@ export function AddToCartButton({ partId, available }: { partId: number; availab
         <span className="flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-brand px-6 py-3.5 text-sm font-bold uppercase tracking-wide text-brand-700">
           <CheckIcon size={18} /> Dans votre panier
         </span>
-        <Link href="/panier" className="flex items-center justify-center rounded-full bg-ink px-6 py-3.5 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-ink-700">
+        <button
+          type="button"
+          onClick={openCartDrawer}
+          className="flex items-center justify-center rounded-full bg-ink px-6 py-3.5 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-ink-700"
+        >
           Voir le panier
-        </Link>
+        </button>
       </div>
     );
   }
@@ -38,7 +41,10 @@ export function AddToCartButton({ partId, available }: { partId: number; availab
   return (
     <button
       type="button"
-      onClick={() => addToCart(partId)}
+      onClick={() => {
+        addToCart(partId);
+        openCartDrawer();
+      }}
       className="flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_30px_rgba(152,174,7,0.4)]"
     >
       <CartIcon size={20} /> Ajouter au panier

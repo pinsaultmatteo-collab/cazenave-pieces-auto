@@ -8,6 +8,12 @@
  */
 const KEY = "cazenave.cart.v1";
 export const CART_EVENT = "cazenave:cart";
+/** Demande d'ouverture du volet panier (après un ajout, par exemple). */
+export const CART_OPEN_EVENT = "cazenave:cart-open";
+
+export function openCartDrawer() {
+  window.dispatchEvent(new CustomEvent(CART_OPEN_EVENT));
+}
 
 export type CartItem = { id: number; addedAt: string };
 

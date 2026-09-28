@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { getCart, removeFromCart, subscribeCart } from "@/lib/cart";
+import { CART_OPEN_EVENT, getCart, removeFromCart, subscribeCart } from "@/lib/cart";
 import { partHref } from "@/lib/catalog/links";
 import type { Part } from "@/lib/catalog/types";
 import { formatPrice } from "@/lib/format";
@@ -42,6 +42,16 @@ export function CartLink({ paymentEnabled = true }: { paymentEnabled?: boolean }
   const close = useCallback(() => {
     setOpen(false);
     triggerRef.current?.focus();
+  }, []);
+
+  // Ouverture demandée ailleurs sur la page (ajout au panier)
+  useEffect(() => {
+    const onOpen = () => {
+      setMounted(true);
+      setOpen(true);
+    };
+    window.addEventListener(CART_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(CART_OPEN_EVENT, onOpen);
   }, []);
 
   return (
