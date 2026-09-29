@@ -57,6 +57,26 @@ export function clearCart() {
   write([]);
 }
 
+export type DeliveryMode = "pickup" | "shipping";
+const DELIVERY_KEY = "cazenave.delivery.v1";
+
+/** Mode de remise choisi dans le panier : retrait au comptoir (gratuit) par défaut. */
+export function getDeliveryMode(): DeliveryMode {
+  try {
+    return localStorage.getItem(DELIVERY_KEY) === "shipping" ? "shipping" : "pickup";
+  } catch {
+    return "pickup";
+  }
+}
+
+export function setDeliveryMode(mode: DeliveryMode) {
+  try {
+    localStorage.setItem(DELIVERY_KEY, mode);
+  } catch {
+    // stockage indisponible : le choix vaut pour la page en cours
+  }
+}
+
 /** S'abonne aux changements du panier (même onglet et autres onglets). */
 export function subscribeCart(cb: () => void) {
   window.addEventListener(CART_EVENT, cb);

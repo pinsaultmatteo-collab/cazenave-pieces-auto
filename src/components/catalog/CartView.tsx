@@ -3,18 +3,24 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getCart, removeFromCart, subscribeCart } from "@/lib/cart";
+import { getCart, getDeliveryMode, removeFromCart, setDeliveryMode, subscribeCart, type DeliveryMode } from "@/lib/cart";
 import { partHref } from "@/lib/catalog/links";
 import type { Part } from "@/lib/catalog/types";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/lib/site";
-import { CloseIcon, LockIcon, TruckIcon } from "@/components/icons";
+import { CloseIcon, LockIcon, PinIcon, TruckIcon } from "@/components/icons";
 
 type State = { loading: boolean; parts: Part[] };
 
 /** Contenu du panier (identifiants en local, détails via l'API). */
 export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }) {
   const [state, setState] = useState<State>({ loading: true, parts: [] });
+  // Retrait au comptoir par défaut ; le récapitulatif ne s'affiche qu'après le chargement, côté navigateur.
+  const [mode, setMode] = useState<DeliveryMode>(() => (typeof window === "undefined" ? "pickup" : getDeliveryMode()));
+  const choose = (m: DeliveryMode) => {
+    setMode(m);
+    setDeliveryMode(m);
+  };
 
   useEffect(() => {
     let alive = true;
@@ -59,7 +65,8 @@ export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }
 
   const subtotal = state.parts.reduce((s, p) => s + p.priceTtc, 0);
   const shipping = state.parts.reduce((s, p) => s + (p.shippingCost ?? 0), 0);
-  const needsQuote = state.parts.some((p) => !p.shippingAvailable);
+  const canShip = state.parts.every((p) => p.shippingAvailable);
+  const ship = canShip && mode === "shipping";
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-start">
@@ -95,18 +102,54 @@ export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }
 
       <aside className="rounded-3xl border border-line bg-white p-6 shadow-lg shadow-ink/5">
         <h2 className="font-display text-2xl font-semibold uppercase text-ink">Récapitulatif</h2>
+        <fieldset className="mt-4 space-y-2">
+          <legend className="sr-only">Retrait ou livraison</legend>
+          {(
+            [
+              { value: "pickup", icon: PinIcon, label: "Retrait au comptoir", detail: `Gratuit · ${site.address.city}`, disabled: false },
+              {
+                value: "shipping",
+                icon: TruckIcon,
+                label: "Livraison à domicile",
+                detail: canShip ? `+ ${formatPrice(shipping)} · 24/48 h` : "Sur devis pour une des pièces",
+                disabled: !canShip,
+              },
+            ] as const
+          ).map((o) => (
+            <label
+              key={o.value}
+              className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition ${
+                (o.value === "shipping" ? ship : !ship) ? "border-brand bg-brand-50" : "border-line"
+              } ${o.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-brand/50"}`}
+            >
+              <input
+                type="radio"
+                name="cart-delivery"
+                className="accent-brand-700"
+                checked={o.value === "shipping" ? ship : !ship}
+                disabled={o.disabled}
+                onChange={() => choose(o.value)}
+              />
+              <o.icon size={16} className="shrink-0 text-brand-700" />
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold text-ink">{o.label}</span>
+                <span className="block text-xs text-steel">{o.detail}</span>
+              </span>
+            </label>
+          ))}
+        </fieldset>
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between">
             <dt className="text-steel">Pièces ({state.parts.length})</dt>
             <dd className="font-semibold text-ink">{formatPrice(subtotal)}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-steel">Livraison</dt>
-            <dd className="font-semibold text-ink">{needsQuote ? "Sur devis" : formatPrice(shipping)}</dd>
+            <dt className="text-steel">{ship ? "Livraison" : "Retrait au comptoir"}</dt>
+            <dd className="font-semibold text-ink">{ship ? formatPrice(shipping) : "Gratuit"}</dd>
           </div>
           <div className="flex justify-between border-t border-line pt-3 text-base">
             <dt className="font-bold text-ink">Total TTC</dt>
-            <dd className="display-title text-3xl text-ink">{formatPrice(subtotal + (needsQuote ? 0 : shipping))}</dd>
+            <dd className="display-title text-3xl text-ink">{formatPrice(subtotal + (ship ? shipping : 0))}</dd>
           </div>
         </dl>
         {paymentEnabled ? (

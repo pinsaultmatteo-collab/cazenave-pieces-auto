@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { SearchIcon } from "@/components/icons";
-import { PLACEHOLDER_BRANDS } from "@/lib/placeholders";
 
 type Tab = "immat" | "modele" | "reference";
+type Option = { slug: string; name: string; count?: number };
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "immat", label: "Immatriculation" },
@@ -12,8 +13,54 @@ const tabs: { id: Tab; label: string }[] = [
   { id: "reference", label: "Référence" },
 ];
 
+/** Marques et modèles en stock, chargés à l'ouverture de l'onglet « Marque et modèle ». */
+function useVehicleOptions(active: boolean, brand: string) {
+  const [brands, setBrands] = useState<Option[] | null>(null);
+  const [models, setModels] = useState<Record<string, Option[]>>({});
+
+  useEffect(() => {
+    if (!active || brands) return;
+    let alive = true;
+    fetch("/api/catalog/vehicles")
+      .then((r) => r.json())
+      .then((j: { brands?: Option[] }) => alive && setBrands(j.brands ?? []))
+      .catch(() => alive && setBrands([]));
+    return () => {
+      alive = false;
+    };
+  }, [active, brands]);
+
+  useEffect(() => {
+    if (!brand || models[brand]) return;
+    let alive = true;
+    fetch(`/api/catalog/vehicles?marque=${encodeURIComponent(brand)}`)
+      .then((r) => r.json())
+      .then((j: { models?: Option[] }) => alive && setModels((m) => ({ ...m, [brand]: j.models ?? [] })))
+      .catch(() => alive && setModels((m) => ({ ...m, [brand]: [] })));
+    return () => {
+      alive = false;
+    };
+  }, [brand, models]);
+
+  return { brands, models: brand ? models[brand] : undefined };
+}
+
 export function HeroSearch() {
   const [tab, setTab] = useState<Tab>("immat");
+  const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
+  const { brands, models } = useVehicleOptions(tab === "modele", brand);
+  const router = useRouter();
+
+  // Catalogue filtré sur le véhicule, sans paramètres vides dans l'adresse.
+  const searchVehicle = (e: React.FormEvent) => {
+    e.preventDefault();
+    const sp = new URLSearchParams();
+    if (brand) sp.set("marque", brand);
+    if (brand && model) sp.set("modele", model);
+    const qs = sp.toString();
+    router.push(qs ? `/pieces-auto?${qs}#recherche-resultats` : "/pieces-auto");
+  };
 
   return (
     <div className="rounded-2xl border-t-4 border-brand bg-white p-5 shadow-2xl shadow-black/40 sm:p-7">
@@ -78,7 +125,7 @@ export function HeroSearch() {
       )}
 
       {tab === "modele" && (
-        <form action="/pieces-auto" method="get" className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+        <form action="/pieces-auto" method="get" onSubmit={searchVehicle} className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
           <div>
             <label htmlFor="marque" className="text-xs font-bold uppercase tracking-wide text-steel">
               Marque
@@ -86,13 +133,19 @@ export function HeroSearch() {
             <select
               id="marque"
               name="marque"
-              defaultValue=""
-              className="mt-2 w-full rounded-lg border-2 border-line bg-white px-3 py-3 text-sm font-semibold outline-none focus:border-brand"
+              value={brand}
+              onChange={(e) => {
+                setBrand(e.target.value);
+                setModel("");
+              }}
+              disabled={!brands}
+              className="mt-2 w-full rounded-lg border-2 border-line bg-white px-3 py-3 text-sm font-semibold outline-none focus:border-brand disabled:bg-mist disabled:text-steel"
             >
-              <option value="">Toutes marques</option>
-              {PLACEHOLDER_BRANDS.map((b) => (
-                <option key={b} value={b}>
-                  {b}
+              <option value="">{brands ? "Toutes marques" : "Chargement…"}</option>
+              {brands?.map((b) => (
+                <option key={b.slug} value={b.slug}>
+                  {b.name}
+                  {b.count ? ` (${b.count})` : ""}
                 </option>
               ))}
             </select>
@@ -104,10 +157,17 @@ export function HeroSearch() {
             <select
               id="modele"
               name="modele"
-              defaultValue=""
-              className="mt-2 w-full rounded-lg border-2 border-line bg-white px-3 py-3 text-sm font-semibold outline-none focus:border-brand"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              disabled={!brand || !models?.length}
+              className="mt-2 w-full rounded-lg border-2 border-line bg-white px-3 py-3 text-sm font-semibold outline-none focus:border-brand disabled:bg-mist disabled:text-steel"
             >
-              <option value="">Tous modèles</option>
+              <option value="">{!brand ? "Choisissez une marque" : models ? "Tous modèles" : "Chargement…"}</option>
+              {models?.map((m) => (
+                <option key={m.slug} value={m.slug}>
+                  {m.name}
+                </option>
+              ))}
             </select>
           </div>
           <button

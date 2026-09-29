@@ -114,7 +114,7 @@ export async function CatalogSection({ basePath, params, fixed }: CatalogSection
   };
 
   return (
-    <div className="container-x py-10 lg:py-14">
+    <div id="recherche-resultats" className="container-x scroll-mt-36 py-10 lg:py-14">
       <DemoNotice className="mb-6" />
       <CatalogFilters
         basePath={basePath}

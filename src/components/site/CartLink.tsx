@@ -260,7 +260,7 @@ function CartDrawer({ open, ids, onClose, paymentEnabled }: { open: boolean; ids
                       <TruckIcon size={14} /> Livraison
                     </dt>
                     <dd className="text-right">
-                      {loading ? "…" : allShip ? `${formatPrice(shipping)}, ou retrait gratuit à ${site.address.city}` : `Retrait gratuit à ${site.address.city}`}
+                      {loading ? "…" : allShip ? `Retrait gratuit à ${site.address.city}, ou livraison ${formatPrice(shipping)}` : `Retrait gratuit à ${site.address.city}`}
                     </dd>
                   </div>
                 </dl>

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getCart, subscribeCart } from "@/lib/cart";
+import { getCart, getDeliveryMode, setDeliveryMode as saveDeliveryMode, subscribeCart, type DeliveryMode } from "@/lib/cart";
 import type { Part } from "@/lib/catalog/types";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/lib/site";
@@ -103,7 +103,12 @@ export function CheckoutForm({ cancelled }: { cancelled?: string }) {
   const [billing, setBilling] = useState<Address>(EMPTY_ADDRESS);
   const [delivery, setDelivery] = useState<Address>(EMPTY_ADDRESS);
   const [shipToBilling, setShipToBilling] = useState(true);
-  const [deliveryMode, setDeliveryMode] = useState<"pickup" | "shipping">("shipping");
+  // Choix fait dans le panier (retrait au comptoir par défaut).
+  const [deliveryMode, setDeliveryModeState] = useState<DeliveryMode>(() => (typeof window === "undefined" ? "pickup" : getDeliveryMode()));
+  const setDeliveryMode = (m: DeliveryMode) => {
+    setDeliveryModeState(m);
+    saveDeliveryMode(m);
+  };
   const [note, setNote] = useState("");
   const [acceptCgv, setAcceptCgv] = useState(false);
   const [errors, setErrors] = useState<Errors>({});

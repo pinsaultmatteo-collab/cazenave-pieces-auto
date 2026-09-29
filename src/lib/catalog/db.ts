@@ -332,10 +332,15 @@ async function buildConditions(params: PartSearch): Promise<SQL[] | null> {
   if (params.vehicleId) conds.push(eq(parts.vehicleId, params.vehicleId));
   if (params.name) conds.push(sql`lower(${parts.name}) like ${`%${escapeLike(normalize(params.name))}%`}`);
   if (params.ref) {
+    // Espaces, points et tirets ignorés des deux côtés (« 320 109 299 R » = « 320109299R ») ; la référence
+    // peut aussi figurer dans la description. Un nombre seul peut être le n° de pièce affiché sur le site.
     const ref = normalize(params.ref).replace(/[^a-z0-9]/g, "");
     if (ref) {
+      const like = `%${escapeLike(ref)}%`;
+      const byId = /^\d{5,9}$/.test(ref) ? sql` or ${parts.id} = ${Number(ref)}` : sql``;
       conds.push(
-        sql`regexp_replace(lower(coalesce(${parts.manufacturerReference}, '') || ' ' || coalesce(${parts.adaptableReference}, '')), '[^a-z0-9 ]', '', 'g') like ${`%${escapeLike(ref)}%`}`,
+        sql`(regexp_replace(lower(coalesce(${parts.manufacturerReference}, '') || '|' || coalesce(${parts.adaptableReference}, '')), '[^a-z0-9|]', '', 'g') like ${like}
+          or regexp_replace(${parts.searchText}, '[^a-z0-9]', '', 'g') like ${like}${byId})`,
       );
     }
   }
