@@ -2,7 +2,7 @@ import Image from "next/image";
 import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
-import { ArrowUpRightIcon, FacebookIcon, InstagramIcon, TiktokIcon } from "@/components/icons";
+import { ArrowUpRightIcon, FacebookIcon, InstagramIcon, LinkedinIcon, TiktokIcon } from "@/components/icons";
 
 const NETWORKS = [
   {
@@ -29,6 +29,14 @@ const NETWORKS = [
     text: "Actualités, horaires exceptionnels et événements à Colomiers.",
     accent: "from-[#1877f2] to-[#0d4fb0]",
   },
+  {
+    name: "LinkedIn",
+    handle: "Cazenave Pièces Auto",
+    href: site.social.linkedin,
+    icon: LinkedinIcon,
+    text: "La vie de l'entreprise, nos engagements VHU et nos offres d'emploi.",
+    accent: "from-[#0a66c2] to-[#004182]",
+  },
 ];
 
 const FEED = [
@@ -40,7 +48,7 @@ const FEED = [
   { photo: photos.tyres, alt: "Rayonnage de pneus" },
 ];
 
-/** Bloc réseaux sociaux : trois plateformes et un aperçu façon feed. */
+/** Bloc réseaux sociaux : quatre plateformes et un aperçu façon feed. */
 export function Social() {
   return (
     <section className="grain relative overflow-hidden bg-night text-white">

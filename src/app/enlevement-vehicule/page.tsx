@@ -168,11 +168,11 @@ export default function RemovalPage() {
               <div className="relative mx-auto max-w-[300px] px-4 pt-3">
                 <Image src={franceMap} alt="Carte de France : zone d'intervention en Occitanie et Nouvelle-Aquitaine" className="w-full" sizes="300px" />
                 {/* Repère Colomiers */}
-                <span aria-hidden className="absolute left-[46%] top-[71%] flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+                <span aria-hidden className="absolute left-[44.7%] top-[80.5%] flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink/40" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full border-2 border-white bg-ink shadow" />
                 </span>
-                <span aria-hidden className="absolute left-[46%] top-[71%] ml-3 -translate-y-1/2 rounded-full bg-ink px-2 py-0.5 text-[10px] font-bold text-white shadow">
+                <span aria-hidden className="absolute left-[44.7%] top-[80.5%] ml-3 -translate-y-1/2 rounded-full bg-ink px-2 py-0.5 text-[10px] font-bold text-white shadow">
                   Colomiers
                 </span>
               </div>

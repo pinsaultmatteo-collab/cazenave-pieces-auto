@@ -55,6 +55,8 @@ export type OpistoVehicle = {
   DateFirstRegistration?: number;
   FirstRegistrationDateDto?: OpistoDateDto;
   ExpertPrice?: number;
+  /** Prix de vente du véhicule */
+  Price?: number;
   RepairCosts?: number;
   ForSale?: boolean;
   Status?: string;

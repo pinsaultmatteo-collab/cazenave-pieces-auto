@@ -202,6 +202,77 @@ export function TiktokIcon(props: IconProps) {
   );
 }
 
+export function BoltIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z" />
+    </svg>
+  );
+}
+
+export function BadgeIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="9" r="6" />
+      <path d="m8.6 13.9-1.6 7.1 5-2.8 5 2.8-1.6-7.1" />
+      <path d="m9.8 9 1.5 1.5 3-3" />
+    </svg>
+  );
+}
+
+export function LiftIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M6.5 8 8 4.5h8L17.5 8" />
+      <rect x="4" y="8" width="16" height="4" rx="1.2" />
+      <path d="M3 15h18M6 15v6M18 15v6M4 21h4M16 21h4" />
+    </svg>
+  );
+}
+
+export function ContainerIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="2.5" y="6" width="19" height="12" rx="1.2" />
+      <path d="M6.5 9v6M10 9v6M14 9v6M17.5 9v6" />
+    </svg>
+  );
+}
+
+export function BatteryIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="2.5" y="7" width="17" height="10" rx="2" />
+      <path d="M22 10.5v3M6 10v4M9.5 10v4M13 10v4" />
+    </svg>
+  );
+}
+
+export function CalendarIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="3.5" y="5" width="17" height="15" rx="2" />
+      <path d="M3.5 10h17M8 3v4M16 3v4" />
+    </svg>
+  );
+}
+
+export function WhatsappIcon(props: IconProps) {
+  return (
+    <svg {...filled(props)}>
+      <path d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.3 21.7l4.8-1.3A9.8 9.8 0 1 0 12 2.2zm0 17.8a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8.9c-.1.2-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .2-1.2c-.1-.1-.2-.2-.4-.3z" />
+    </svg>
+  );
+}
+
+export function LinkedinIcon(props: IconProps) {
+  return (
+    <svg {...filled(props)}>
+      <path d="M4.98 3.5a2.49 2.49 0 1 1 0 4.98 2.49 2.49 0 0 1 0-4.98zM3 9.75h3.96V21H3V9.75zm6.46 0h3.8v1.54h.05c.53-1 1.82-2.05 3.75-2.05 4.01 0 4.75 2.64 4.75 6.07V21h-3.96v-5.03c0-1.2-.02-2.74-1.67-2.74-1.67 0-1.93 1.3-1.93 2.65V21H9.46V9.75z" />
+    </svg>
+  );
+}
+
 export function FacebookIcon(props: IconProps) {
   return (
     <svg {...filled(props)}>

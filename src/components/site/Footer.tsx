@@ -142,6 +142,9 @@ export function Footer() {
             <a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white">
               Instagram
             </a>
+            <a href={site.social.tiktok} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              TikTok
+            </a>
             <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white">
               LinkedIn
             </a>

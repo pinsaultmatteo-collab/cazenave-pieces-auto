@@ -4,8 +4,9 @@ import { useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } fr
 import { AnimatePresence, motion } from "motion/react";
 import { site } from "@/lib/site";
 import { CheckIcon, PhoneIcon, PinIcon, UserIcon } from "@/components/icons";
+import { DocumentDrop } from "./DocumentDrop";
 
-type Kind = "contact" | "enlevement" | "candidature" | "batterie";
+type Kind = "contact" | "enlevement" | "candidature" | "batterie" | "marchand";
 type Status = { state: "idle" | "sending" | "sent" | "error"; message?: string };
 type Errors = Record<string, string | undefined>;
 
@@ -20,7 +21,7 @@ const BATTERY_ACTIVITIES = ["Stockage d'énergie stationnaire", "Intégrateur ou
 const BATTERY_NEEDS = ["Modules", "Batteries complètes", "Approvisionnement régulier", "Autre besoin"];
 
 const MESSAGE_MAX = 2000;
-const CV_MAX_MB = 5;
+const CV_MAX_MB = 4;
 
 /* ---------- règles de validation (le serveur reste juge) ---------- */
 function validateField(name: string, value: string, kind: Kind): string | undefined {
@@ -31,7 +32,13 @@ function validateField(name: string, value: string, kind: Kind): string | undefi
     case "email":
       return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? undefined : "Adresse e-mail invalide.";
     case "phone":
-      if (!v) return kind === "enlevement" ? "Un numéro est nécessaire pour organiser l'enlèvement." : undefined;
+      if (!v)
+        return kind === "enlevement"
+          ? "Un numéro est nécessaire pour organiser l'enlèvement."
+          : kind === "marchand"
+            ? "Un numéro de portable est nécessaire pour le groupe WhatsApp."
+            : undefined;
+      if (kind === "marchand") return /^(\+33 ?|0)[67](?:[ .-]?\d{2}){4}$/.test(v) ? undefined : "Indiquez un numéro de portable (06 ou 07).";
       return /^(\+33|0)[1-9](?:[ .-]?\d{2}){4}$/.test(v) ? undefined : "Numéro de téléphone invalide.";
     case "plate":
       if (!v) return kind === "enlevement" ? "Indiquez l'immatriculation." : undefined;
@@ -43,11 +50,11 @@ function validateField(name: string, value: string, kind: Kind): string | undefi
     case "subject":
       return kind === "contact" && !v ? "Choisissez un sujet." : undefined;
     case "company":
-      return kind === "batterie" && v.length < 2 ? "Indiquez le nom de votre société." : undefined;
+      return (kind === "batterie" || kind === "marchand") && v.length < 2 ? "Indiquez le nom de votre société." : undefined;
     case "need":
       return kind === "batterie" && !v ? "Précisez votre besoin." : undefined;
     case "message":
-      if (kind === "enlevement") return undefined;
+      if (kind === "enlevement" || kind === "marchand") return v.length > MESSAGE_MAX ? "Message trop long." : undefined;
       return v.length < 10 ? "Quelques mots de plus nous aideront à vous répondre." : v.length > MESSAGE_MAX ? "Message trop long." : undefined;
     default:
       return undefined;
@@ -126,6 +133,7 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
   const isRemoval = kind === "enlevement";
   const isJob = kind === "candidature";
   const isBattery = kind === "batterie";
+  const isDealer = kind === "marchand";
 
   /** Validation d'un champ à la sortie (ou au changement pour les listes). */
   function onBlur(e: { target: { name: string; value: string } }) {
@@ -161,11 +169,21 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
       if (!fd.get("rolling")) next.rolling = "Précisez si le véhicule roule.";
       if (!fd.get("accessible")) next.accessible = "Précisez si une dépanneuse peut y accéder.";
     }
+    if (isDealer) {
+      for (const [key, label] of [["kbis", "votre Kbis"], ["identite", "une pièce d'identité"]] as const) {
+        const f = fd.get(key);
+        if (!(f instanceof File) || f.size === 0) next[key] = `Joignez ${label}.`;
+        else if (errors[key]) next[key] = errors[key];
+      }
+      const total = ["kbis", "identite"].reduce((s, k) => s + ((fd.get(k) as File | null)?.size ?? 0), 0);
+      if (total > 4.3 * 1024 * 1024) next.identite = "Les deux documents dépassent 4 Mo au total : envoyez des fichiers plus légers.";
+    }
     if (!fd.get("consent")) next.consent = "Votre accord est nécessaire pour traiter la demande.";
     setErrors(next);
     if (Object.values(next).some(Boolean)) {
       const first = form.querySelector<HTMLElement>('[aria-invalid="true"], [data-invalid="true"]');
       first?.focus();
+      if (first && first.tagName === "DIV") first.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -201,13 +219,15 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
           <CheckIcon size={28} />
         </motion.span>
         <p className="mt-4 font-display text-3xl font-semibold uppercase text-ink">
-          {isRemoval ? "Demande enregistrée" : isJob ? "Candidature envoyée" : isBattery ? "Demande envoyée" : "Message envoyé"}
+          {isRemoval ? "Demande enregistrée" : isJob ? "Candidature envoyée" : isBattery || isDealer ? "Demande envoyée" : "Message envoyé"}
         </p>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink">
           {isRemoval
             ? "Notre service enlèvement vous rappelle sous un jour ouvré pour confirmer l'éligibilité et fixer une date."
             : isBattery
               ? "Merci, notre équipe vous recontacte avec les batteries disponibles correspondant à votre besoin."
+              : isDealer
+                ? "Merci, nous vérifions vos documents et ajoutons votre numéro au groupe WhatsApp sous quelques jours ouvrés."
               : "Merci, nous vous répondons du lundi au vendredi, de 9h à 17h. Pour une urgence, appelez-nous."}
         </p>
         <button type="button" onClick={() => setStatus({ state: "idle" })} className="mt-5 text-sm font-bold text-brand-700 underline underline-offset-4">
@@ -232,7 +252,7 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
           <Field id="name" label="Nom et prénom" required error={errors.name} icon={<UserIcon size={16} />}>
             <input id="name" name="name" autoComplete="name" placeholder="Camille Durand" onBlur={onBlur} className={`${inputBase} h-12 pl-10`} {...invalid("name")} />
           </Field>
-          <Field id="phone" label="Téléphone" required={isRemoval} error={errors.phone} icon={<PhoneIcon size={16} />}>
+          <Field id="phone" label={isDealer ? "Téléphone portable (WhatsApp)" : "Téléphone"} required={isRemoval || isDealer} error={errors.phone} icon={<PhoneIcon size={16} />}>
             <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="06 12 34 56 78" onBlur={onBlur} className={`${inputBase} h-12 pl-10`} {...invalid("phone")} />
           </Field>
         </div>
@@ -363,6 +383,31 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
         </Section>
       )}
 
+      {isDealer && (
+        <Section n="02" title="Votre entreprise" hint="Le groupe est réservé aux professionnels de l'automobile.">
+          <Field id="company" label="Société" required error={errors.company}>
+            <input id="company" name="company" autoComplete="organization" placeholder="Nom de votre entreprise" onBlur={onBlur} className={`${inputBase} h-12`} {...invalid("company")} />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <DocumentDrop
+              name="kbis"
+              label="Kbis de moins de 3 mois"
+              hint="PDF ou photo lisible"
+              error={errors.kbis}
+              onValid={(key, err) => setErrors((p) => ({ ...p, [key]: err }))}
+            />
+            <DocumentDrop
+              name="identite"
+              label="Pièce d'identité du gérant"
+              hint="Carte d'identité, passeport ou permis"
+              error={errors.identite}
+              onValid={(key, err) => setErrors((p) => ({ ...p, [key]: err }))}
+            />
+          </div>
+          <p className="text-xs leading-5 text-steel">Vos documents servent uniquement à vérifier votre statut de professionnel. Ils ne sont pas conservés sur le site.</p>
+        </Section>
+      )}
+
       {isJob && (
         <Section n="02" title="Votre CV" hint="PDF ou Word, 5 Mo maximum. Facultatif si vous vous présentez ci-dessous.">
           <label
@@ -382,11 +427,11 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
         </Section>
       )}
 
-      <Section n="03" title={isRemoval ? "Précisions" : isJob ? "Présentez-vous" : isBattery ? "Votre demande" : "Votre message"}>
+      <Section n="03" title={isRemoval ? "Précisions" : isJob ? "Présentez-vous" : isBattery ? "Votre demande" : isDealer ? "Message (facultatif)" : "Votre message"}>
         <Field
           id="message"
-          label={isRemoval ? "Informations utiles" : isJob ? "Parcours, motivations, disponibilités" : isBattery ? "Usage prévu, contraintes techniques, délais" : "Message"}
-          required={!isRemoval}
+          label={isRemoval ? "Informations utiles" : isJob ? "Parcours, motivations, disponibilités" : isBattery ? "Usage prévu, contraintes techniques, délais" : isDealer ? "Types de véhicules recherchés" : "Message"}
+          required={!isRemoval && !isDealer}
           error={errors.message}
         >
           <textarea
@@ -401,6 +446,8 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
                   ? "Mécanicien depuis 5 ans, disponible immédiatement…"
                   : isBattery
                     ? "Stockage stationnaire pour un site industriel, chimie NMC recherchée, livraison sur Toulouse…"
+                    : isDealer
+                      ? "Citadines récentes, utilitaires, véhicules à réparer…"
                     : "Décrivez votre besoin : pièce recherchée, véhicule, numéro de commande…"
             }
             onBlur={onBlur}
@@ -451,7 +498,7 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
             className="inline-flex h-13 items-center justify-center gap-2 rounded-full bg-brand px-8 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_30px_rgba(152,174,7,0.35)] disabled:cursor-wait disabled:opacity-70"
           >
             {status.state === "sending" ? <Spinner /> : <CheckIcon size={18} />}
-            {status.state === "sending" ? "Envoi en cours…" : isRemoval ? "Demander l'enlèvement" : isJob ? "Envoyer ma candidature" : isBattery ? "Envoyer ma demande" : "Envoyer le message"}
+            {status.state === "sending" ? "Envoi en cours…" : isRemoval ? "Demander l'enlèvement" : isJob ? "Envoyer ma candidature" : isBattery ? "Envoyer ma demande" : isDealer ? "Rejoindre le groupe" : "Envoyer le message"}
           </button>
           <p className="text-xs text-steel">Réponse sous un jour ouvré · {site.hoursShort}</p>
         </div>

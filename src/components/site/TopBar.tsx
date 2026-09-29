@@ -4,6 +4,7 @@ import {
   ClockIcon,
   FacebookIcon,
   InstagramIcon,
+  LinkedinIcon,
   LockIcon,
   PhoneIcon,
   PinIcon,
@@ -23,6 +24,7 @@ const socials = [
   { name: "Instagram", href: site.social.instagram, icon: InstagramIcon },
   { name: "TikTok", href: site.social.tiktok, icon: TiktokIcon },
   { name: "Facebook", href: site.social.facebook, icon: FacebookIcon },
+  { name: "LinkedIn", href: site.social.linkedin, icon: LinkedinIcon },
 ];
 
 /** Bandeau supérieur : promesses, coordonnées et réseaux, avec un filet vert. */

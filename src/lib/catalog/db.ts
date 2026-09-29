@@ -3,7 +3,7 @@
  * depuis Opisto (voir src/lib/opisto/sync.ts). Même interface que `demo.ts`.
  */
 import "server-only";
-import { and, asc, count, desc, eq, inArray, isNull, ne, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, isNull, ne, sql, type SQL } from "drizzle-orm";
 import { getDb } from "@/db";
 import { brands, categories, parts, ranges, subcategories, vehicles, type CategoryRow, type PartRow, type RangeRow, type SubCategoryRow, type VehicleRow } from "@/db/schema";
 import type { Brand, Category, Paginated, Part, PartCondition, PartSearch, Vehicle, VehicleModel } from "./types";
@@ -83,7 +83,7 @@ function toPart(r: PartRow): Part {
 }
 
 function toVehicle(r: VehicleRow): Vehicle {
-  const price = num(r.expertPrice);
+  const price = num(r.salePrice);
   return {
     id: r.id,
     slug: r.slug,
@@ -355,13 +355,21 @@ export async function listPartLinks(): Promise<{ id: number; slug: string; updat
 
 /* ---------- véhicules ---------- */
 
+/**
+ * Véhicule complet à vendre : publié à la vente par Opisto (/vehicles) avec
+ * le statut « A vendre VO ». Les véhicules donneurs de pièces sont exclus.
+ */
+const VEHICLE_FOR_SALE = and(
+  eq(vehicles.forSale, true),
+  sql`lower(translate(coalesce(${vehicles.status}, ''), 'ÀÂÄàâä', 'AAAaaa')) like 'a vendre vo%'`,
+)!;
+
 export async function getVehicles(params: { page?: number; perPage?: number; brand?: string; forSale?: boolean } = {}): Promise<Paginated<Vehicle>> {
   const page = Math.max(1, params.page ?? 1);
   const perPage = Math.min(48, Math.max(1, params.perPage ?? PER_PAGE));
   const conds: SQL[] = [isNull(vehicles.deletedAt)];
-  if (params.forSale === true) conds.push(eq(vehicles.forSale, true));
-  else if (params.forSale === false) conds.push(eq(vehicles.forSale, false));
-  else conds.push(or(eq(vehicles.forSale, true), sql`${vehicles.partsCount} > 0`)!);
+  if (params.forSale === false) conds.push(eq(vehicles.forSale, false));
+  else conds.push(VEHICLE_FOR_SALE);
   if (params.brand) {
     const g = (await brandGroups()).get(params.brand);
     if (!g) return { items: [], total: 0, page, perPage, pages: 1 };

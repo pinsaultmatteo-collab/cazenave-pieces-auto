@@ -4,7 +4,8 @@ import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
 import { FAQ } from "@/lib/faq";
 import { CATEGORY_COVERS, categoryVisual, PLACEHOLDER_ARTICLES } from "@/lib/placeholders";
-import { getBrandCounts, getBrands, getCategories, getCategoryCounts, getCategoryShowcase, getLatestParts, isDemoData } from "@/lib/catalog";
+import { getBrandCounts, getBrands, getCategories, getCategoryCounts, getCategoryShowcase, getLatestParts, isDemoData, searchParts } from "@/lib/catalog";
+import { TRACTION_BATTERY } from "@/lib/ev";
 import { PartCard } from "@/components/catalog/PartCard";
 import { Hero } from "@/components/home/Hero";
 import { Categories } from "@/components/home/Categories";
@@ -15,6 +16,7 @@ import { StockBanner } from "@/components/home/StockBanner";
 import { Reviews } from "@/components/home/Reviews";
 import { Faq } from "@/components/home/Faq";
 import { Social } from "@/components/home/Social";
+import { EvBlock } from "@/components/home/EvBlock";
 import { ParallaxBanner } from "@/components/motion/ParallaxBanner";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
@@ -50,13 +52,14 @@ const faqJsonLd = {
 };
 
 export default async function HomePage() {
-  const [categories, counts, latest, showcase, brands, brandCounts] = await Promise.all([
+  const [categories, counts, latest, showcase, brands, brandCounts, batteries] = await Promise.all([
     getCategories(),
     getCategoryCounts(),
     getLatestParts(4),
     getCategoryShowcase(),
     getBrands(),
     getBrandCounts(),
+    searchParts({ name: TRACTION_BATTERY, perPage: 1 }).then((r) => r.total).catch(() => 0),
   ]);
   const marqueeBrands = brands
     .map((b) => ({ slug: b.slug, name: b.name, count: brandCounts[b.id] ?? 0 }))
@@ -168,6 +171,9 @@ export default async function HomePage() {
       <StockBanner />
 
       <Stats />
+
+      {/* Expertise véhicules électriques : accès à la page Batteries VE */}
+      <EvBlock batteries={batteries} />
 
       {/* Enlèvement de véhicule : encart un peu plus large que la colonne de contenu */}
       <section className="container-x pb-20 lg:pb-28">

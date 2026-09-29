@@ -177,16 +177,17 @@ async function upsertDonorVehicles(db: Db, list: OpistoPart[], now: Date) {
   }
   if (!rows.size) return 0;
   const values = [...rows.values()].map((v) => {
-    const { forSale: _f, status: _s, expertPrice: _e, ...rest } = v;
+    const { forSale: _f, status: _s, expertPrice: _e, salePrice: _p, ...rest } = v;
     void _f;
     void _s;
     void _e;
+    void _p;
     return rest;
   });
   await db
     .insert(vehicles)
     .values(values)
-    .onConflictDoUpdate({ target: vehicles.id, set: excludedSet(vehicles, ["id", "forSale", "status", "expertPrice", "partsCount", "deletedAt"]) });
+    .onConflictDoUpdate({ target: vehicles.id, set: excludedSet(vehicles, ["id", "forSale", "status", "expertPrice", "salePrice", "partsCount", "deletedAt"]) });
   return values.length;
 }
 

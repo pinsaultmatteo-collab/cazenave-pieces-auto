@@ -93,6 +93,8 @@ export const vehicles = pgTable(
     forSale: boolean("for_sale").notNull().default(false),
     status: text("status"),
     expertPrice: numeric("expert_price", { precision: 10, scale: 2 }),
+    /** Prix de vente du véhicule (Vehicle.Price), distinct de l'estimation de l'expert */
+    salePrice: numeric("sale_price", { precision: 10, scale: 2 }),
     photos: jsonb("photos").$type<string[]>().notNull().default([]),
     vignette: text("vignette"),
     policeId: integer("police_id"),

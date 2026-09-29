@@ -8,8 +8,10 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { searchParts, type PartSort } from "@/lib/catalog";
 import { photos } from "@/lib/photos";
 import { site } from "@/lib/site";
+import { TRACTION_BATTERY } from "@/lib/ev";
+import { EvExpertiseGrid } from "@/components/ev/EvExpertise";
 import certIndraExpert from "@/assets/brand/cert-indra-expert.jpg";
-import { CheckIcon, ChevronRightIcon, ClockIcon, PhoneIcon, PinIcon, ShieldIcon } from "@/components/icons";
+import { BoltIcon, CheckIcon, ChevronRightIcon, ClockIcon, PhoneIcon, PinIcon, ShieldIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Batteries de véhicules électriques d'occasion",
@@ -21,15 +23,24 @@ export const metadata: Metadata = {
 /** Stock mis à jour toutes les 30 minutes. */
 export const revalidate = 600;
 
-/** Nom Opisto des batteries revendables (sous-catégorie). */
-const TRACTION = "batterie de traction";
 const PER_PAGE = 12;
 
 const REUSE_POINTS = [
   "Batterie d'origine constructeur, identifiée avec son véhicule donneur",
   "Démontage et mise en sécurité dans notre centre, référencé Indra Centre Expert pour les véhicules électriques et hybrides",
   "Photos, référence et véhicule d'origine sur chaque fiche pour vérifier la compatibilité",
+  "État de santé (SOH) mesurable avec nos outils de diagnostic : renseignez-vous avant l'achat",
+  "Stockage dans un container hermétique jusqu'à la vente",
   "Installation à confier à un professionnel habilité à intervenir sur les véhicules électriques",
+];
+
+/** Parcours d'une batterie dans le centre, de l'arrivée du véhicule à sa seconde vie. */
+const BATTERY_JOURNEY = [
+  { title: "Mise en sécurité", text: "Un technicien habilité intervient sur le système haute tension du véhicule." },
+  { title: "Dépose", text: "La batterie est démontée sur notre pont élévateur réservé aux véhicules électriques." },
+  { title: "Diagnostic", text: "Contrôle de la batterie et mesure de son état de santé (SOH) avec nos outils de test." },
+  { title: "Stockage", text: "La batterie rejoint notre container de stockage hermétique." },
+  { title: "Seconde vie", text: "Réemploi dans un autre véhicule, ou valorisation de ses modules pour un usage industriel." },
 ];
 
 const INDUSTRIAL_USES = [
@@ -46,7 +57,7 @@ export default async function BatteriesPage({ searchParams }: PageProps<"/batter
   const page = Math.max(1, Number(str(sp.page)) || 1);
   const sortParam = str(sp.sort);
   const sort = (sortParam === "price-asc" || sortParam === "price-desc" ? sortParam : undefined) as PartSort | undefined;
-  const result = await searchParts({ name: TRACTION, page, perPage: PER_PAGE, sort });
+  const result = await searchParts({ name: TRACTION_BATTERY, page, perPage: PER_PAGE, sort });
 
   return (
     <>
@@ -109,6 +120,42 @@ export default async function BatteriesPage({ searchParams }: PageProps<"/batter
             </p>
           </StaggerItem>
         </Stagger>
+      </section>
+
+      {/* Expertise véhicules électriques */}
+      <section id="expertise" className="grain relative scroll-mt-44 overflow-clip bg-night text-white">
+        <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(152,174,7,0.16),transparent_55%)]" />
+        <div className="container-x py-16 lg:py-20">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-14">
+            <Reveal className="text-center lg:text-left">
+              <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-brand-400 lg:justify-start">
+                <BoltIcon size={16} /> Centre expert VE
+              </p>
+              <h2 className="display-title mt-3 text-4xl sm:text-5xl">
+                Trois ans d&apos;expertise <span className="text-outline-brand">électrique</span>
+              </h2>
+              <p className="mx-auto mt-5 max-w-xl leading-7 text-white/75 lg:mx-0">
+                Une batterie de traction ne se démonte pas comme une pièce mécanique : tension élevée, poids pouvant atteindre plusieurs centaines de
+                kilos, risque d&apos;emballement thermique. Depuis trois ans, nous avons investi dans un équipement et une formation
+                dédiés pour traiter les véhicules électriques et hybrides en toute sécurité, et donner une seconde vie à leurs batteries.
+              </p>
+            </Reveal>
+            <EvExpertiseGrid tone="dark" />
+          </div>
+
+          <Reveal className="mt-14">
+            <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-brand-400 lg:text-left">Le parcours d&apos;une batterie chez nous</p>
+            <ol className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {BATTERY_JOURNEY.map((s, i) => (
+                <li key={s.title} className="relative rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+                  <span className="font-display text-3xl font-semibold text-brand-400">{String(i + 1).padStart(2, "0")}</span>
+                  <p className="mt-1 font-bold">{s.title}</p>
+                  <p className="mt-1 text-[13px] leading-5 text-white/70">{s.text}</p>
+                </li>
+              ))}
+            </ol>
+          </Reveal>
+        </div>
       </section>
 
       {/* Filière 1 : réemploi */}
@@ -239,7 +286,8 @@ export default async function BatteriesPage({ searchParams }: PageProps<"/batter
               </div>
               <div className="flex items-start gap-3 rounded-2xl border border-white/10 p-5 text-sm leading-6 text-white/75">
                 <ShieldIcon size={20} className="mt-0.5 shrink-0 text-brand-400" />
-                Batteries mises en sécurité par nos équipes et remises avec la traçabilité de leur véhicule d&apos;origine.
+                Batteries mises en sécurité par notre équipe habilitée, stockées dans un container hermétique et remises avec la
+                traçabilité de leur véhicule d&apos;origine.
               </div>
             </Reveal>
             <Reveal delay={0.1} className="rounded-3xl bg-white p-6 text-ink shadow-2xl shadow-black/30 sm:p-8">

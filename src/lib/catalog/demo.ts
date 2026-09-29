@@ -115,7 +115,7 @@ export async function getVehicles(params: { page?: number; perPage?: number; bra
   const perPage = params.perPage ?? PER_PAGE;
   let items = [...DEMO_VEHICLES];
   if (params.brand) items = items.filter((v) => slugify(v.brandName) === params.brand);
-  if (params.forSale !== undefined) items = items.filter((v) => v.forSale === params.forSale);
+  items = items.filter((v) => v.forSale === (params.forSale ?? true));
   items.sort((a, b) => (b.firstRegistration ?? "").localeCompare(a.firstRegistration ?? ""));
   const total = items.length;
   return { items: items.slice((page - 1) * perPage, page * perPage), total, page, perPage, pages: Math.max(1, Math.ceil(total / perPage)) };
