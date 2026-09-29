@@ -157,6 +157,12 @@ export const parts = pgTable(
     modelId: integer("model_id"),
     brandName: text("brand_name"),
     modelName: text("model_name"),
+    /** Modèle Opisto = phase (« CLIO 4 PHASE 2 BREAK ») ; `modelName` contient la gamme */
+    phaseName: text("phase_name"),
+    /** Années de commercialisation de la version du véhicule donneur */
+    yearFrom: integer("year_from"),
+    yearTo: integer("year_to"),
+    doors: integer("doors"),
     version: text("version"),
     energy: text("energy"),
     gearbox: text("gearbox"),
@@ -184,6 +190,7 @@ export const parts = pgTable(
     index("parts_created_idx").on(t.opistoCreatedAt),
     index("parts_available_idx").on(t.available, t.inStock, t.forSale, t.blocked, t.deletedAt),
     index("parts_ref_idx").on(t.manufacturerReference),
+    index("parts_model_idx").on(t.modelId),
   ],
 );
 

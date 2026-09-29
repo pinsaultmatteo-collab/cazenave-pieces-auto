@@ -20,7 +20,14 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true, anchors: true });
+    const lenis = new Lenis({
+      lerp: 0.1,
+      smoothWheel: true,
+      anchors: true,
+      // Zones qui défilent seules : fenêtre du chatbot Locomotive, listes internes
+      allowNestedScroll: true,
+      prevent: (node) => node.id === "loco-webchat",
+    });
     lenisRef.current = lenis;
     let frame = 0;
     const loop = (time: number) => {

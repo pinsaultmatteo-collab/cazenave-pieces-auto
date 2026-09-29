@@ -78,6 +78,11 @@ export type Part = {
   brandId: number | null;
   brandName: string | null;
   modelName: string | null;
+  /** Phase du véhicule donneur (« Clio 4 Phase 2 »), années de commercialisation et nombre de portes */
+  phaseName?: string | null;
+  yearFrom?: number | null;
+  yearTo?: number | null;
+  doors?: number | null;
   version: string | null;
   vehicleId: number | null;
   /** Prix unitaire HT (PartPrice.OriginPrice) */
@@ -122,6 +127,20 @@ export type Paginated<T> = {
 
 export type PartSort = "recent" | "price-asc" | "price-desc";
 
+/** Phase d'un modèle (modèle Opisto), avec ses années de commercialisation. */
+export type VehiclePhase = {
+  slug: string;
+  name: string;
+  /** Libellé court, sans le nom du modèle (« Phase 2 Break ») */
+  label: string;
+  from: number | null;
+  /** null : encore commercialisée */
+  to: number | null;
+  count: number;
+};
+
+export type DoorOption = { value: number; count: number };
+
 export type PartSearch = {
   /** Texte libre : nom de pièce, marque, modèle */
   q?: string;
@@ -130,6 +149,12 @@ export type PartSearch = {
   category?: string;
   brand?: string;
   model?: string;
+  /** Année du véhicule du client : restreint aux phases commercialisées cette année-là */
+  year?: number;
+  /** Phase (slug du modèle Opisto, ex. « clio-4-phase-2 ») */
+  phase?: string;
+  /** Nombre de portes (carrosserie extérieure) */
+  doors?: number;
   vehicleId?: number;
   /** Nom de pièce contenant ce texte (ex. « batterie de traction ») */
   name?: string;

@@ -5,7 +5,7 @@
  */
 import { slugify } from "@/lib/slug";
 import { DEMO_BRANDS, DEMO_CATEGORIES, DEMO_MODELS, DEMO_PARTS, DEMO_VEHICLES } from "./mock";
-import type { Brand, Category, Paginated, Part, PartSearch, Vehicle, VehicleModel } from "./types";
+import type { Brand, Category, DoorOption, Paginated, Part, PartSearch, Vehicle, VehicleModel, VehiclePhase } from "./types";
 import { PER_PAGE } from "./links";
 
 const normalize = (s: string) =>
@@ -35,6 +35,17 @@ export async function getModels(brandId: number): Promise<VehicleModel[]> {
 }
 
 /** Nombre de pièces disponibles par marque, pour l'index des marques. */
+/** Le jeu de démonstration ne décrit pas les phases ni les portes. */
+export async function getPhases(...args: [brand: string | undefined, model: string]): Promise<VehiclePhase[]> {
+  void args;
+  return [];
+}
+
+export async function getDoorOptions(params: PartSearch): Promise<DoorOption[]> {
+  void params;
+  return [];
+}
+
 export async function getBrandCounts(): Promise<Record<number, number>> {
   const counts: Record<number, number> = {};
   for (const p of DEMO_PARTS) {

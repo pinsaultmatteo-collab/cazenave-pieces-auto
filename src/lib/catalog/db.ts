@@ -3,11 +3,14 @@
  * depuis Opisto (voir src/lib/opisto/sync.ts). Même interface que `demo.ts`.
  */
 import "server-only";
+import { cache } from "react";
 import { and, asc, count, desc, eq, inArray, isNull, ne, sql, type SQL } from "drizzle-orm";
 import { getDb } from "@/db";
 import { brands, categories, parts, ranges, subcategories, vehicles, type CategoryRow, type PartRow, type RangeRow, type SubCategoryRow, type VehicleRow } from "@/db/schema";
-import type { Brand, Category, Paginated, Part, PartCondition, PartSearch, Vehicle, VehicleModel } from "./types";
+import type { Brand, Category, DoorOption, Paginated, Part, PartCondition, PartSearch, Vehicle, VehicleModel, VehiclePhase } from "./types";
+import { slugify } from "@/lib/slug";
 import { PER_PAGE } from "./links";
+import { phasesForYear } from "./phases";
 
 const CONDITIONS: PartCondition[] = ["GOOD", "CORRECT", "BAD"];
 
@@ -54,6 +57,10 @@ function toPart(r: PartRow): Part {
     brandId: r.brandId,
     brandName: r.brandName,
     modelName: r.modelName,
+    phaseName: r.phaseName,
+    yearFrom: r.yearFrom,
+    yearTo: r.yearTo,
+    doors: r.doors,
     version: r.version,
     vehicleId: r.vehicleId,
     priceHt: Number(r.priceHt),
@@ -196,6 +203,108 @@ export async function getCategoryCounts(): Promise<Record<number, number>> {
 
 const EMPTY = (page: number, perPage: number): Paginated<Part> => ({ items: [], total: 0, page, perPage, pages: 1 });
 
+/** Gammes (« Clio 4 ») correspondant au slug, dans le groupe de la marque si elle est donnée. */
+async function rangeIds(brand: string | undefined, model: string): Promise<number[]> {
+  let brandIds: number[] | null = null;
+  if (brand) {
+    const g = (await brandGroups()).get(brand);
+    if (!g) return [];
+    brandIds = g.ids;
+  }
+  const db = await getDb();
+  const where = brandIds ? and(eq(ranges.slug, model), inArray(ranges.brandId, brandIds)) : eq(ranges.slug, model);
+  return (await db.select({ id: ranges.id }).from(ranges).where(where)).map((r) => r.id);
+}
+
+type PhaseWithIds = VehiclePhase & { ids: number[] };
+
+/**
+ * Phases en stock d'une gamme : modèles Opisto regroupés par nom. La période
+ * retenue est celle de la majorité des pièces (quelques véhicules sont
+ * rattachés à une version d'une autre phase dans Opisto) ; à défaut de
+ * dates, on prend les années des véhicules donneurs. Mis en cache le temps
+ * d'une requête.
+ */
+const phasesForRanges = cache(async (key: string): Promise<PhaseWithIds[]> => {
+  const ids = key.split(",").map(Number).filter(Boolean);
+  if (!ids.length) return [];
+  const db = await getDb();
+  const [rangeRow] = await db.select({ name: ranges.name }).from(ranges).where(inArray(ranges.id, ids)).limit(1);
+  const rows = await db
+    .select({
+      modelId: parts.modelId,
+      name: parts.phaseName,
+      from: parts.yearFrom,
+      to: parts.yearTo,
+      minYear: sql<number | null>`min(${parts.year})`,
+      maxYear: sql<number | null>`max(${parts.year})`,
+      n: count(),
+    })
+    .from(parts)
+    .where(and(LIVE, inArray(parts.rangeId, ids), sql`${parts.modelId} is not null and ${parts.phaseName} ~ '[[:alnum:]]'`))
+    .groupBy(parts.modelId, parts.phaseName, parts.yearFrom, parts.yearTo);
+
+  type Acc = PhaseWithIds & { spans: Map<string, number>; minYear: number | null; maxYear: number | null };
+  const prefix = normalize(rangeRow?.name ?? "") + " ";
+  const bySlug = new Map<string, Acc>();
+  for (const r of rows) {
+    const name = r.name!;
+    const slug = slugify(name);
+    let acc = bySlug.get(slug);
+    if (!acc) {
+      const short = normalize(name).startsWith(prefix) ? name.slice(prefix.length).trim() : "";
+      const label = short ? short.charAt(0).toUpperCase() + short.slice(1) : name;
+      acc = { slug, name, label, from: null, to: null, count: 0, ids: [], spans: new Map(), minYear: null, maxYear: null };
+      bySlug.set(slug, acc);
+    }
+    const n = Number(r.n);
+    acc.count += n;
+    if (!acc.ids.includes(r.modelId!)) acc.ids.push(r.modelId!);
+    if (r.from !== null) {
+      const span = `${r.from}-${r.to ?? ""}`;
+      acc.spans.set(span, (acc.spans.get(span) ?? 0) + n);
+    }
+    if (r.minYear !== null) acc.minYear = Math.min(acc.minYear ?? 9999, Number(r.minYear));
+    if (r.maxYear !== null) acc.maxYear = Math.max(acc.maxYear ?? 0, Number(r.maxYear));
+  }
+
+  const phases: PhaseWithIds[] = [];
+  for (const { spans, minYear, maxYear, ...p } of bySlug.values()) {
+    const best = [...spans].sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (best) {
+      const [from, to] = best.split("-");
+      p.from = Number(from);
+      p.to = to ? Number(to) : null;
+    } else {
+      p.from = minYear;
+      p.to = maxYear;
+    }
+    phases.push(p);
+  }
+  return phases.sort((a, b) => (a.from ?? 9999) - (b.from ?? 9999) || a.label.localeCompare(b.label, "fr"));
+});
+
+/** Phases disponibles pour un modèle (gamme) d'une marque. */
+export async function getPhases(brand: string | undefined, model: string): Promise<VehiclePhase[]> {
+  const ids = await rangeIds(brand, model);
+  const phases = await phasesForRanges(ids.sort((a, b) => a - b).join(","));
+  return phases.map((p) => ({ slug: p.slug, name: p.name, label: p.label, from: p.from, to: p.to, count: p.count }));
+}
+
+/** Nombres de portes présents dans les résultats (hors filtre portes). */
+export async function getDoorOptions(params: PartSearch): Promise<DoorOption[]> {
+  const conds = await buildConditions({ ...params, doors: undefined });
+  if (!conds) return [];
+  const db = await getDb();
+  const rows = await db
+    .select({ value: parts.doors, n: count() })
+    .from(parts)
+    .where(and(...conds, sql`${parts.doors} > 0`))
+    .groupBy(parts.doors)
+    .orderBy(asc(parts.doors));
+  return rows.map((r) => ({ value: Number(r.value), count: Number(r.n) }));
+}
+
 async function buildConditions(params: PartSearch): Promise<SQL[] | null> {
   const conds: SQL[] = [LIVE];
   if (params.category) {
@@ -203,20 +312,23 @@ async function buildConditions(params: PartSearch): Promise<SQL[] | null> {
     if (!cat) return null;
     conds.push(cat.parentId === null ? eq(parts.categoryId, cat.id) : eq(parts.subCategoryId, cat.id));
   }
-  let brandIds: number[] | null = null;
   if (params.brand) {
     const g = (await brandGroups()).get(params.brand);
     if (!g) return null;
-    brandIds = g.ids;
     conds.push(inArray(parts.brandId, g.ids));
   }
   if (params.model) {
-    const db = await getDb();
-    const where = brandIds ? and(eq(ranges.slug, params.model), inArray(ranges.brandId, brandIds)) : eq(ranges.slug, params.model);
-    const models = await db.select({ id: ranges.id }).from(ranges).where(where);
-    if (!models.length) return null;
-    conds.push(inArray(parts.rangeId, models.map((m) => m.id)));
+    const ids = await rangeIds(params.brand, params.model);
+    if (!ids.length) return null;
+    conds.push(inArray(parts.rangeId, ids));
+    if (params.phase || params.year) {
+      const phases = await phasesForRanges(ids.sort((a, b) => a - b).join(","));
+      const selected = params.phase ? phases.filter((p) => p.slug === params.phase) : phasesForYear(phases, params.year!);
+      if (!selected.length) return null;
+      conds.push(inArray(parts.modelId, selected.flatMap((p) => p.ids)));
+    }
   }
+  if (params.doors) conds.push(eq(parts.doors, params.doors));
   if (params.vehicleId) conds.push(eq(parts.vehicleId, params.vehicleId));
   if (params.name) conds.push(sql`lower(${parts.name}) like ${`%${escapeLike(normalize(params.name))}%`}`);
   if (params.ref) {

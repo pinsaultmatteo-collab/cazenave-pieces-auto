@@ -103,6 +103,12 @@ export function mapVehicle(v: OpistoVehicle, casse: number, now: Date): NewVehic
   };
 }
 
+/** Année d'une date de commercialisation Opisto, si elle est plausible. */
+function saleYear(value: string | null | undefined): number | null {
+  const y = fromOpistoDate(value ?? null)?.getFullYear();
+  return y && y >= 1950 && y <= new Date().getFullYear() + 1 ? y : null;
+}
+
 export function mapPart(p: OpistoPart, casse: number, family: { id: number; name: string } | null, now: Date): NewPartRow {
   const v = p.Vehicle;
   const id = v?.Identification;
@@ -171,6 +177,10 @@ export function mapPart(p: OpistoPart, casse: number, family: { id: number; name
     modelId: id?.Model?.Id ?? null,
     brandName: brand,
     modelName: range,
+    phaseName: /[a-z0-9]/i.test(id?.Model?.Name ?? "") ? titleCase(cleanLabel(id?.Model?.Name)) : null,
+    yearFrom: saleYear(id?.BeginDate),
+    yearTo: saleYear(id?.EndDate),
+    doors: id?.DoorNumber && id.DoorNumber > 0 ? id.DoorNumber : null,
     version: shortVersion(id),
     energy: cleanLabel(id?.Energy?.Name),
     gearbox: cleanLabel(id?.GearboxType?.Name),

@@ -11,6 +11,7 @@ import { ProductGallery } from "@/components/catalog/ProductGallery";
 import { AddToCartButton } from "@/components/catalog/AddToCartButton";
 import { PartCard } from "@/components/catalog/PartCard";
 import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
+import { phasePeriod } from "@/lib/catalog/phases";
 
 /** Rendu mis en cache et rafraîchi au plus toutes les 10 minutes (stock synchronisé depuis Opisto). */
 export const revalidate = 600;
@@ -70,6 +71,9 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
     { label: "Référence constructeur", value: part.manufacturerReference },
     { label: "Référence équipementier", value: part.adaptableReference },
     { label: "Véhicule d'origine", value: vehicle ? vehicleLabel(vehicle) : vehicleName || null },
+    { label: "Phase", value: part.phaseName ?? null },
+    { label: "Années de production", value: part.yearFrom ? phasePeriod({ from: part.yearFrom, to: part.yearTo ?? null }) : null },
+    { label: "Nombre de portes", value: part.doors ? `${part.doors} portes` : null },
     { label: "Mise en circulation", value: part.firstRegistration ? formatDate(part.firstRegistration) : null },
     { label: "Kilométrage du véhicule", value: part.mileage !== null ? formatMileage(part.mileage) : null },
     { label: "Couleur", value: part.color },

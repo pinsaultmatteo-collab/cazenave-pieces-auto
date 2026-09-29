@@ -41,6 +41,9 @@ export type OpistoIdentification = {
   Power?: number;
   Displacement?: number;
   DoorNumber?: number;
+  /** Début et fin de commercialisation de la version (forme .NET /Date(…)/) */
+  BeginDate?: string | null;
+  EndDate?: string | null;
   KType?: number;
   CNIT?: string;
   CatId?: number;

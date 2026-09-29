@@ -29,6 +29,13 @@
       "when": 1790686384860,
       "tag": "0003_vehicle-sale-price",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790687639988,
+      "tag": "0004_part-phase-doors",
+      "breakpoints": true
     }
   ]
 }

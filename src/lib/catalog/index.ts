@@ -11,7 +11,7 @@
 import * as db from "./db";
 import * as demo from "./demo";
 
-export type { Brand, Category, Paginated, Part, PartSearch, PartSort, Vehicle, VehicleModel } from "./types";
+export type { Brand, Category, DoorOption, Paginated, Part, PartSearch, PartSort, Vehicle, VehicleModel, VehiclePhase } from "./types";
 export { PER_PAGE, partHref, vehicleHref, vehicleLabel } from "./links";
 
 export type CatalogSource = "db" | "demo";
@@ -35,6 +35,8 @@ export const getCategoryBySlug: typeof db.getCategoryBySlug = (...a) => impl().g
 export const getBrands: typeof db.getBrands = (...a) => impl().getBrands(...a);
 export const getBrandBySlug: typeof db.getBrandBySlug = (...a) => impl().getBrandBySlug(...a);
 export const getModels: typeof db.getModels = (...a) => impl().getModels(...a);
+export const getPhases: typeof db.getPhases = (...a) => impl().getPhases(...a);
+export const getDoorOptions: typeof db.getDoorOptions = (...a) => impl().getDoorOptions(...a);
 export const getBrandCounts: typeof db.getBrandCounts = (...a) => impl().getBrandCounts(...a);
 export const getCategoryCounts: typeof db.getCategoryCounts = (...a) => impl().getCategoryCounts(...a);
 export const searchParts: typeof db.searchParts = (...a) => impl().searchParts(...a);

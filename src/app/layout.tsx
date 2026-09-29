@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
+import { Webchat } from "@/components/site/Webchat";
 import { site } from "@/lib/site";
 
 const montserrat = Montserrat({
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main className="flex-1">{children}</main>
           <Footer />
         </SmoothScroll>
+        <Webchat />
       </body>
     </html>
   );
