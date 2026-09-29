@@ -1,6 +1,18 @@
 @import "tailwindcss";
 
 /*
+ * Sur mobile, une grille sans colonnes déclarées crée une colonne « auto »
+ * qui s'élargit au mot le plus long (identifiant de réseau social, titre…)
+ * et déborde de l'écran. Colonne unique contrainte par défaut ; les classes
+ * grid-cols-* (y compris lg:…) la remplacent.
+ */
+@layer base {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/*
  * Charte Cazenave Pièces Auto (reprise du site actuel) :
  * ardoise #2b3d47, vert olive #98ae07, Montserrat pour le texte.
  * Titres en Barlow Condensed (esprit automobile), fonds nuit pour les

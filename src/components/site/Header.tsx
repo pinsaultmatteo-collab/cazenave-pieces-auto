@@ -15,11 +15,11 @@ export function Header() {
       <TopBar />
 
       {/* Barre principale */}
-      <div className="container-x flex items-center gap-3 py-3 lg:gap-8">
+      <div className="container-x flex items-center gap-2 py-3 min-[360px]:gap-3 lg:gap-8">
         <MobileNav />
 
         <Link href="/" className="shrink-0" aria-label="Accueil Cazenave Pièces Auto">
-          <Image src={logo} alt="Cazenave Pièces Auto" priority className="h-9 w-auto sm:h-10 lg:h-12" />
+          <Image src={logo} alt="Cazenave Pièces Auto" priority className="h-7 w-auto min-[360px]:h-9 sm:h-10 lg:h-12" />
         </Link>
 
         <SearchBox id="header-search" className="hidden flex-1 md:block" />

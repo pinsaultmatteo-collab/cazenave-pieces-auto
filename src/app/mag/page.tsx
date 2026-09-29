@@ -38,7 +38,7 @@ export default function MagPage() {
             href={`/mag/${first.slug}`}
             className="group grid overflow-hidden rounded-3xl border border-line bg-white shadow-lg shadow-ink/5 transition hover:shadow-xl lg:grid-cols-2"
           >
-            <div className="relative aspect-[16/10] lg:aspect-auto lg:min-h-[360px]">
+            <div className="relative h-56 sm:h-80 lg:h-auto lg:min-h-[360px]">
               {first.cover ? (
                 <Image src={first.cover} alt="" fill sizes="(min-width: 1024px) 50vw, 100vw" priority className="object-cover transition-transform duration-700 group-hover:scale-105" />
               ) : (

@@ -39,9 +39,9 @@ export const EV_EXPERTISE = [
 export function EvExpertiseGrid({ tone = "light", className = "" }: { tone?: "light" | "dark"; className?: string }) {
   const dark = tone === "dark";
   return (
-    <Stagger className={`grid gap-x-6 gap-y-5 sm:grid-cols-2 ${className}`} stagger={0.07}>
+    <Stagger className={`grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 ${className}`} stagger={0.07}>
       {EV_EXPERTISE.map(({ icon: Icon, title, text }) => (
-        <StaggerItem key={title} className="group flex items-start gap-3.5">
+        <StaggerItem key={title} className="group flex min-w-0 items-start gap-3.5">
           <span
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm transition duration-500 ease-out group-hover:-translate-y-0.5 group-hover:-rotate-6 group-hover:scale-110 ${
               dark ? "bg-brand/15 text-brand-400" : "bg-white text-brand-700 group-hover:bg-brand group-hover:text-ink-900"
@@ -49,7 +49,7 @@ export function EvExpertiseGrid({ tone = "light", className = "" }: { tone?: "li
           >
             <Icon size={22} />
           </span>
-          <span>
+          <span className="min-w-0">
             <span className={`block text-sm font-bold ${dark ? "text-white" : "text-ink"}`}>{title}</span>
             <span className={`mt-0.5 block text-[13px] leading-5 ${dark ? "text-white/70" : "text-steel"}`}>{text}</span>
           </span>
