@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { ClearCart } from "@/components/checkout/ClearCart";
-import { getOrderByRef, orderSummary } from "@/lib/orders/checkout";
+import { getOrderByRef, orderNumber, orderSummary } from "@/lib/orders/checkout";
 import { verifyOrderToken } from "@/lib/orders/refs";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/lib/site";
@@ -35,7 +35,7 @@ export default async function ConfirmationPage({ searchParams }: PageProps<"/com
   if (!orderRef) notFound();
   const order = await loadOrder(orderRef, sessionId, token);
   if (!order) notFound();
-  const summary = orderSummary(order);
+  const number = orderNumber(order);
 
   const paid = order.status === "paid" || order.status === "completed" || order.status === "opisto_failed";
   const ship = order.deliveryMode === "shipping";
@@ -53,14 +53,15 @@ export default async function ConfirmationPage({ searchParams }: PageProps<"/com
       <div className="container-x grid gap-8 py-10 lg:grid-cols-[1.2fr_0.8fr] lg:py-14">
         <div className="space-y-6">
           <div className={`rounded-3xl border p-6 ${paid ? "border-brand-200 bg-brand-50" : "border-amber-200 bg-amber-50"}`}>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-steel">Référence</p>
-            <p className="display-title mt-1 text-4xl text-ink">{summary.ref}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-steel">Numéro de commande</p>
+            <p className="display-title mt-1 text-4xl text-ink">{number}</p>
             {paid ? (
               <p className="mt-3 text-sm leading-6 text-ink">
                 Paiement reçu. Un e-mail de confirmation est envoyé à <strong>{order.email}</strong>.
                 {ship
                   ? " Nous préparons vos pièces : expédition sous 24 à 48 h ouvrées, numéro de suivi par e-mail."
-                  : " Vos pièces sont mises de côté au comptoir : présentez cette référence lors du retrait."}
+                  : " Vos pièces sont mises de côté au comptoir : présentez ce numéro lors du retrait."}
+                {" "}Conservez ce numéro : il permet de suivre la commande et figure sur votre facture.
               </p>
             ) : (
               <p className="mt-3 text-sm leading-6 text-ink">
@@ -106,7 +107,7 @@ export default async function ConfirmationPage({ searchParams }: PageProps<"/com
           <div className="rounded-3xl border border-line bg-white p-6">
             <h2 className="font-display text-2xl font-semibold uppercase text-ink">Une question ?</h2>
             <p className="mt-2 text-sm leading-6 text-steel">
-              Notre équipe est joignable du lundi au vendredi, en indiquant votre référence de commande.
+              Notre équipe est joignable du lundi au vendredi, en indiquant votre numéro de commande.
             </p>
             <a href={site.phoneHref} className="mt-3 inline-flex items-center gap-2 font-bold text-ink hover:text-brand-700">
               <PhoneIcon size={18} className="text-brand-700" /> {site.phone}
@@ -151,7 +152,7 @@ export default async function ConfirmationPage({ searchParams }: PageProps<"/com
           )}
           {paid && (
             <Link
-              href={`/suivi-commande?ref=${encodeURIComponent(summary.ref)}`}
+              href={`/suivi-commande?ref=${encodeURIComponent(number)}`}
               className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-ink px-6 py-3 text-sm font-bold text-white transition hover:bg-ink-700"
             >
               Suivre ma commande

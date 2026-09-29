@@ -8,7 +8,7 @@ import { OPISTO_PAYMENT_CB, type OpistoOrderAddress } from "@/lib/opisto/types";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/lib/site";
 import { ORDERS_TO, sendEmail } from "@/lib/email";
-import { getOrderByRef, updateOrder } from "./checkout";
+import { getOrderByRef, orderNumber, updateOrder } from "./checkout";
 
 /** Identifiant Opisto de la France (référentiel /geography/countries). */
 const COUNTRY_FR = 0;
@@ -54,6 +54,10 @@ export async function fulfillOrder(ref: string, payment: PaymentInfo): Promise<O
       }
       order = await updateOrder(order.id, { opistoOrderId: result.OrderId, opistoPaymentId: result.PaymentId ?? null });
       await reserveLocally(order.items.map((i) => i.id));
+      if (payment.provider === "stripe") {
+        const { labelStripePayment } = await import("@/lib/payment/stripe");
+        await labelStripePayment(payment.paymentIntentId, String(result.OrderId), order.ref);
+      }
     }
 
     if (order.opistoOrderId && order.opistoPaymentId) {
@@ -148,9 +152,10 @@ function itemLines(items: OrderItem[]) {
 
 export async function sendOrderEmails(order: OrderRow) {
   const ship = order.deliveryMode === "shipping";
+  const number = orderNumber(order);
   const addr = (a: OrderAddress) => `${a.firstname} ${a.lastname}${a.company ? ` (${a.company})` : ""}\n${a.street}${a.streetAdditional ? `\n${a.streetAdditional}` : ""}\n${a.postcode} ${a.city}\n${a.phone}`;
   const summary = [
-    `Commande ${order.ref}`,
+    `Commande n° ${number}`,
     "",
     itemLines(order.items),
     "",
@@ -166,26 +171,26 @@ export async function sendOrderEmails(order: OrderRow) {
       `Bonjour ${order.customer.firstname},`,
       "",
       "Merci pour votre commande, votre paiement a bien été reçu.",
-      ship ? "Nous préparons vos pièces : expédition sous 24 à 48 h ouvrées, vous recevrez le numéro de suivi par e-mail." : "Vos pièces sont mises de côté : présentez cette référence au comptoir pour les retirer.",
+      ship ? "Nous préparons vos pièces : expédition sous 24 à 48 h ouvrées, vous recevrez le numéro de suivi par e-mail." : "Vos pièces sont mises de côté : présentez ce numéro de commande au comptoir pour les retirer.",
       "",
       summary,
       "",
-      `Suivre votre commande : ${site.url}/suivi-commande?ref=${order.ref} (avec l'e-mail ${order.email}).`,
+      `Suivre votre commande : ${site.url}/suivi-commande?ref=${number} (avec l'e-mail ${order.email}).`,
       `Une question ? ${site.phone} ou par SMS au ${site.sms}.`,
       `${site.name}`,
     ].join("\n");
-    const sent = await sendEmail({ to: order.email, subject: `Votre commande ${order.ref} est confirmée`, text: customerText, replyTo: ORDERS_TO });
+    const sent = await sendEmail({ to: order.email, subject: `Votre commande n° ${number} est confirmée`, text: customerText, replyTo: ORDERS_TO });
     if (sent.delivered) await updateOrder(order.id, { customerEmailSentAt: new Date() });
   }
 
   const status =
     order.status === "completed"
-      ? `Enregistrée chez Opisto : commande n° ${order.opistoOrderId}, règlement n° ${order.opistoPaymentId}${order.opistoError ? `\nAttention : ${order.opistoError}` : ""}`
+      ? `Enregistrée chez Opisto : transaction n° ${order.opistoOrderId}, règlement n° ${order.opistoPaymentId}${order.opistoError ? `\nAttention : ${order.opistoError}` : ""}`
       : `NON ENREGISTRÉE CHEZ OPISTO, à saisir à la main.\nErreur : ${order.opistoError ?? "inconnue"}`;
   await sendEmail({
     to: ORDERS_TO,
-    subject: `${order.status === "completed" ? "Nouvelle commande" : "Commande payée à traiter"} ${order.ref} · ${formatPrice(Number(order.totalTtc))}`,
-    text: [status, "", `Client : ${order.customer.firstname} ${order.customer.lastname} · ${order.email} · ${order.customer.phone}`, order.note ? `Note du client : ${order.note}` : "", "", summary, "", `Paiement ${order.paymentProvider} : ${order.paymentIntentId ?? "-"}`].join("\n"),
+    subject: `${order.status === "completed" ? "Nouvelle commande" : "Commande payée à traiter"} n° ${number} · ${formatPrice(Number(order.totalTtc))}`,
+    text: [status, "", `Client : ${order.customer.firstname} ${order.customer.lastname} · ${order.email} · ${order.customer.phone}`, order.note ? `Note du client : ${order.note}` : "", "", summary, "", `Paiement ${order.paymentProvider} : ${order.paymentIntentId ?? "-"}`, `Référence interne du site : ${order.ref}`].join("\n"),
     replyTo: order.email,
   });
 }

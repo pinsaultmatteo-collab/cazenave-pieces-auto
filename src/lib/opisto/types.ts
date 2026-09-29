@@ -84,7 +84,7 @@ export type OpistoPhoto = {
   IsThumbnail?: boolean;
 };
 
-export type OpistoPrice = { OriginPrice: number; Quantity: number; VATRate: number };
+export type OpistoPrice = { OriginPrice: number; Quantity: number; VATRate: number; ReductionExcludingTaxes?: number };
 
 export type OpistoShipping = {
   ShippingId: number;
@@ -180,14 +180,23 @@ export type OpistoCreateOrderResult = {
   PartsWithError?: number[] | null;
 };
 
+/** Commande lue par GET /orders/{id} ; `Id` est le « Transaction N° » d'Opisto 360. */
 export type OpistoOrder = {
   Id: number;
+  Casse?: { Id: number };
+  Date?: string | null;
+  /** OrderStatus : 1 proforma, 3 commande, 4 devis, 5 facture */
   Status?: number;
   Total?: number;
   TotalExcludingTaxes?: number;
   TotalVAT?: number;
   PartsTotalWithReduction?: number;
+  PartsTotalIncludingTaxes?: number;
   WantSend?: boolean;
+  Client?: { Id?: number; Contact?: { Mail?: string | null } | null; Identity?: { Email?: string | null } | null } | null;
+  DeliveryAddress?: { Firstname?: string; Lastname?: string; PostCode?: string; City?: string } | null;
+  Parts?: OpistoPart[];
+  Payment?: { Amount?: number; Date?: string | null } | null;
   HasInvoice?: boolean;
   DeliveryInfos?: { DeliveryNumber?: string | null; Status?: number; Transporter?: string | null } | null;
   Shipping?: { CalculatedTotalCost?: number; DelayMin?: number; DelayMax?: number };

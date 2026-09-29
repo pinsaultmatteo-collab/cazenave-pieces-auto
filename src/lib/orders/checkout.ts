@@ -109,6 +109,13 @@ export async function getOrderByRef(ref: string): Promise<OrderRow | null> {
   return row ?? null;
 }
 
+/** Commande du site enregistrée chez Opisto sous ce numéro de transaction. */
+export async function getOrderByOpistoId(opistoOrderId: number): Promise<OrderRow | null> {
+  const db = await getDb();
+  const [row] = await db.select().from(orders).where(eq(orders.opistoOrderId, opistoOrderId)).limit(1);
+  return row ?? null;
+}
+
 export async function getOrderBySession(sessionId: string): Promise<OrderRow | null> {
   const db = await getDb();
   const [row] = await db.select().from(orders).where(eq(orders.paymentSessionId, sessionId)).limit(1);
@@ -126,6 +133,15 @@ export async function updateOrder(id: number, patch: Partial<NewOrderRow>): Prom
 }
 
 /** Champs d'affichage d'une commande (évite l'accès direct à `ref` dans les composants). */
+/**
+ * Numéro de commande communiqué au client : le numéro de transaction Opisto
+ * (celui d'Opisto 360 et de la facture) dès que la commande y est
+ * enregistrée ; à défaut, la référence interne du site (CZ-…).
+ */
+export function orderNumber(order: Pick<OrderRow, "ref" | "opistoOrderId">): string {
+  return order.opistoOrderId ? String(order.opistoOrderId) : order.ref;
+}
+
 export function orderSummary(order: OrderRow) {
   return { ref: order.ref, status: order.status, count: order.items.length, total: Number(order.totalTtc) };
 }

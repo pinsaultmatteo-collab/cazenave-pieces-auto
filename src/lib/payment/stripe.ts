@@ -57,6 +57,22 @@ export const provider: PaymentProvider = {
   },
 };
 
+/**
+ * Inscrit le numéro de transaction Opisto sur le paiement Stripe, pour
+ * rapprocher les deux dans le tableau de bord. Sans effet bloquant.
+ */
+export async function labelStripePayment(paymentIntentId: string, orderNumber: string, internalRef: string) {
+  if (!paymentIntentId.startsWith("pi_")) return;
+  try {
+    await stripeClient().paymentIntents.update(paymentIntentId, {
+      description: `Commande n° ${orderNumber}`,
+      metadata: { orderRef: internalRef, opistoOrderId: orderNumber },
+    });
+  } catch (err) {
+    console.warn(`[commande ${internalRef}] mise à jour du paiement Stripe impossible :`, err instanceof Error ? err.message : err);
+  }
+}
+
 /** Traite un événement Stripe (webhook) : paiement réussi ou session expirée. */
 export async function handleStripeEvent(event: Stripe.Event): Promise<{ handled: boolean; ref?: string }> {
   if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {

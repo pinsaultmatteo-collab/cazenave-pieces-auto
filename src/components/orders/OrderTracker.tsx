@@ -25,6 +25,7 @@ function steps(order: TrackedOrder) {
     preparing: "En préparation",
     ready: "Prête au retrait",
     shipped: "Expédiée",
+    returned: "Retournée",
     cancelled: "Annulée",
   };
   const current = order_.indexOf(order.stage);
@@ -34,9 +35,15 @@ function steps(order: TrackedOrder) {
 function headline(order: TrackedOrder) {
   switch (order.stage) {
     case "pending":
-      return { title: "Paiement non finalisé", text: "Nous n'avons pas reçu le paiement de cette commande. Vous pouvez la reprendre depuis votre panier, ou nous appeler." };
+      return order.source === "site"
+        ? { title: "Paiement non finalisé", text: "Nous n'avons pas reçu le paiement de cette commande. Vous pouvez la reprendre depuis votre panier, ou nous appeler." }
+        : { title: "En attente de règlement", text: "Cette commande n'est pas encore réglée. Appelez-nous pour la finaliser." };
     case "cancelled":
-      return { title: "Commande annulée", text: "Le paiement n'a pas abouti et la commande a été annulée. Aucun montant n'a été débité." };
+      return order.paidAt || order.source === "opisto"
+        ? { title: "Commande annulée", text: "Cette commande a été annulée. Appelez-nous pour toute question sur son remboursement." }
+        : { title: "Commande annulée", text: "Le paiement n'a pas abouti et la commande a été annulée. Aucun montant n'a été débité." };
+    case "returned":
+      return { title: "Commande retournée", text: "Nous avons enregistré le retour de cette commande. Appelez-nous pour toute question." };
     case "paid":
       return { title: "Paiement confirmé", text: "Votre paiement est bien reçu, notre équipe enregistre la commande." };
     case "preparing":
@@ -45,13 +52,13 @@ function headline(order: TrackedOrder) {
         text: `Nous préparons et emballons vos pièces. Expédition sous ${order.delay ? `${order.delay.min} à ${order.delay.max}` : "1 à 3"} jours ouvrés, le numéro de suivi apparaîtra ici.`,
       };
     case "ready":
-      return { title: "Prête au retrait", text: "Vos pièces sont mises de côté au comptoir de Colomiers. Présentez votre référence de commande lors du retrait." };
+      return { title: "Prête au retrait", text: "Vos pièces sont mises de côté au comptoir de Colomiers. Présentez votre numéro de commande lors du retrait." };
     case "shipped":
       return { title: "Commande expédiée", text: "Vos pièces sont en route. Suivez le colis avec le numéro ci-dessous." };
   }
 }
 
-/** Formulaire de suivi (référence + e-mail) et affichage de l'état de la commande. */
+/** Formulaire de suivi (numéro de transaction + e-mail) et affichage de l'état de la commande. */
 export function OrderTracker({ initialRef = "" }: { initialRef?: string }) {
   const [ref, setRef] = useState(initialRef);
   const [email, setEmail] = useState("");
@@ -61,7 +68,7 @@ export function OrderTracker({ initialRef = "" }: { initialRef?: string }) {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ref.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())) {
-      setState({ status: "error", message: "Indiquez votre référence de commande et l'e-mail utilisé pour commander." });
+      setState({ status: "error", message: "Indiquez votre numéro de commande et l'e-mail utilisé pour commander." });
       return;
     }
     setState({ status: "loading" });
@@ -82,18 +89,20 @@ export function OrderTracker({ initialRef = "" }: { initialRef?: string }) {
       <div className="rounded-3xl border border-line bg-white p-6 shadow-lg shadow-ink/5 sm:p-8 lg:sticky lg:top-48">
         <p className="font-display text-2xl font-semibold uppercase text-ink">Retrouver ma commande</p>
         <p className="mt-2 text-sm leading-6 text-steel">
-          La référence (CZ-…) figure sur la page de confirmation et dans l&apos;e-mail envoyé après votre paiement.
+          Le numéro de commande (numéro de transaction) figure sur la page de confirmation, dans l&apos;e-mail envoyé après votre paiement et
+          sur votre facture.
         </p>
         <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
           <div>
             <label htmlFor="track-ref" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-steel">
-              Référence de commande
+              Numéro de commande
             </label>
             <input
               id="track-ref"
               value={ref}
               onChange={(e) => setRef(e.target.value.toUpperCase())}
-              placeholder="CZ-XXXXXXXX"
+              placeholder="Ex. 32098516"
+              inputMode="numeric"
               autoCapitalize="characters"
               autoComplete="off"
               className={`${inputBase} font-display text-lg tracking-[0.15em]`}
@@ -121,7 +130,8 @@ export function OrderTracker({ initialRef = "" }: { initialRef?: string }) {
           </button>
         </form>
         <p className="mt-5 border-t border-line pt-5 text-xs leading-5 text-steel">
-          Commande passée par téléphone ou au comptoir ? Appelez-nous au{" "}
+          Commande passée au comptoir, par téléphone ou sur une plateforme : le numéro de transaction de votre facture fonctionne aussi. Une
+          question ? Appelez-nous au{" "}
           <a href={site.phoneHref} className="font-bold text-ink">
             {site.phone}
           </a>
@@ -141,7 +151,8 @@ export function OrderTracker({ initialRef = "" }: { initialRef?: string }) {
             </span>
             <p className="mt-4 font-display text-2xl font-semibold uppercase text-ink">Où en est ma commande ?</p>
             <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-steel">
-              Saisissez votre référence et votre e-mail : vous verrez l&apos;état de la commande, le numéro de suivi du colis et votre facture dès qu&apos;elle est disponible.
+              Saisissez votre numéro de commande et votre e-mail : vous verrez l&apos;état de la commande, le numéro de suivi du colis et votre
+              facture dès qu&apos;elle est disponible.
             </p>
           </motion.div>
         )}
@@ -154,14 +165,14 @@ function OrderView({ order }: { order: TrackedOrder }) {
   const ship = order.deliveryMode === "shipping";
   const head = headline(order);
   const list = steps(order);
-  const inactive = order.stage === "pending" || order.stage === "cancelled";
+  const inactive = order.stage === "pending" || order.stage === "cancelled" || order.stage === "returned";
 
   return (
     <>
       <div className="rounded-3xl border border-line bg-white p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-steel">Commande {order.ref}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-steel">Commande n° {order.ref}</p>
             <p className="display-title mt-2 text-3xl text-ink sm:text-4xl">{head.title}</p>
           </div>
           <p className="rounded-full bg-mist px-3 py-1.5 text-xs font-semibold text-steel">Passée le {dateFr(order.createdAt)}</p>
@@ -198,7 +209,7 @@ function OrderView({ order }: { order: TrackedOrder }) {
           </ol>
         )}
 
-        {order.stage === "pending" && (
+        {order.stage === "pending" && order.source === "site" && (
           <Link href="/panier" className="mt-6 inline-flex rounded-full bg-brand px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400">
             Reprendre ma commande
           </Link>
@@ -255,7 +266,7 @@ function OrderView({ order }: { order: TrackedOrder }) {
             </a>
           ) : (
             <p className="mt-3 text-sm leading-6 text-steel">
-              {order.stage === "pending" || order.stage === "cancelled" ? "Aucune facture pour cette commande." : "Votre facture sera disponible ici après la préparation de la commande."}
+              {inactive ? "Aucune facture disponible pour cette commande." : "Votre facture sera disponible ici après la préparation de la commande."}
             </p>
           )}
           <a href={site.phoneHref} className="mt-4 flex items-center gap-2 text-sm font-semibold text-ink hover:text-brand-700">
