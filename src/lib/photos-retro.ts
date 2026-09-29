@@ -24,7 +24,7 @@ import p2010 from "@/assets/photos/timeline/2010.png";
 import p2013 from "@/assets/photos/frise/2013-naudinats.png";
 import p2016 from "@/assets/photos/timeline/2016.png";
 import p2021 from "@/assets/photos/frise/2021-carte-verte.png";
-import p2023 from "@/assets/photos/timeline/2023.png";
+import p2023 from "@/assets/photos/frise/2023-sophie-cazenave.jpg";
 
 export const retro = {
   p1975,
