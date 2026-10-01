@@ -329,6 +329,7 @@ async function buildConditions(params: PartSearch): Promise<SQL[] | null> {
     }
   }
   if (params.doors) conds.push(eq(parts.doors, params.doors));
+  if (params.ktype) conds.push(eq(parts.ktype, params.ktype));
   if (params.vehicleId) conds.push(eq(parts.vehicleId, params.vehicleId));
   if (params.name) conds.push(sql`lower(${parts.name}) like ${`%${escapeLike(normalize(params.name))}%`}`);
   if (params.ref) {

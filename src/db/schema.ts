@@ -191,6 +191,7 @@ export const parts = pgTable(
     index("parts_available_idx").on(t.available, t.inStock, t.forSale, t.blocked, t.deletedAt),
     index("parts_ref_idx").on(t.manufacturerReference),
     index("parts_model_idx").on(t.modelId),
+    index("parts_ktype_idx").on(t.ktype),
   ],
 );
 
@@ -286,6 +287,17 @@ export const syncRuns = pgTable("sync_runs", {
   status: text("status").notNull().default("running"),
   error: text("error"),
   details: jsonb("details").$type<Record<string, unknown>>(),
+});
+
+/**
+ * Recherches par plaque déjà faites (API payante à la recherche) : une plaque
+ * n'est interrogée qu'une fois. `found` faux : plaque inconnue du service.
+ */
+export const plateLookups = pgTable("plate_lookups", {
+  plate: text("plate").primaryKey(),
+  found: boolean("found").notNull(),
+  data: jsonb("data").$type<Record<string, unknown>>(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 /** Jeton Opisto partagé entre les fonctions serveur. */

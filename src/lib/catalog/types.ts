@@ -155,6 +155,8 @@ export type PartSearch = {
   phase?: string;
   /** Nombre de portes (carrosserie extérieure) */
   doors?: number;
+  /** Code véhicule TecDoc (KType) : pièces issues d'une version identique */
+  ktype?: number;
   vehicleId?: number;
   /** Nom de pièce contenant ce texte (ex. « batterie de traction ») */
   name?: string;

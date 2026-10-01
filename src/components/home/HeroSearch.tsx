@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { SearchIcon } from "@/components/icons";
+import { normalizePlate } from "@/lib/plate-format";
 
 type Tab = "immat" | "modele" | "reference";
 type Option = { slug: string; name: string; count?: number };
@@ -51,6 +52,21 @@ export function HeroSearch() {
   const [model, setModel] = useState("");
   const { brands, models } = useVehicleOptions(tab === "modele", brand);
   const router = useRouter();
+  const [plateError, setPlateError] = useState<string | null>(null);
+  const [searching, startSearch] = useTransition();
+
+  // Plaque : contrôle du format, puis page de résultats (identification côté serveur).
+  const searchPlate = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const raw = String(new FormData(e.currentTarget).get("immat") ?? "");
+    const plate = normalizePlate(raw);
+    if (!plate) {
+      setPlateError("Format attendu : AB-123-CD (ou 123 ABC 31 pour les anciennes plaques).");
+      return;
+    }
+    setPlateError(null);
+    startSearch(() => router.push(`/recherche?immat=${encodeURIComponent(plate)}`));
+  };
 
   // Catalogue filtré sur le véhicule, sans paramètres vides dans l'adresse.
   const searchVehicle = (e: React.FormEvent) => {
@@ -89,7 +105,7 @@ export function HeroSearch() {
       </h2>
 
       {tab === "immat" && (
-        <form action="/recherche" method="get" className="mt-4">
+        <form action="/recherche" method="get" onSubmit={searchPlate} className="mt-4" noValidate>
           <label htmlFor="immat" className="text-xs font-bold uppercase tracking-wide text-steel">
             Saisissez votre plaque d&apos;immatriculation
           </label>
@@ -105,22 +121,29 @@ export function HeroSearch() {
                 inputMode="text"
                 autoComplete="off"
                 placeholder="AB-123-CD"
-                pattern="[A-Za-z]{2}[- ]?[0-9]{3}[- ]?[A-Za-z]{2}"
-                title="Format attendu : AB-123-CD"
+                maxLength={12}
+                aria-invalid={plateError ? true : undefined}
+                aria-describedby={plateError ? "immat-error" : undefined}
+                onChange={() => plateError && setPlateError(null)}
                 className="w-full px-4 py-3 text-center text-xl font-extrabold uppercase tracking-[0.2em] text-ink outline-none placeholder:text-ink/30"
               />
             </div>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-6 py-3 text-sm font-bold uppercase text-ink-900 transition hover:bg-brand-600"
+              disabled={searching}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-6 py-3 text-sm font-bold uppercase text-ink-900 transition hover:bg-brand-600 disabled:opacity-70"
             >
               <SearchIcon size={18} />
-              Rechercher
+              {searching ? "Identification…" : "Rechercher"}
             </button>
           </div>
-          <p className="mt-3 text-xs text-steel">
-            Nous identifions votre véhicule pour n&apos;afficher que les pièces compatibles.
-          </p>
+          {plateError ? (
+            <p id="immat-error" role="alert" className="mt-3 text-xs font-semibold text-red-600">
+              {plateError}
+            </p>
+          ) : (
+            <p className="mt-3 text-xs text-steel">Nous identifions votre véhicule pour n&apos;afficher que les pièces compatibles.</p>
+          )}
         </form>
       )}
 
