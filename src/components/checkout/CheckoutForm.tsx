@@ -6,6 +6,9 @@ import Link from "next/link";
 import { getCart, getDeliveryMode, setDeliveryMode as saveDeliveryMode, subscribeCart, type DeliveryMode } from "@/lib/cart";
 import type { Part } from "@/lib/catalog/types";
 import { formatPrice } from "@/lib/format";
+import { proPrice } from "@/lib/account/pricing";
+import { useAccount, useDiscountRate } from "@/lib/account/client";
+import { Price } from "@/components/catalog/Price";
 import { site } from "@/lib/site";
 import { checkoutSchema, type CheckoutInput } from "@/lib/orders/schema";
 import { CheckIcon, LockIcon, PinIcon, TruckIcon } from "@/components/icons";
@@ -99,7 +102,10 @@ export function CheckoutForm({ cancelled }: { cancelled?: string }) {
   }, [ids, idsKey]);
   const parts = useMemo<Part[] | null>(() => (ids.length === 0 ? [] : fetched && fetched.key === idsKey ? fetched.parts : null), [ids, fetched, idsKey]);
 
-  const [email, setEmail] = useState("");
+  const [typedEmail, setTypedEmail] = useState<string | null>(null);
+  // Client connecté : e-mail du compte proposé par défaut
+  const { account } = useAccount();
+  const email = typedEmail ?? account?.email ?? "";
   const [billing, setBilling] = useState<Address>(EMPTY_ADDRESS);
   const [delivery, setDelivery] = useState<Address>(EMPTY_ADDRESS);
   const [shipToBilling, setShipToBilling] = useState(true);
@@ -119,7 +125,9 @@ export function CheckoutForm({ cancelled }: { cancelled?: string }) {
   // Mode effectif : la livraison n'est proposée que si toutes les pièces s'expédient.
   const mode: "pickup" | "shipping" = canShip ? deliveryMode : "pickup";
 
-  const subtotal = (parts ?? []).reduce((s, p) => s + p.priceTtc, 0);
+  const rate = useDiscountRate();
+  const listTotal = (parts ?? []).reduce((s, p) => s + p.priceTtc, 0);
+  const subtotal = (parts ?? []).reduce((s, p) => s + proPrice(p.priceTtc, rate), 0);
   const shipping = mode === "shipping" ? (parts ?? []).reduce((s, p) => s + (p.shippingCost ?? 0), 0) : 0;
   const total = subtotal + shipping;
 
@@ -189,7 +197,7 @@ export function CheckoutForm({ cancelled }: { cancelled?: string }) {
           <h2 className="font-display text-2xl font-semibold uppercase text-ink">1. Vos coordonnées</h2>
           <div className="mt-5 grid gap-4">
             <Field label="Adresse e-mail" name="email" error={errors.email} hint="Confirmation et suivi de commande">
-              <input id="email" type="email" autoComplete="email" className={field} value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!!errors.email} />
+              <input id="email" type="email" autoComplete="email" className={field} value={email} onChange={(e) => setTypedEmail(e.target.value)} aria-invalid={!!errors.email} />
             </Field>
             <AddressFields prefix="billing" value={billing} onChange={setBilling} errors={errors} />
           </div>
@@ -299,15 +307,21 @@ export function CheckoutForm({ cancelled }: { cancelled?: string }) {
                   {p.manufacturerReference ? ` · Réf. ${p.manufacturerReference}` : ""}
                 </span>
               </span>
-              <span className="text-sm font-bold text-ink">{formatPrice(p.priceTtc)}</span>
+              <Price ttc={p.priceTtc} compact className="text-sm font-bold text-ink" />
             </li>
           ))}
         </ul>
         <dl className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
           <div className="flex justify-between">
             <dt className="text-steel">Pièces ({parts.length})</dt>
-            <dd className="font-semibold text-ink">{formatPrice(subtotal)}</dd>
+            <dd className="font-semibold text-ink">{formatPrice(listTotal)}</dd>
           </div>
+          {rate > 0 && (
+            <div className="flex justify-between text-brand-700">
+              <dt className="font-semibold">Remise professionnelle (-{Math.round(rate * 100)} %)</dt>
+              <dd className="font-semibold">-{formatPrice(listTotal - subtotal)}</dd>
+            </div>
+          )}
           <div className="flex justify-between">
             <dt className="text-steel">{mode === "shipping" ? "Livraison" : "Retrait au comptoir"}</dt>
             <dd className="font-semibold text-ink">{mode === "shipping" ? formatPrice(shipping) : "Gratuit"}</dd>

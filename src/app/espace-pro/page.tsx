@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/site/PageHero";
 import { ContactForm } from "@/components/forms/ContactForm";
+import { ProAccess } from "@/components/account/ProAccess";
+import { PRO_DISCOUNT_RATE } from "@/lib/account/accounts";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
@@ -17,11 +19,11 @@ export const metadata: Metadata = {
 
 const BENEFITS = [
   { title: "Un interlocuteur dédié", text: "Un conseiller qui connaît votre activité, joignable au comptoir, par téléphone ou par SMS." },
-  { title: "Conditions professionnelles", text: "Tarification adaptée à votre volume et facturation avec TVA récupérable." },
+  { title: "Tarifs professionnels", text: `-${Math.round(PRO_DISCOUNT_RATE * 100)} % sur toutes les pièces du site, affichés dès la connexion, et facturation avec TVA récupérable.` },
   { title: "Disponibilité immédiate", text: "Retrait au comptoir de Colomiers le jour même pour les pièces en stock, expédition sous 24/48h sinon." },
   { title: "Pièces tracées et garanties", text: "Chaque pièce est rattachée à son véhicule d'origine, testée et garantie 12 mois." },
   { title: "Reprise de véhicules", text: "Enlèvement de vos VHU, épaves et véhicules de fourrière, avec les certificats de destruction." },
-  { title: "Bientôt : commande en ligne pro", text: "Connexion à votre compte, historique des commandes et conditions appliquées automatiquement." },
+  { title: "Commande en ligne pro", text: "Connexion par e-mail, sans mot de passe : vos tarifs appliqués automatiquement et l'historique de vos commandes." },
 ];
 
 const AUDIENCES = ["Garages et ateliers", "Carrossiers", "Concessionnaires", "Assureurs et experts", "Fourrières", "Loueurs et flottes"];
@@ -36,7 +38,7 @@ export default function ProPage() {
             Professionnel de <span className="text-brand-400">l&apos;automobile</span> ?
           </>
         }
-        text="Depuis 1974, les garages, carrossiers et assureurs de la région toulousaine s'appuient sur notre stock et notre comptoir. Créez votre compte professionnel."
+        text="Depuis 1974, les garages, carrossiers et assureurs de la région toulousaine s'appuient sur notre stock et notre comptoir. Connectez-vous pour voir vos tarifs professionnels, ou demandez l'ouverture de votre compte pro."
         image={photos.counter}
         imageAlt="Comptoir professionnel Cazenave Pièces Auto"
         crumbs={[{ label: "Espace pro" }]}
@@ -49,6 +51,13 @@ export default function ProPage() {
           ))}
         </ul>
       </PageHero>
+
+      {/* Connexion pro (ou état du compte connecté) */}
+      <section id="connexion" className="container-x scroll-mt-40 pt-12 lg:pt-16">
+        <div className="mx-auto max-w-2xl">
+          <ProAccess discountPercent={Math.round(PRO_DISCOUNT_RATE * 100)} />
+        </div>
+      </section>
 
       <section className="container-x py-16 lg:py-20">
         <Reveal>
@@ -67,14 +76,14 @@ export default function ProPage() {
         </Stagger>
       </section>
 
-      <section className="bg-mist">
+      <section id="demande" className="scroll-mt-40 bg-mist">
         <div className="container-x grid gap-10 py-16 lg:grid-cols-[1fr_1fr] lg:py-20">
           <Reveal>
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">Ouvrir un compte pro</p>
             <h2 className="display-title mt-3 text-4xl text-ink">Parlons de votre activité</h2>
             <p className="mt-4 leading-7 text-steel">
-              Indiquez-nous votre activité, votre volume et vos besoins. Nous vous rappelons pour ouvrir votre compte et
-              convenir de vos conditions.
+              Indiquez-nous votre activité, votre volume et vos besoins. Nous vous rappelons pour ouvrir votre compte
+              professionnel : vous pourrez ensuite vous connecter avec la même adresse e-mail pour voir vos tarifs.
             </p>
             <a href={site.phoneHref} className="mt-6 inline-flex items-center gap-2 rounded-full border border-line bg-white px-6 py-3 text-sm font-bold text-ink transition hover:border-brand">
               <PhoneIcon size={18} /> {site.phone}

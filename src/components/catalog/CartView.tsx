@@ -7,6 +7,9 @@ import { getCart, getDeliveryMode, removeFromCart, setDeliveryMode, subscribeCar
 import { partHref } from "@/lib/catalog/links";
 import type { Part } from "@/lib/catalog/types";
 import { formatPrice } from "@/lib/format";
+import { proPrice } from "@/lib/account/pricing";
+import { useDiscountRate } from "@/lib/account/client";
+import { Price } from "./Price";
 import { site } from "@/lib/site";
 import { CloseIcon, LockIcon, PinIcon, TruckIcon } from "@/components/icons";
 
@@ -15,6 +18,7 @@ type State = { loading: boolean; parts: Part[] };
 /** Contenu du panier (identifiants en local, détails via l'API). */
 export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }) {
   const [state, setState] = useState<State>({ loading: true, parts: [] });
+  const rate = useDiscountRate();
   // Retrait au comptoir par défaut ; le récapitulatif ne s'affiche qu'après le chargement, côté navigateur.
   const [mode, setMode] = useState<DeliveryMode>(() => (typeof window === "undefined" ? "pickup" : getDeliveryMode()));
   const choose = (m: DeliveryMode) => {
@@ -63,7 +67,8 @@ export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }
     );
   }
 
-  const subtotal = state.parts.reduce((s, p) => s + p.priceTtc, 0);
+  const listTotal = state.parts.reduce((s, p) => s + p.priceTtc, 0);
+  const subtotal = state.parts.reduce((s, p) => s + proPrice(p.priceTtc, rate), 0);
   const shipping = state.parts.reduce((s, p) => s + (p.shippingCost ?? 0), 0);
   const canShip = state.parts.every((p) => p.shippingAvailable);
   const ship = canShip && mode === "shipping";
@@ -91,7 +96,7 @@ export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }
               </p>
             </div>
             <div className="flex flex-col items-end justify-between">
-              <p className="display-title text-2xl text-ink">{formatPrice(p.priceTtc)}</p>
+              <Price ttc={p.priceTtc} className="display-title text-2xl text-ink" />
               <button type="button" onClick={() => removeFromCart(p.id)} className="flex items-center gap-1 text-xs font-semibold text-steel hover:text-red-600" aria-label={`Retirer ${p.name} du panier`}>
                 <CloseIcon size={14} /> Retirer
               </button>
@@ -141,8 +146,14 @@ export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between">
             <dt className="text-steel">Pièces ({state.parts.length})</dt>
-            <dd className="font-semibold text-ink">{formatPrice(subtotal)}</dd>
+            <dd className="font-semibold text-ink">{formatPrice(listTotal)}</dd>
           </div>
+          {rate > 0 && (
+            <div className="flex justify-between text-brand-700">
+              <dt className="font-semibold">Remise professionnelle (-{Math.round(rate * 100)} %)</dt>
+              <dd className="font-semibold">-{formatPrice(listTotal - subtotal)}</dd>
+            </div>
+          )}
           <div className="flex justify-between">
             <dt className="text-steel">{ship ? "Livraison" : "Retrait au comptoir"}</dt>
             <dd className="font-semibold text-ink">{ship ? formatPrice(shipping) : "Gratuit"}</dd>

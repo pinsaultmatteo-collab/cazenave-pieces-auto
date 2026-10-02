@@ -49,6 +49,14 @@ Le site tourne sur http://localhost:3000.
   total Opisto, e-mails client et atelier (`ORDERS_TO_EMAIL`). En cas d'échec Opisto, la commande passe en
   `opisto_failed` et l'atelier reçoit un e-mail pour la saisir à la main. `ORDERS_DRY_RUN=1` évite les appels Opisto.
 
+## Comptes clients et tarifs pro
+
+- Connexion sans mot de passe : l'e-mail reçoit un code à 6 chiffres (`/mon-compte`, `/espace-pro#connexion`). Nécessite `RESEND_API_KEY` en production ; en local, le code s'affiche à l'écran.
+- Le statut professionnel vient d'Opisto (`Client.IsProfessional`, recherche par e-mail), relu à chaque connexion et au plus toutes les 6 heures.
+- Remise pro : `PRO_DISCOUNT_PERCENT` (20 par défaut). Affichée côté navigateur (prix public barré), appliquée côté serveur à la commande et transmise à Opisto (`Discount` en euros TTC par pièce).
+- Session : cookie signé `cz_session` (30 jours). Clé `SESSION_SECRET` conseillée, sinon `ORDERS_TOKEN_SECRET` ou `SYNC_SECRET`.
+- « Mon compte » liste les commandes payées sur le site (e-mail de commande ou compte connecté). L'API Opisto ne permet pas de lister les achats faits au comptoir : ils se suivent avec leur numéro de transaction.
+
 ## Organisation
 
 - `src/app` — pages et routes (App Router)

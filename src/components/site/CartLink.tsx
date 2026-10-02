@@ -9,6 +9,9 @@ import { CART_OPEN_EVENT, getCart, removeFromCart, subscribeCart } from "@/lib/c
 import { partHref } from "@/lib/catalog/links";
 import type { Part } from "@/lib/catalog/types";
 import { formatPrice } from "@/lib/format";
+import { proPrice } from "@/lib/account/pricing";
+import { useDiscountRate } from "@/lib/account/client";
+import { Price } from "@/components/catalog/Price";
 import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 import { site } from "@/lib/site";
 import { CartIcon, CheckIcon, CloseIcon, LockIcon, TruckIcon } from "@/components/icons";
@@ -129,7 +132,8 @@ function CartDrawer({ open, ids, onClose, paymentEnabled }: { open: boolean; ids
 
   const loading = ids.length > 0 && (!fetched || fetched.key !== idsKey);
   const parts = !ids.length ? [] : fetched && fetched.key === idsKey ? fetched.parts : [];
-  const subtotal = parts.reduce((s, p) => s + p.priceTtc, 0);
+  const rate = useDiscountRate();
+  const subtotal = parts.reduce((s, p) => s + proPrice(p.priceTtc, rate), 0);
   const allShip = parts.length > 0 && parts.every((p) => p.shippingAvailable);
   const shipping = parts.reduce((s, p) => s + (p.shippingCost ?? 0), 0);
 
@@ -240,7 +244,7 @@ function CartDrawer({ open, ids, onClose, paymentEnabled }: { open: boolean; ids
                             <CloseIcon size={12} /> Retirer
                           </button>
                         </div>
-                        <p className="font-display text-xl font-semibold text-ink">{formatPrice(p.priceTtc)}</p>
+                        <Price ttc={p.priceTtc} compact className="font-display text-xl font-semibold text-ink" />
                       </motion.li>
                     ))}
                   </AnimatePresence>

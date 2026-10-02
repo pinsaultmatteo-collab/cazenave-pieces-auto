@@ -138,13 +138,23 @@ function buildOrderDto(order: OrderRow, clientId: number) {
     ClientId: clientId,
     BillingAddress: toOpistoAddress(order.billing, order.email),
     DeliveryAddress: ship && order.delivery ? toOpistoAddress(order.delivery, order.email) : undefined,
-    Parts: order.items.map((i: OrderItem) => ({ Id: i.id, ShippingId: ship ? (i.shippingId ?? undefined) : undefined, Discount: 0 })),
+    // Discount : montant TTC de la réduction sur la pièce (remise professionnelle)
+    Parts: order.items.map((i: OrderItem) => ({
+      Id: i.id,
+      ShippingId: ship ? (i.shippingId ?? undefined) : undefined,
+      Discount: i.listPriceTtc ? Math.round((i.listPriceTtc - i.priceTtc) * 100) / 100 : 0,
+    })),
     ToSend: ship,
     IsFreeShipping: false,
   };
 }
 
 /* ---------- e-mails ---------- */
+
+/** Montant total de la remise professionnelle sur la commande. */
+export function discountTotal(order: Pick<OrderRow, "items">): number {
+  return Math.round(order.items.reduce((s, i) => s + (i.listPriceTtc ? i.listPriceTtc - i.priceTtc : 0), 0) * 100) / 100;
+}
 
 function itemLines(items: OrderItem[]) {
   return items.map((i) => `- ${i.name} ${[i.brandName, i.modelName].filter(Boolean).join(" ")}${i.reference ? ` (réf. ${i.reference})` : ""} · ${formatPrice(i.priceTtc)}`).join("\n");
@@ -160,6 +170,7 @@ export async function sendOrderEmails(order: OrderRow) {
     itemLines(order.items),
     "",
     `Pièces : ${formatPrice(Number(order.subtotalTtc))}`,
+    ...(order.proDiscountRate ? [`Remise professionnelle (-${Math.round(Number(order.proDiscountRate) * 100)} %) incluse : -${formatPrice(discountTotal(order))}`] : []),
     ship ? `Livraison : ${formatPrice(Number(order.shippingTtc))}` : "Retrait au comptoir de Colomiers : gratuit",
     `Total TTC réglé : ${formatPrice(Number(order.totalTtc))}`,
     "",
@@ -190,7 +201,7 @@ export async function sendOrderEmails(order: OrderRow) {
   await sendEmail({
     to: ORDERS_TO,
     subject: `${order.status === "completed" ? "Nouvelle commande" : "Commande payée à traiter"} n° ${number} · ${formatPrice(Number(order.totalTtc))}`,
-    text: [status, "", `Client : ${order.customer.firstname} ${order.customer.lastname} · ${order.email} · ${order.customer.phone}`, order.note ? `Note du client : ${order.note}` : "", "", summary, "", `Paiement ${order.paymentProvider} : ${order.paymentIntentId ?? "-"}`, `Référence interne du site : ${order.ref}`].join("\n"),
+    text: [status, "", `Client : ${order.customer.firstname} ${order.customer.lastname} · ${order.email} · ${order.customer.phone}`, order.accountEmail ? `Compte du site : ${order.accountEmail}${order.proDiscountRate ? " (professionnel)" : ""}` : "", order.note ? `Note du client : ${order.note}` : "", "", summary, "", `Paiement ${order.paymentProvider} : ${order.paymentIntentId ?? "-"}`, `Référence interne du site : ${order.ref}`].join("\n"),
     replyTo: order.email,
   });
 }

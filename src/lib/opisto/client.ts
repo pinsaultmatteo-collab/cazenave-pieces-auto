@@ -225,6 +225,10 @@ export async function findClientsByEmail(email: string): Promise<OpistoClient[]>
   return list.filter((c) => c && typeof c.Id === "number" && (!c.Email || c.Email.toLowerCase() === email.toLowerCase()));
 }
 
+export function getClient(clientId: number) {
+  return opistoGet<OpistoClient>(`/clients/${clientId}`);
+}
+
 /** Crée un client particulier ; renvoie son identifiant. */
 export async function createClient(input: { email: string; firstname: string; lastname: string; password: string; nationality?: string }): Promise<number> {
   const json = await opistoSend<OpistoCreateResult | number>("POST", "/clients", {

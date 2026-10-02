@@ -43,6 +43,13 @@
       "when": 1790859147486,
       "tag": "0005_plate-lookups",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790943512945,
+      "tag": "0006_customer-accounts",
+      "breakpoints": true
     }
   ]
 }

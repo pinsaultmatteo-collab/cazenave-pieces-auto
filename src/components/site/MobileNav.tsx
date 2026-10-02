@@ -51,13 +51,23 @@ export function MobileNav() {
             ))}
             <li>
               <Link
-                href="/espace-pro"
+                href="/espace-pro#connexion"
                 onClick={() => setOpen(false)}
                 className="block px-5 py-3.5 text-base font-bold text-brand-700 hover:bg-mist"
               >
                 Espace pro
               </Link>
             </li>
+            {[
+              { href: "/mon-compte", label: "Mon compte" },
+              { href: "/suivi-commande", label: "Suivi de commande" },
+            ].map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} onClick={() => setOpen(false)} className="block px-5 py-3.5 text-base font-semibold hover:bg-mist">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
           </ul>
 
           <div className="flex items-center justify-between gap-3 bg-mist px-5 py-4 text-sm">

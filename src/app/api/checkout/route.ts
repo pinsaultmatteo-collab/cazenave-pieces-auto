@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { CheckoutError, createPendingOrder } from "@/lib/orders/checkout";
+import { currentAccount } from "@/lib/account/accounts";
 import { checkoutUrls, paymentProvider } from "@/lib/payment";
 
 /**
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Corps de requête invalide" }, { status: 400 });
   }
   try {
-    const order = await createPendingOrder(body as Parameters<typeof createPendingOrder>[0]);
+    const order = await createPendingOrder(body as Parameters<typeof createPendingOrder>[0], await currentAccount());
     const session = await paymentProvider().createCheckout(order, checkoutUrls(order.ref));
     return NextResponse.json({ ref: order.ref, url: session.url, provider: session.provider });
   } catch (err) {

@@ -5,6 +5,8 @@ import { orders, type NewOrderRow, type OrderAddress, type OrderItem, type Order
 import { getPart, partHref } from "@/lib/catalog";
 import { checkoutSchema, type CheckoutData, type CheckoutInput } from "./schema";
 import { newOrderRef } from "./refs";
+import { proPrice } from "@/lib/account/pricing";
+import type { Account } from "@/lib/account/accounts";
 
 export class CheckoutError extends Error {
   constructor(
@@ -38,7 +40,7 @@ function toAddress(a: CheckoutData["billing"]): OrderAddress {
  * commande « en attente de paiement ». Les pièces sont uniques : une pièce
  * déjà vendue ou retirée fait échouer la commande avant tout paiement.
  */
-export async function createPendingOrder(raw: CheckoutInput): Promise<OrderRow> {
+export async function createPendingOrder(raw: CheckoutInput, account: Account | null = null): Promise<OrderRow> {
   const parsed = checkoutSchema.safeParse(raw);
   if (!parsed.success) throw new CheckoutError("Formulaire incomplet", "validation", parsed.error.flatten());
   const data = parsed.data;
@@ -63,13 +65,16 @@ export async function createPendingOrder(raw: CheckoutInput): Promise<OrderRow> 
     }
   }
 
+  // Compte professionnel connecté : remise appliquée ici, côté serveur (jamais sur la foi du navigateur)
+  const rate = account?.isPro ? account.discountRate : 0;
   const items: OrderItem[] = live.map((p) => ({
     id: p.id,
     name: p.name,
     brandName: p.brandName,
     modelName: p.modelName,
     reference: p.manufacturerReference,
-    priceTtc: p.priceTtc,
+    priceTtc: proPrice(p.priceTtc, rate),
+    ...(rate > 0 ? { listPriceTtc: p.priceTtc } : {}),
     vatRate: p.vatRate,
     shippingCost: p.shippingAvailable ? (p.shippingCost ?? 0) : null,
     shippingId: p.shippingAvailable ? (p.shippingId ?? null) : null,
@@ -97,6 +102,10 @@ export async function createPendingOrder(raw: CheckoutInput): Promise<OrderRow> 
     totalTtc: total.toFixed(2),
     note: data.note || null,
     paymentProvider: process.env.STRIPE_SECRET_KEY ? "stripe" : "test",
+    accountEmail: account?.email ?? null,
+    proDiscountRate: rate > 0 ? rate.toFixed(3) : null,
+    // Commande d'un pro rattachée à sa fiche client Opisto (filtre « professionnels »)
+    opistoClientId: account?.isPro ? (account.opistoClientIds[0] ?? null) : null,
   };
   const db = await getDb();
   const [created] = await db.insert(orders).values(row).returning();

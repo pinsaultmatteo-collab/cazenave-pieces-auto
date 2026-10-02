@@ -4,6 +4,7 @@ import logo from "@/assets/brand/logo-navbar.png";
 import { TruckIcon } from "@/components/icons";
 import { CartLink } from "./CartLink";
 import { isPaymentConfigured } from "@/lib/payment/config";
+import { AccountLink } from "./AccountLink";
 import { MobileNav } from "./MobileNav";
 import { NavLinks } from "./NavLinks";
 import { SearchBox } from "./SearchBox";
@@ -25,14 +26,15 @@ export function Header() {
         <SearchBox id="header-search" className="hidden flex-1 md:block" />
 
         <nav aria-label="Compte et panier" className="ml-auto flex items-center gap-1 sm:gap-3">
+          {/* Sur mobile, le suivi de commande passe dans le menu et dans « Mon compte » */}
           <Link
             href="/suivi-commande"
-            className="group flex flex-col items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-1 text-[11px] font-semibold text-ink transition hover:text-brand-700 sm:flex-row sm:gap-2 sm:text-sm"
+            className="group hidden items-center gap-2 whitespace-nowrap rounded-lg px-2 py-1 text-sm font-semibold text-ink transition hover:text-brand-700 lg:flex"
           >
             <TruckIcon size={22} className="transition-transform duration-300 group-hover:translate-x-0.5" />
-            <span className="sm:hidden">Suivi</span>
-            <span className="hidden sm:inline">Suivi de commande</span>
+            Suivi de commande
           </Link>
+          <AccountLink />
           <CartLink paymentEnabled={isPaymentConfigured()} />
         </nav>
       </div>
@@ -42,7 +44,7 @@ export function Header() {
         <div className="container-x flex h-12 items-center justify-between">
           <NavLinks />
           <Link
-            href="/espace-pro"
+            href="/espace-pro#connexion"
             className="shrink-0 whitespace-nowrap rounded-full bg-brand px-4 py-1.5 text-[13px] font-bold text-ink-900 transition hover:bg-brand-600 xl:text-sm"
           >
             Espace pro

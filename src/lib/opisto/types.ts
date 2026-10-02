@@ -146,7 +146,17 @@ export type OpistoVehiclesPage = { Vehicles: OpistoVehicle[]; VehiclesNumber?: n
 
 export type OpistoCreateResult = { Id?: number; Value?: number; Success?: boolean; ErrorCode?: number; ErrorMessage?: string; Errors?: unknown };
 
-export type OpistoClient = { Id: number; Email?: string; Firstname?: string; Lastname?: string };
+export type OpistoClient = {
+  Id: number;
+  Email?: string;
+  Firstname?: string;
+  Lastname?: string;
+  /** Client professionnel (filtre « professionnels » d'Opisto 360) */
+  IsProfessional?: boolean | null;
+  Identity?: { Firstname?: string; Lastname?: string; Email?: string } | null;
+  Contact?: { Mail?: string } | null;
+  Professional?: { CompanyName?: string } | null;
+};
 
 export type OpistoReadClients = { Clients?: OpistoClient[]; ClientsNumber?: number; Value?: OpistoClient[] } | OpistoClient[];
 

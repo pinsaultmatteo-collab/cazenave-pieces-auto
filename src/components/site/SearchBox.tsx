@@ -4,7 +4,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { formatPrice } from "@/lib/format";
+import { Price } from "@/components/catalog/Price";
 import { ChevronRightIcon, SearchIcon } from "@/components/icons";
 
 type PartHit = { id: number; href: string; name: string; vehicle: string; reference: string | null; price: number; photo: string | null };
@@ -173,7 +173,9 @@ export function SearchBox({ id, inline = false, className = "", placeholder = "R
                           {p.reference ? ` · Réf. ${p.reference}` : ""}
                         </span>
                       </span>
-                      <span className="shrink-0 font-display text-lg font-semibold text-ink">{formatPrice(p.price)}</span>
+                      <span className="shrink-0 text-right">
+                        <Price ttc={p.price} compact className="font-display text-lg font-semibold text-ink" />
+                      </span>
                     </Link>
                   </li>
                 ))}

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { ClearCart } from "@/components/checkout/ClearCart";
 import { getOrderByRef, orderNumber, orderSummary } from "@/lib/orders/checkout";
+import { discountTotal } from "@/lib/orders/fulfill";
 import { verifyOrderToken } from "@/lib/orders/refs";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/lib/site";
@@ -136,6 +137,12 @@ export default async function ConfirmationPage({ searchParams }: PageProps<"/com
               <dt className="text-steel">Pièces</dt>
               <dd className="font-semibold text-ink">{formatPrice(Number(order.subtotalTtc))}</dd>
             </div>
+            {order.proDiscountRate && (
+              <div className="flex justify-between text-brand-700">
+                <dt className="font-semibold">Dont remise professionnelle (-{Math.round(Number(order.proDiscountRate) * 100)} %)</dt>
+                <dd className="font-semibold">-{formatPrice(discountTotal(order))}</dd>
+              </div>
+            )}
             <div className="flex justify-between">
               <dt className="text-steel">{ship ? "Livraison" : "Retrait"}</dt>
               <dd className="font-semibold text-ink">{ship ? formatPrice(Number(order.shippingTtc)) : "Gratuit"}</dd>

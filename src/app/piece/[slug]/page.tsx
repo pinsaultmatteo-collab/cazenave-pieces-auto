@@ -10,6 +10,7 @@ import { DemoNotice } from "@/components/site/DemoNotice";
 import { ProductGallery } from "@/components/catalog/ProductGallery";
 import { AddToCartButton } from "@/components/catalog/AddToCartButton";
 import { PartCard } from "@/components/catalog/PartCard";
+import { Price, ProAmount } from "@/components/catalog/Price";
 import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
 import { phasePeriod } from "@/lib/catalog/phases";
 
@@ -120,9 +121,9 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
           <div className="mt-8 rounded-3xl border border-line bg-white p-6 shadow-lg shadow-ink/5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <p className="display-title text-5xl text-ink">{formatPrice(part.priceTtc)}</p>
+                <Price ttc={part.priceTtc} className="display-title text-5xl text-ink" />
                 <p className="mt-1 text-xs text-steel">
-                  TTC · {formatPrice(part.priceHt)} HT · TVA {Math.round(part.vatRate * 100)} %
+                  TTC · <ProAmount value={part.priceHt} /> HT · TVA {Math.round(part.vatRate * 100)} %
                 </p>
               </div>
               <p className={`flex items-center gap-1.5 text-sm font-bold ${canBuy ? "text-brand-700" : "text-steel"}`}>

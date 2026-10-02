@@ -217,6 +217,8 @@ export type OrderItem = {
   modelName: string | null;
   reference: string | null;
   priceTtc: number;
+  /** Prix public avant remise professionnelle (absent sans remise) */
+  listPriceTtc?: number;
   vatRate: number;
   shippingCost: number | null;
   shippingId: number | null;
@@ -259,10 +261,14 @@ export const orders = pgTable(
     opistoPaymentId: integer("opisto_payment_id"),
     opistoError: text("opisto_error"),
     customerEmailSentAt: timestamp("customer_email_sent_at", { withTimezone: true }),
+    /** Compte connecté au moment de la commande (peut différer de l'e-mail saisi) */
+    accountEmail: text("account_email"),
+    /** Remise professionnelle appliquée (0,20 = -20 %) */
+    proDiscountRate: numeric("pro_discount_rate", { precision: 4, scale: 3 }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex("orders_ref_idx").on(t.ref), index("orders_email_idx").on(t.email), index("orders_status_idx").on(t.status), index("orders_session_idx").on(t.paymentSessionId)],
+  (t) => [uniqueIndex("orders_ref_idx").on(t.ref), index("orders_email_idx").on(t.email), index("orders_account_idx").on(t.accountEmail), index("orders_status_idx").on(t.status), index("orders_session_idx").on(t.paymentSessionId)],
 );
 
 export type OrderRow = typeof orders.$inferSelect;
@@ -300,6 +306,36 @@ export const plateLookups = pgTable("plate_lookups", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * Comptes clients du site (connexion par code reçu par e-mail). Le statut
+ * professionnel vient d'Opisto (Client.IsProfessional), relu régulièrement.
+ */
+export const customerAccounts = pgTable("customer_accounts", {
+  email: text("email").primaryKey(),
+  opistoClientIds: jsonb("opisto_client_ids").$type<number[]>().notNull().default([]),
+  isPro: boolean("is_pro").notNull().default(false),
+  firstname: text("firstname"),
+  company: text("company"),
+  checkedAt: timestamp("checked_at", { withTimezone: true }),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Codes de connexion à usage unique (seule l'empreinte est stockée). */
+export const loginCodes = pgTable(
+  "login_codes",
+  {
+    id: serial("id").primaryKey(),
+    email: text("email").notNull(),
+    codeHash: text("code_hash").notNull(),
+    attempts: integer("attempts").notNull().default(0),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("login_codes_email_idx").on(t.email)],
+);
+
 /** Jeton Opisto partagé entre les fonctions serveur. */
 export const opistoTokens = pgTable("opisto_tokens", {
   env: text("env").primaryKey(),
@@ -308,6 +344,7 @@ export const opistoTokens = pgTable("opisto_tokens", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export type CustomerAccountRow = typeof customerAccounts.$inferSelect;
 export type PartRow = typeof parts.$inferSelect;
 export type NewPartRow = typeof parts.$inferInsert;
 export type VehicleRow = typeof vehicles.$inferSelect;

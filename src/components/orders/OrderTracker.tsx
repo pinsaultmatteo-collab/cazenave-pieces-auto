@@ -59,9 +59,9 @@ function headline(order: TrackedOrder) {
 }
 
 /** Formulaire de suivi (numéro de transaction + e-mail) et affichage de l'état de la commande. */
-export function OrderTracker({ initialRef = "" }: { initialRef?: string }) {
+export function OrderTracker({ initialRef = "", initialEmail = "" }: { initialRef?: string; initialEmail?: string }) {
   const [ref, setRef] = useState(initialRef);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail);
   const [state, setState] = useState<{ status: "idle" | "loading" | "error"; message?: string }>({ status: "idle" });
   const [order, setOrder] = useState<TrackedOrder | null>(null);
 

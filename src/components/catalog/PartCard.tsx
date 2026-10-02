@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { partHref } from "@/lib/catalog/links";
 import type { Part } from "@/lib/catalog/types";
-import { formatPrice } from "@/lib/format";
 import { CheckIcon, TruckIcon } from "@/components/icons";
+import { Price, ProAmount } from "./Price";
 
 const CONDITION_LABEL: Record<Part["condition"], string> = {
   GOOD: "Bon état",
@@ -65,8 +65,10 @@ export function PartCard({ part, priority = false }: { part: Part; priority?: bo
         </dl>
         <div className="mt-auto flex items-end justify-between gap-3 pt-4">
           <div>
-            <p className="display-title text-3xl text-ink">{formatPrice(part.priceTtc)}</p>
-            <p className="text-[11px] text-steel">TTC · {formatPrice(part.priceHt)} HT</p>
+            <Price ttc={part.priceTtc} />
+            <p className="text-[11px] text-steel">
+              TTC · <ProAmount value={part.priceHt} /> HT
+            </p>
           </div>
           <Link
             href={partHref(part)}
