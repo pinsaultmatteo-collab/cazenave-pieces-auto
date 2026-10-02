@@ -8,12 +8,12 @@ import { Reveal } from "@/components/motion/Reveal";
 import { getVehicles } from "@/lib/catalog";
 import { photos } from "@/lib/photos";
 import { site } from "@/lib/site";
-import { CheckIcon, PhoneIcon, WhatsappIcon } from "@/components/icons";
+import { CheckIcon, PhoneIcon, ShieldIcon, WhatsappIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Véhicules d'occasion à vendre",
   description:
-    "Véhicules d'occasion complets à vendre à Colomiers, près de Toulouse. Professionnels de l'automobile : rejoignez notre groupe WhatsApp pour recevoir nos offres en avant-première.",
+    "Véhicules d'occasion complets à vendre aux professionnels de l'automobile à Colomiers, près de Toulouse. Marchands et garages : rejoignez notre groupe WhatsApp pour recevoir nos offres en avant-première.",
   alternates: { canonical: "/vehicules-occasion" },
 };
 
@@ -34,19 +34,22 @@ export default async function VehiclesPage({ searchParams }: PageProps<"/vehicul
   return (
     <>
       <PageHero
-        kicker="Le parc"
+        kicker="Réservé aux professionnels"
         title={
           <>
             Véhicules <span className="text-brand-400">d&apos;occasion</span>
           </>
         }
-        text="Une sélection de véhicules complets, révisés et documentés, à vendre directement depuis notre parc de Colomiers. Visites et essais sur rendez-vous."
+        text="Une sélection de véhicules complets, révisés et documentés, à vendre directement depuis notre parc de Colomiers. La vente de véhicules d'occasion est exclusivement réservée aux professionnels de l'automobile (marchands, garages, négociants) sur présentation d'un Kbis. Visites et essais sur rendez-vous."
         image={photos.heroDrone}
         imageAlt="Vue aérienne du parc de véhicules"
         crumbs={[{ label: "Véhicules d'occasion" }]}
         compact
       >
-        <div className="mt-8 flex flex-wrap gap-3">
+        <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-400/50 bg-brand/15 px-4 py-2 text-xs font-bold uppercase tracking-wide text-brand-400">
+          <ShieldIcon size={16} className="shrink-0" /> Vente aux professionnels uniquement · Kbis demandé
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
           <a href="#vehicules" className="rounded-full bg-brand px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400">
             Voir les véhicules
           </a>

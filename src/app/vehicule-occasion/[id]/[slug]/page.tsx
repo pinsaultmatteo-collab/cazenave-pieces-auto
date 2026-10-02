@@ -73,6 +73,9 @@ export default async function VehiclePage({ params }: PageProps<"/vehicule-occas
               <>
                 <p className="display-title text-5xl text-ink">{formatPrice(v.price)}</p>
                 <p className="mt-1 text-xs text-steel">Prix TTC, véhicule visible sur rendez-vous à Colomiers</p>
+                <p className="mt-3 rounded-xl bg-brand-50 px-3 py-2 text-xs font-semibold text-ink">
+                  Vente réservée aux professionnels de l&apos;automobile, sur présentation d&apos;un Kbis.
+                </p>
               </>
             ) : (
               <>
