@@ -50,7 +50,7 @@ export function Hero() {
           fill
           preload
           fetchPriority="high"
-          sizes="100vw"
+          sizes="(max-width: 640px) 70vw, 100vw"
           quality={60}
           placeholder="blur"
           className="object-cover object-[center_40%]"
