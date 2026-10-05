@@ -30,7 +30,7 @@ export function PageHero({ kicker, title, text, image, imageAlt = "", crumbs, ch
           // Photo assombrie par un voile : sur téléphone, une image plus petite et moins
           // compressée ne se voit pas et accélère nettement l'affichage
           sizes="(max-width: 640px) 70vw, 100vw"
-          quality={55}
+          quality={50}
           placeholder={typeof image === "string" ? undefined : "blur"}
           className="-z-20 object-cover object-center"
         />

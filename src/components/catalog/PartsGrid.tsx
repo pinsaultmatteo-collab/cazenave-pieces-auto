@@ -25,9 +25,10 @@ export function PartsGrid({ parts, emptyTitle = "Aucune pièce ne correspond à 
   }
   return (
     <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {parts.map((p, i) => (
+      {/* Pas de préchargement : la grille est sous l'en-tête, la photo d'en-tête passe d'abord */}
+      {parts.map((p) => (
         <li key={p.id}>
-          <PartCard part={p} priority={i < 4} />
+          <PartCard part={p} />
         </li>
       ))}
     </ul>
