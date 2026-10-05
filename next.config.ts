@@ -26,6 +26,13 @@ const nextConfig: NextConfig = {
   // Anciennes adresses du site cazenave.net : redirections définitives (référencement)
   async redirects() {
     return [
+      // Ancienne adresse de préproduction : tout renvoie vers le domaine définitif
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "cazenave-pieces-auto.vercel.app" }],
+        destination: "https://www.cazenave.net/:path*",
+        permanent: true,
+      },
       { source: "/index.php", destination: "/", permanent: true },
       { source: "/pieces-auto.php", destination: "/pieces-auto", permanent: true },
       { source: "/constructeurs-pieces-auto.php", destination: "/pieces-auto/marques", permanent: true },
