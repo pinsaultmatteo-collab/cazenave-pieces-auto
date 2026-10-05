@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   // Postgres embarqué (développement) : binaire WASM chargé côté Node, pas bundlé
   serverExternalPackages: ["@electric-sql/pglite"],
   images: {
+    // 55 et 60 : photos de fond assombries par un voile (en-têtes), plus légères sur mobile
+    qualities: [55, 60, 75],
     remotePatterns: [
       // Photos des pièces et véhicules servies par le stockage Opisto
       { protocol: "https", hostname: "**.bso.st" },

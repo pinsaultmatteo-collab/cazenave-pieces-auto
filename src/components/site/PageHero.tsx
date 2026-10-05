@@ -26,7 +26,10 @@ export function PageHero({ kicker, title, text, image, imageAlt = "", crumbs, ch
           alt={imageAlt}
           fill
           preload
+          fetchPriority="high"
           sizes="100vw"
+          // Photo assombrie par un voile : une qualité réduite ne se voit pas et allège le mobile
+          quality={55}
           placeholder={typeof image === "string" ? undefined : "blur"}
           className="-z-20 object-cover object-center"
         />

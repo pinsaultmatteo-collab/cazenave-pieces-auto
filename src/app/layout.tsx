@@ -13,11 +13,14 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+// Titres : seules les graisses 600 et 700 servent. Pas de préchargement : sur mobile,
+// la feuille de style (qui conditionne le premier affichage) passe avant.
 const barlow = Barlow_Condensed({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["600", "700"],
   variable: "--font-barlow",
   display: "swap",
+  preload: false,
 });
 
 const isProduction = process.env.VERCEL_ENV === "production";
