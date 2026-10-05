@@ -63,6 +63,8 @@ export const site = {
     city: "Colomiers",
     country: "France",
   },
+  /** Coordonnées du 23 chemin de la Nasque (OpenStreetMap) */
+  geo: { latitude: 43.5994435, longitude: 1.313063 },
   hours: "Du lundi au vendredi, 9h – 17h",
   hoursShort: "Lun. – ven. 9h – 17h",
   hoursClosed: "Fermé le samedi et le dimanche",

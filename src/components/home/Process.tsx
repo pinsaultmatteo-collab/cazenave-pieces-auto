@@ -126,8 +126,12 @@ export function Process() {
 
         <ol className="mt-10 grid gap-6 lg:mt-8 lg:grid-cols-4">
           {STEPS.map((s, i) => (
-            <Reveal key={s.n} delay={i * 0.12}>
-              <li className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] transition-colors duration-500 hover:border-brand-400/60">
+            <Reveal
+              key={s.n}
+              as="li"
+              delay={i * 0.12}
+              className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] transition-colors duration-500 hover:border-brand-400/60"
+            >
                 <div className="relative aspect-[16/8] overflow-hidden lg:aspect-[16/10]">
                   <Image
                     src={s.photo}
@@ -144,7 +148,6 @@ export function Process() {
                   <h3 className="font-display text-2xl font-semibold uppercase leading-none">{s.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-white/65 lg:mt-3">{s.text}</p>
                 </div>
-              </li>
             </Reveal>
           ))}
         </ol>

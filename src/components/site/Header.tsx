@@ -20,7 +20,7 @@ export function Header() {
         <MobileNav />
 
         <Link href="/" className="shrink-0" aria-label="Accueil Cazenave Pièces Auto">
-          <Image src={logo} alt="Cazenave Pièces Auto" priority className="h-7 w-auto min-[360px]:h-9 sm:h-10 lg:h-12" />
+          <Image src={logo} alt="Cazenave Pièces Auto" preload sizes="(min-width: 1024px) 240px, 180px" className="h-7 w-auto min-[360px]:h-9 sm:h-10 lg:h-12" />
         </Link>
 
         <SearchBox id="header-search" className="hidden flex-1 md:block" />

@@ -87,7 +87,7 @@ export default async function ArticlePage({ params }: PageProps<"/mag/[slug]">) 
       {article.cover && (
         <div className="container-x max-w-5xl">
           <div className="relative aspect-[16/9] overflow-hidden rounded-3xl shadow-xl shadow-ink/10">
-            <Image src={article.cover} alt="" fill priority sizes="(min-width: 1024px) 1024px, 100vw" className="object-cover" />
+            <Image src={article.cover} alt="" fill preload sizes="(min-width: 1024px) 1024px, 100vw" className="object-cover" />
           </div>
         </div>
       )}

@@ -156,7 +156,7 @@ export function Footer() {
       <div className="bg-white text-ink">
         <div className="container-x py-4 md:py-6">
           <div className="flex flex-col items-center gap-3 md:gap-4 lg:flex-row lg:justify-between">
-            <p className="shrink-0 text-[11px] font-bold uppercase tracking-[0.25em] text-steel">Certifications et partenaires</p>
+            <p className="shrink-0 text-[11px] font-bold uppercase tracking-[0.25em] text-ink/80">Certifications et partenaires</p>
             <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2.5 md:gap-x-8 md:gap-y-4 lg:justify-end">
               {site.partners.map((p) => {
                 const external = p.href.startsWith("http");
@@ -182,7 +182,7 @@ export function Footer() {
               ))}
             </ul>
           </div>
-          <p className="mt-3 text-center text-[11px] text-steel md:mt-4 md:text-xs lg:text-right">
+          <p className="mt-3 text-center text-[11px] text-ink/80 md:mt-4 md:text-xs lg:text-right">
             Nos partenaires recyclage :{" "}
             {site.textPartners.map((p, i) => (
               <span key={p.name}>

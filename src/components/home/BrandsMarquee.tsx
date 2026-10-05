@@ -28,7 +28,7 @@ export function BrandsMarquee({ brands }: { brands: MarqueeBrand[] }) {
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white p-1.5 shadow-md shadow-black/30 transition-transform duration-300 group-hover/brand:scale-110">
                   {LOGOS[b.slug] ? (
-                    <Image src={LOGOS[b.slug]} alt="" width={40} height={40} loading="eager" className="h-8 w-8 object-contain" />
+                    <Image src={LOGOS[b.slug]} alt="" width={40} height={40} className="h-8 w-8 object-contain" />
                   ) : (
                     <span className="font-display text-lg font-semibold text-ink">{b.name.charAt(0)}</span>
                   )}

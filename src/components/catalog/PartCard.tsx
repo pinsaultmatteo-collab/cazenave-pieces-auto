@@ -21,7 +21,7 @@ export function PartCard({ part, priority = false }: { part: Part; priority?: bo
             src={part.vignette}
             alt={`${part.name} ${vehicle}`.trim()}
             fill
-            priority={priority}
+            preload={priority}
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />

@@ -25,7 +25,7 @@ export function PageHero({ kicker, title, text, image, imageAlt = "", crumbs, ch
           src={image}
           alt={imageAlt}
           fill
-          priority
+          preload
           sizes="100vw"
           placeholder={typeof image === "string" ? undefined : "blur"}
           className="-z-20 object-cover object-center"

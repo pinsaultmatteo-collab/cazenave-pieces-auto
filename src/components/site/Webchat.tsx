@@ -11,6 +11,9 @@ const WEBCHAT_CONFIG_ID = "497fda1b-e1bc-49d9-a05c-76de44b770d5";
  */
 const REOPEN_TEASER = `try{if(!sessionStorage.getItem("cz-webchat-visit")){sessionStorage.setItem("cz-webchat-visit","1");localStorage.removeItem("loco-webchat-bubble-closed")}}catch(e){}`;
 
+/** Le bouton rond de Locomotive n'a pas de nom : on lui en donne un pour les lecteurs d'écran (accessibilité). */
+const LABEL_BUTTON = `(function(){var n=0,t=setInterval(function(){var r=document.getElementById("loco-webchat"),s=r&&r.shadowRoot,b=(s&&s.getElementById("loco-webchat-message-button"))||document.getElementById("loco-webchat-message-button");if(b){b.setAttribute("aria-label","Ouvrir la discussion avec notre équipe");clearInterval(t)}else if(++n>60){clearInterval(t)}},1000)})();`;
+
 /**
  * Assistant de discussion Locomotive (bulle en bas de l'écran), chargé une
  * fois la page affichée pour ne pas ralentir le site.
@@ -21,7 +24,7 @@ export function Webchat() {
   return (
     <>
       <Script id="loco-webchat-teaser" strategy="afterInteractive">
-        {REOPEN_TEASER}
+        {REOPEN_TEASER + LABEL_BUTTON}
       </Script>
       <Script id="loco-webchat-script" src="https://webchat.locomotive.eu/webchat/widget/index.js" strategy="lazyOnload" {...attrs} />
     </>

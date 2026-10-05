@@ -48,7 +48,8 @@ export function Hero() {
           src={photos.heroBuilding}
           alt=""
           fill
-          priority
+          preload
+          fetchPriority="high"
           sizes="100vw"
           placeholder="blur"
           className="object-cover object-[center_40%]"

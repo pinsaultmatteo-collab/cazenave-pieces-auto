@@ -40,7 +40,7 @@ export default function MagPage() {
           >
             <div className="relative h-56 sm:h-80 lg:h-auto lg:min-h-[360px]">
               {first.cover ? (
-                <Image src={first.cover} alt="" fill sizes="(min-width: 1024px) 50vw, 100vw" priority className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                <Image src={first.cover} alt="" fill sizes="(min-width: 1024px) 50vw, 100vw" preload className="object-cover transition-transform duration-700 group-hover:scale-105" />
               ) : (
                 <Image src={photos.parcRows} alt="" fill sizes="(min-width: 1024px) 50vw, 100vw" placeholder="blur" className="object-cover" />
               )}

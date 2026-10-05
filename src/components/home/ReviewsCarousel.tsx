@@ -15,7 +15,7 @@ function initials(author: string) {
 
 function Stars({ rating, animate }: { rating: number; animate: boolean }) {
   return (
-    <span className="flex items-center gap-0.5" aria-label={`${rating} étoiles sur 5`}>
+    <span role="img" className="flex items-center gap-0.5" aria-label={`${rating} étoiles sur 5`}>
       {Array.from({ length: 5 }).map((_, i) => (
         <motion.span
           key={i}
@@ -179,7 +179,7 @@ export function ReviewsCarousel({ reviews }: { reviews: Review[] }) {
       </div>
 
       <div className="mt-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2" role="tablist" aria-label="Choisir un avis">
+        <div className="flex items-center gap-0.5" role="tablist" aria-label="Choisir un avis">
           {Array.from({ length: positions }).map((_, i) => (
             <button
               key={i}
@@ -188,8 +188,11 @@ export function ReviewsCarousel({ reviews }: { reviews: Review[] }) {
               aria-selected={i === Math.min(index, positions - 1)}
               aria-label={`Avis ${i + 1}`}
               onClick={() => goTo(i)}
-              className={`h-2.5 rounded-full transition-all duration-500 ${i === Math.min(index, positions - 1) ? "w-8 bg-brand" : "w-2.5 bg-ink-100 hover:bg-steel"}`}
-            />
+              className="group/dot flex h-6 min-w-6 items-center justify-center px-0.5"
+            >
+              {/* Pastille visuelle, zone de clic de 24 px pour le doigt */}
+              <span className={`block h-2.5 rounded-full transition-all duration-500 ${i === Math.min(index, positions - 1) ? "w-8 bg-brand" : "w-2.5 bg-ink-100 group-hover/dot:bg-steel"}`} />
+            </button>
           ))}
         </div>
         <div className="flex items-center gap-3">

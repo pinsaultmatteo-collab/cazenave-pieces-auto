@@ -18,6 +18,7 @@ import { Reviews } from "@/components/home/Reviews";
 import { Faq } from "@/components/home/Faq";
 import { Social } from "@/components/home/Social";
 import { EvBlock } from "@/components/home/EvBlock";
+import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
 import { ParallaxBanner } from "@/components/motion/ParallaxBanner";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
@@ -314,6 +315,7 @@ export default async function HomePage() {
 
       <Faq />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <LocalBusinessJsonLd />
 
       <Social />
 

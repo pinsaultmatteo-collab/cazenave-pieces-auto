@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/site/PageHero";
 import { ContactForm } from "@/components/forms/ContactForm";
+import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
 import { Reveal } from "@/components/motion/Reveal";
 import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
@@ -92,6 +93,7 @@ export default async function ContactPage({ searchParams }: PageProps<"/contact"
           </div>
         </Reveal>
       </div>
+      <LocalBusinessJsonLd />
     </>
   );
 }

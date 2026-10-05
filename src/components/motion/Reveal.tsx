@@ -11,13 +11,16 @@ type RevealProps = {
   className?: string;
   delay?: number;
   y?: number;
+  /** Élément rendu : « li » pour un élément de liste animé */
+  as?: "div" | "li";
 };
 
 /** Apparition au scroll : fondu + légère montée, une seule fois. */
-export function Reveal({ children, className, delay = 0, y = 32 }: RevealProps) {
+export function Reveal({ children, className, delay = 0, y = 32, as = "div" }: RevealProps) {
   const reduce = useReducedMotion();
+  const Tag = as === "li" ? motion.li : motion.div;
   return (
-    <motion.div
+    <Tag
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -25,7 +28,7 @@ export function Reveal({ children, className, delay = 0, y = 32 }: RevealProps) 
       transition={{ duration: reduce ? 0 : 0.8, delay: reduce ? 0 : delay, ease: EASE }}
     >
       {children}
-    </motion.div>
+    </Tag>
   );
 }
 
