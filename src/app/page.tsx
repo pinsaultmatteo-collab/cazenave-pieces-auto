@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/lib/site";
@@ -20,6 +21,8 @@ import { EvBlock } from "@/components/home/EvBlock";
 import { ParallaxBanner } from "@/components/motion/ParallaxBanner";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 /** Rendu mis en cache et rafraîchi au plus toutes les 30 minutes (stock synchronisé depuis Opisto). */
 export const revalidate = 1800;
