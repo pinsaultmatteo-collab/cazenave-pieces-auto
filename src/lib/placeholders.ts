@@ -1,7 +1,9 @@
 import { photos } from "@/lib/photos";
 import coverGrosseMecanique from "@/assets/photos/categories/grosse-mecanique.webp";
-import coverInterieure from "@/assets/photos/categories/carrosserie-interieure.jpg";
-import coverExterieure from "@/assets/photos/categories/carrosserie-exterieure.jpg";
+import coverPetiteMecanique from "@/assets/photos/categories/petite-mecanique.webp";
+import coverInterieure from "@/assets/photos/categories/carrosserie-interieure.webp";
+import coverExterieure from "@/assets/photos/categories/carrosserie-exterieure.webp";
+import coverJantes from "@/assets/photos/categories/jantes.jpg";
 
 /**
  * Données provisoires affichées tant que la base locale n'est pas
@@ -45,14 +47,16 @@ export const PLACEHOLDER_CATEGORIES = [
 export const CATEGORY_FALLBACK = { photo: photos.aisle, icon: "mecanique" } as const;
 
 /**
- * Couvertures imposées pour certaines familles sur l'accueil (choix de
- * Mattéo, sept. 2026). Les autres familles prennent une photo de pièce du
- * stock, puis la photo locale de repli.
+ * Couvertures des familles sur l'accueil : photos studio choisies par
+ * Sophie (oct. 2026). Les familles absentes de cette liste prennent une
+ * photo de pièce du stock, puis la photo locale de repli.
  */
 export const CATEGORY_COVERS: Record<string, (typeof photos)[keyof typeof photos]> = {
   "grosse-mecanique": coverGrosseMecanique,
+  "petite-mecanique": coverPetiteMecanique,
   "carrosserie-interieure-et-divers": coverInterieure,
   "carrosserie-exterieure": coverExterieure,
+  jantes: coverJantes,
 };
 
 /** Photo et pictogramme d'une catégorie, d'après son adresse. */
