@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { getPart, getRelatedParts, getVehicle, partHref, vehicleHref, vehicleLabel, type Part } from "@/lib/catalog";
-import { idFromSlug } from "@/lib/slug";
+import { getPart, getPartModel, getRelatedParts, getVehicle, modelHref, partHref, vehicleHref, vehicleLabel, type Part } from "@/lib/catalog";
+import { idFromSlug, slugify } from "@/lib/slug";
 import { formatDate, formatMileage, formatPrice } from "@/lib/format";
 import { site } from "@/lib/site";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
@@ -43,7 +43,7 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
   if (!part) notFound();
   if (slug !== `${part.id}-${part.slug}`) permanentRedirect(partHref(part));
 
-  const [related, vehicle] = await Promise.all([getRelatedParts(part), part.vehicleId ? getVehicle(part.vehicleId) : null]);
+  const [related, vehicle, model] = await Promise.all([getRelatedParts(part), part.vehicleId ? getVehicle(part.vehicleId) : null, getPartModel(part.id)]);
   const vehicleName = [part.brandName, part.modelName].filter(Boolean).join(" ");
   const canBuy = part.available && part.inStock;
 
@@ -88,7 +88,12 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
         <Breadcrumbs
           items={[
             { label: "Pièces auto", href: "/pieces-auto" },
-            { label: part.categoryName, href: `/pieces-auto/${part.categoryName.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}` },
+            ...(model
+              ? [
+                  { label: model.brandName, href: `/pieces-auto/marques/${model.brand}` },
+                  { label: `${model.brandName} ${model.modelName}`, href: modelHref(model.brand, model.model) },
+                ]
+              : [{ label: part.categoryName, href: `/pieces-auto/${slugify(part.categoryName)}` }]),
             { label: part.name },
           ]}
         />
@@ -101,7 +106,11 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
         </div>
 
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">{part.categoryName}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-700">
+            <Link href={`/pieces-auto/${slugify(part.categoryName)}`} className="hover:underline">
+              {part.categoryName}
+            </Link>
+          </p>
           <h1 className="display-title mt-3 text-4xl text-ink sm:text-5xl">{part.name}</h1>
           <p className="mt-3 text-lg font-semibold text-ink">
             {vehicleName}
@@ -189,6 +198,14 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
             {vehicle && (
               <Link href={vehicleHref(vehicle)} className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-brand-700 hover:underline">
                 Voir le véhicule d&apos;origine et ses {vehicle.partsCount} pièces <ChevronRightIcon size={16} />
+              </Link>
+            )}
+            {model && (
+              <Link
+                href={modelHref(model.brand, model.model)}
+                className="mt-2 flex items-center gap-1 text-sm font-bold text-brand-700 hover:underline"
+              >
+                Toutes nos pièces {model.brandName} {model.modelName} <ChevronRightIcon size={16} />
               </Link>
             )}
           </div>

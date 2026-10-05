@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PageHero } from "@/components/site/PageHero";
 import { CatalogSection, readCatalogParams } from "@/components/catalog/catalog-page";
 import { PartsGrid } from "@/components/catalog/PartsGrid";
-import { searchParts } from "@/lib/catalog";
+import { modelHref, searchParts } from "@/lib/catalog";
 import { lookupPlate, matchCatalogVehicle, normalizePlate, type CatalogVehicle, type PlateResult, type PlateVehicle } from "@/lib/plate";
 import { site } from "@/lib/site";
 import { photos } from "@/lib/photos";
@@ -18,12 +18,12 @@ const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v
 
 /** Lien vers le catalogue filtré sur le véhicule identifié. */
 function catalogHref(match: CatalogVehicle) {
+  if (!match.model) return `/pieces-auto/marques/${match.brand}#recherche-resultats`;
   const sp = new URLSearchParams();
-  if (match.brand) sp.set("marque", match.brand);
-  if (match.model) sp.set("modele", match.model);
-  if (match.model && match.year) sp.set("annee", String(match.year));
-  if (match.model && match.phase) sp.set("phase", match.phase);
-  return `/pieces-auto?${sp}#recherche-resultats`;
+  if (match.year) sp.set("annee", String(match.year));
+  if (match.phase) sp.set("phase", match.phase);
+  const qs = sp.toString();
+  return `${modelHref(match.brand!, match.model)}${qs ? `?${qs}` : ""}#recherche-resultats`;
 }
 
 function PlateBadge({ plate }: { plate: string }) {

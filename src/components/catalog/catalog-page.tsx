@@ -4,6 +4,7 @@ import {
   getCategories,
   getCategoryBySlug,
   getCategoryCounts,
+  getCategoryFacets,
   getDoorOptions,
   getModels,
   getPhases,
@@ -48,7 +49,7 @@ type CatalogSectionProps = {
   basePath: string;
   params: ReturnType<typeof readCatalogParams>;
   /** Filtres imposés par la page (masqués dans la barre). */
-  fixed?: { category?: string; brand?: string };
+  fixed?: { category?: string; brand?: string; model?: string };
 };
 
 /** Vrai pour la carrosserie extérieure ou l'une de ses sous-catégories (portes, ailes, pare-chocs…). */
@@ -64,21 +65,25 @@ async function isBodywork(slug: string | undefined): Promise<boolean> {
 export async function CatalogSection({ basePath, params, fixed }: CatalogSectionProps) {
   const category = fixed?.category ?? params.category;
   const brand = fixed?.brand ?? params.brand;
+  const model = fixed?.model ?? params.model;
   const showDoors = await isBodywork(category);
   // Année et phase n'ont de sens qu'avec un modèle ; les portes qu'en carrosserie extérieure.
   const effective = {
     ...params,
     category,
     brand,
-    year: params.model ? params.year : undefined,
-    phase: params.model ? params.phase : undefined,
+    model,
+    year: model ? params.year : undefined,
+    phase: model ? params.phase : undefined,
     doors: showDoors ? params.doors : undefined,
   };
-  const [result, categories, brands, catCounts, brandCounts, phases, doorOptions] = await Promise.all([
+  const [result, categories, brands, catCounts, modelFacets, brandCounts, phases, doorOptions] = await Promise.all([
     searchParts(effective),
     getCategories(),
     getBrands(),
     getCategoryCounts(),
+    // Page modèle : seules les familles présentes pour ce modèle, avec leur nombre de pièces
+    fixed?.model ? getCategoryFacets({ brand, model }) : null,
     getBrandCounts(),
     effective.model ? getPhases(brand, effective.model) : Promise.resolve<VehiclePhase[]>([]),
     showDoors ? getDoorOptions(effective) : Promise.resolve<DoorOption[]>([]),
@@ -93,7 +98,7 @@ export async function CatalogSection({ basePath, params, fixed }: CatalogSection
   const values = {
     category: fixed?.category ? undefined : params.category,
     brand: fixed?.brand ? undefined : params.brand,
-    model: params.model,
+    model: fixed?.model ? undefined : params.model,
     year: effective.year ? String(effective.year) : undefined,
     phase: effective.phase,
     doors: effective.doors ? String(effective.doors) : undefined,
@@ -118,11 +123,13 @@ export async function CatalogSection({ basePath, params, fixed }: CatalogSection
       <DemoNotice className="mb-6" />
       <CatalogFilters
         basePath={basePath}
-        categories={categories.map((c) => ({ slug: c.slug, name: c.name, count: catCounts[c.id] ?? 0 }))}
+        categories={categories
+          .map((c) => ({ slug: c.slug, name: c.name, count: modelFacets ? (modelFacets.find((f) => f.slug === c.slug)?.count ?? 0) : (catCounts[c.id] ?? 0) }))
+          .filter((c) => !modelFacets || c.count > 0 || c.slug === values.category)}
         brands={brands.map((b) => ({ slug: b.slug, name: b.name, count: brandCounts[b.id] ?? 0 }))}
         modelsByBrand={{ ...modelsByBrand, ...(effective.brand && fixed?.brand ? { [effective.brand]: modelsByBrand[effective.brand] ?? [] } : {}) }}
-        values={{ ...values, brand: values.brand ?? fixed?.brand }}
-        locked={{ category: !!fixed?.category, brand: !!fixed?.brand }}
+        values={{ ...values, brand: values.brand ?? fixed?.brand, model: values.model ?? fixed?.model }}
+        locked={{ category: !!fixed?.category, brand: !!fixed?.brand, model: !!fixed?.model }}
         phases={phases}
         doorOptions={showDoors ? doorOptions : undefined}
         total={result.total}

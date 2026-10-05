@@ -30,7 +30,7 @@ type CatalogFiltersProps = {
   doorOptions?: DoorOption[];
   values: FilterValues;
   /** Filtres figés par la page (catégorie ou marque de l'URL). */
-  locked?: { category?: boolean; brand?: boolean };
+  locked?: { category?: boolean; brand?: boolean; model?: boolean };
   total: number;
 };
 
@@ -75,7 +75,11 @@ export function CatalogFilters({ basePath, categories, brands, modelsByBrand, ph
       next.phase = matches.length === 1 ? matches[0].slug : undefined;
     }
     const sp = new URLSearchParams();
-    for (const [k, v] of Object.entries(next) as [keyof FilterValues, string | undefined][]) if (v) sp.set(URL_KEYS[k], v);
+    for (const [k, v] of Object.entries(next) as [keyof FilterValues, string | undefined][]) {
+      // Filtres figés par la page : déjà dans l'adresse (/marques/renault/clio-3), inutile de les répéter
+      if (!v || (k === "brand" && locked?.brand) || (k === "model" && locked?.model) || (k === "category" && locked?.category)) continue;
+      sp.set(URL_KEYS[k], v);
+    }
     const qs = sp.toString();
     startTransition(() => router.push(qs ? `${basePath}?${qs}` : basePath, { scroll: false }));
   }
@@ -108,22 +112,24 @@ export function CatalogFilters({ basePath, categories, brands, modelsByBrand, ph
           </select>
         </label>
       )}
-      <label className={labelClass}>
-        Modèle
-        <select
-          className={`mt-1.5 ${selectClass}`}
-          value={values.model ?? ""}
-          disabled={!values.brand || models.length === 0}
-          onChange={(e) => update({ model: e.target.value || undefined })}
-        >
-          <option value="">{values.brand ? "Tous les modèles" : "Choisissez une marque"}</option>
-          {models.map((m) => (
-            <option key={m.slug} value={m.slug}>
-              {m.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      {!locked?.model && (
+        <label className={labelClass}>
+          Modèle
+          <select
+            className={`mt-1.5 ${selectClass}`}
+            value={values.model ?? ""}
+            disabled={!values.brand || models.length === 0}
+            onChange={(e) => update({ model: e.target.value || undefined })}
+          >
+            <option value="">{values.brand ? "Tous les modèles" : "Choisissez une marque"}</option>
+            {models.map((m) => (
+              <option key={m.slug} value={m.slug}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <label className={labelClass}>
         Année du véhicule
         <select

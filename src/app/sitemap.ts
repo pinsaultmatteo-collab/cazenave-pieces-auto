@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
 import { getArticles } from "@/lib/mag";
-import { getBrands, getCategories, getVehicles, listPartLinks, partHref, vehicleHref } from "@/lib/catalog";
+import { getBrands, getCategories, getVehicles, listModelLinks, listPartLinks, modelHref, partHref, vehicleHref } from "@/lib/catalog";
 
 /** Rendu mis en cache et rafraîchi au plus toutes les 60 minutes (stock synchronisé depuis Opisto). */
 export const revalidate = 3600;
@@ -25,9 +25,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/garantie`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
   ];
 
-  const [categories, brands, parts, vehicles] = await Promise.all([
+  const [categories, brands, models, parts, vehicles] = await Promise.all([
     getCategories(),
     getBrands(),
+    listModelLinks(),
     listPartLinks(),
     getVehicles({ perPage: 48 }),
   ]);
@@ -36,6 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...statics,
     ...categories.map((c) => ({ url: `${base}/pieces-auto/${c.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.8 })),
     ...brands.map((b) => ({ url: `${base}/pieces-auto/marques/${b.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.7 })),
+    ...models.map((m) => ({ url: `${base}${modelHref(m.brand, m.model)}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.7 })),
     ...parts.map((p) => ({ url: `${base}${partHref(p)}`, lastModified: new Date(p.updatedAt), changeFrequency: "weekly" as const, priority: 0.6 })),
     ...vehicles.items.map((v) => ({ url: `${base}${vehicleHref(v)}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 })),
     ...getArticles().map((a) => ({ url: `${base}/mag/${a.slug}`, lastModified: new Date(a.date), changeFrequency: "yearly" as const, priority: 0.5 })),

@@ -9,7 +9,7 @@ import { getDb } from "@/db";
 import { brands, categories, parts, ranges, subcategories, vehicles, type CategoryRow, type PartRow, type RangeRow, type SubCategoryRow, type VehicleRow } from "@/db/schema";
 import type { Brand, Category, DoorOption, Paginated, Part, PartCondition, PartSearch, Vehicle, VehicleModel, VehiclePhase } from "./types";
 import { slugify } from "@/lib/slug";
-import { PER_PAGE } from "./links";
+import { MODEL_PAGE_MIN_PARTS, PER_PAGE } from "./links";
 import { phasesForYear } from "./phases";
 
 const CONDITIONS: PartCondition[] = ["GOOD", "CORRECT", "BAD"];
@@ -283,6 +283,65 @@ const phasesForRanges = cache(async (key: string): Promise<PhaseWithIds[]> => {
   }
   return phases.sort((a, b) => (a.from ?? 9999) - (b.from ?? 9999) || a.label.localeCompare(b.label, "fr"));
 });
+
+/** Modèles (gammes) d'une marque avec leur nombre de pièces en stock, triés par nom. */
+export async function getModelsWithCounts(brandId: number): Promise<(VehicleModel & { count: number })[]> {
+  const group = [...(await brandGroups()).values()].find((g) => g.ids.includes(brandId));
+  const ids = group?.ids ?? [brandId];
+  const db = await getDb();
+  const rows = await db
+    .select({ slug: ranges.slug, name: sql<string>`min(${ranges.name})`, id: sql<number>`min(${ranges.id})`, n: count(parts.id) })
+    .from(ranges)
+    .innerJoin(parts, and(eq(parts.rangeId, ranges.id), LIVE))
+    .where(inArray(ranges.brandId, ids))
+    .groupBy(ranges.slug);
+  return rows
+    .map((r) => ({ id: Number(r.id), brandId: group?.id ?? brandId, slug: r.slug, name: r.name, count: Number(r.n) }))
+    .sort((a, b) => a.name.localeCompare(b.name, "fr", { numeric: true }));
+}
+
+/** Familles de pièces présentes pour une recherche, avec leur nombre de pièces (des plus fournies aux moins fournies). */
+export async function getCategoryFacets(params: PartSearch): Promise<{ slug: string; name: string; count: number }[]> {
+  const conds = await buildConditions(params);
+  if (!conds) return [];
+  const db = await getDb();
+  const [rows, cats] = await Promise.all([
+    db.select({ id: parts.categoryId, n: count() }).from(parts).where(and(...conds)).groupBy(parts.categoryId),
+    getCategories(),
+  ]);
+  return rows
+    .flatMap((r) => {
+      const c = cats.find((c) => c.id === r.id);
+      return c ? [{ slug: c.slug, name: c.name, count: Number(r.n) }] : [];
+    })
+    .sort((a, b) => b.count - a.count);
+}
+
+/** Pages modèles assez fournies pour être indexées (plan du site). */
+export async function listModelLinks(): Promise<{ brand: string; model: string; count: number }[]> {
+  const db = await getDb();
+  const rows = await db
+    .select({ brand: brands.slug, model: ranges.slug, n: count(parts.id) })
+    .from(ranges)
+    .innerJoin(brands, eq(brands.id, ranges.brandId))
+    .innerJoin(parts, and(eq(parts.rangeId, ranges.id), LIVE))
+    .groupBy(brands.slug, ranges.slug)
+    .having(sql`count(${parts.id}) >= ${MODEL_PAGE_MIN_PARTS}`);
+  return rows.map((r) => ({ brand: r.brand, model: r.model, count: Number(r.n) }));
+}
+
+/** Marque et modèle (gamme) d'une pièce, pour le lien vers la page modèle. */
+export async function getPartModel(partId: number): Promise<{ brand: string; brandName: string; model: string; modelName: string } | null> {
+  const db = await getDb();
+  const [row] = await db
+    .select({ brand: brands.slug, brandName: brands.name, model: ranges.slug, modelName: ranges.name })
+    .from(parts)
+    .innerJoin(ranges, eq(ranges.id, parts.rangeId))
+    .innerJoin(brands, eq(brands.id, ranges.brandId))
+    .where(eq(parts.id, partId))
+    .limit(1);
+  return row ?? null;
+}
 
 /** Phases disponibles pour un modèle (gamme) d'une marque. */
 export async function getPhases(brand: string | undefined, model: string): Promise<VehiclePhase[]> {

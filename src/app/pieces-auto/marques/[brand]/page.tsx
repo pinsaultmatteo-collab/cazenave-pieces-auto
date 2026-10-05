@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { CatalogSection, readCatalogParams } from "@/components/catalog/catalog-page";
-import { getBrandBySlug, getBrandCounts, getModels } from "@/lib/catalog";
+import { getBrandBySlug, getBrandCounts, getModelsWithCounts, modelHref } from "@/lib/catalog";
 import { photos } from "@/lib/photos";
 
 // Page rendue à la demande (stock synchronisé, filtres dans l'URL).
@@ -22,7 +22,7 @@ export default async function BrandPage({ params, searchParams }: PageProps<"/pi
   const { brand } = await params;
   const b = await getBrandBySlug(brand);
   if (!b) notFound();
-  const [models, counts] = await Promise.all([getModels(b.id), getBrandCounts()]);
+  const [models, counts] = await Promise.all([getModelsWithCounts(b.id), getBrandCounts()]);
   const sp = readCatalogParams(await searchParams);
 
   return (
@@ -43,14 +43,13 @@ export default async function BrandPage({ params, searchParams }: PageProps<"/pi
         {models.length > 0 && (
           <ul className="mt-8 flex flex-wrap gap-2">
             {models.map((m) => (
-              <li key={m.id}>
+              <li key={m.slug}>
                 <Link
-                  href={`/pieces-auto/marques/${b.slug}?modele=${m.slug}`}
-                  className={`rounded-full border px-3.5 py-2 text-xs font-bold transition ${
-                    sp.model === m.slug ? "border-brand bg-brand text-ink-900" : "border-white/15 bg-white/5 text-white hover:border-brand-400 hover:bg-white/10"
-                  }`}
+                  href={modelHref(b.slug, m.slug)}
+                  className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-2 text-xs font-bold text-white transition hover:border-brand-400 hover:bg-white/10"
                 >
                   {m.name}
+                  <span className="text-[10px] opacity-60">{m.count}</span>
                 </Link>
               </li>
             ))}

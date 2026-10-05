@@ -34,7 +34,25 @@ export async function getModels(brandId: number): Promise<VehicleModel[]> {
   return DEMO_MODELS.filter((m) => m.brandId === brandId);
 }
 
-/** Nombre de pièces disponibles par marque, pour l'index des marques. */
+export async function getModelsWithCounts(brandId: number): Promise<(VehicleModel & { count: number })[]> {
+  const models = await getModels(brandId);
+  return models.map((m) => ({ ...m, count: DEMO_PARTS.filter((p) => p.brandId === brandId && p.modelName === m.name).length }));
+}
+
+export async function getCategoryFacets(params: PartSearch): Promise<{ slug: string; name: string; count: number }[]> {
+  void params;
+  return [];
+}
+
+export async function listModelLinks(): Promise<{ brand: string; model: string; count: number }[]> {
+  return [];
+}
+
+export async function getPartModel(partId: number): Promise<{ brand: string; brandName: string; model: string; modelName: string } | null> {
+  void partId;
+  return null;
+}
+
 /** Le jeu de démonstration ne décrit pas les phases ni les portes. */
 export async function getPhases(...args: [brand: string | undefined, model: string]): Promise<VehiclePhase[]> {
   void args;
@@ -46,6 +64,7 @@ export async function getDoorOptions(params: PartSearch): Promise<DoorOption[]> 
   return [];
 }
 
+/** Nombre de pièces disponibles par marque, pour l'index des marques. */
 export async function getBrandCounts(): Promise<Record<number, number>> {
   const counts: Record<number, number> = {};
   for (const p of DEMO_PARTS) {

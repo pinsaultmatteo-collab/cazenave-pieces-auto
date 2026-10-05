@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { SearchIcon } from "@/components/icons";
 import { normalizePlate } from "@/lib/plate-format";
+import { modelHref } from "@/lib/catalog/links";
 
 type Tab = "immat" | "modele" | "reference";
 type Option = { slug: string; name: string; count?: number };
@@ -71,11 +72,8 @@ export function HeroSearch() {
   // Catalogue filtré sur le véhicule, sans paramètres vides dans l'adresse.
   const searchVehicle = (e: React.FormEvent) => {
     e.preventDefault();
-    const sp = new URLSearchParams();
-    if (brand) sp.set("marque", brand);
-    if (brand && model) sp.set("modele", model);
-    const qs = sp.toString();
-    router.push(qs ? `/pieces-auto?${qs}#recherche-resultats` : "/pieces-auto");
+    if (brand && model) return router.push(`${modelHref(brand, model)}#recherche-resultats`);
+    router.push(brand ? `/pieces-auto/marques/${brand}#recherche-resultats` : "/pieces-auto");
   };
 
   return (

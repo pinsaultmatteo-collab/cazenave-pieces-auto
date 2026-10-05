@@ -4,6 +4,14 @@
  */
 import type { Part, Vehicle } from "./types";
 
+/** En dessous de ce nombre de pièces, une page modèle n'est pas indexée (contenu trop mince). */
+export const MODEL_PAGE_MIN_PARTS = 5;
+
+/** Page « Pièces {marque} {modèle} d'occasion ». */
+export function modelHref(brandSlug: string, modelSlug: string): string {
+  return `/pieces-auto/marques/${brandSlug}/${modelSlug}`;
+}
+
 export const PER_PAGE = 12;
 
 export function partHref(part: Pick<Part, "id" | "slug">): string {
