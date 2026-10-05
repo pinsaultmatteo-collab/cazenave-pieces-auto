@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { partHref } from "@/lib/catalog/links";
 import type { Part } from "@/lib/catalog/types";
 import { CheckIcon, TruckIcon } from "@/components/icons";
 import { Price, ProAmount } from "./Price";
+import { PartPhoto } from "@/components/catalog/PartPhoto";
 
 const CONDITION_LABEL: Record<Part["condition"], string> = {
   GOOD: "Bon état",
@@ -15,17 +15,15 @@ export function PartCard({ part, priority = false }: { part: Part; priority?: bo
   const vehicle = [part.brandName, part.modelName].filter(Boolean).join(" ");
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/10">
-      {/* Photo entière (object-contain) sur fond blanc : les photos Scancube sont carrées sur fond blanc,
-          un recadrage 4:3 couperait la pièce ; les photos d'atelier 4:3 remplissent le cadre comme avant. */}
       <Link href={partHref(part)} className="relative block aspect-[4/3] overflow-hidden bg-white">
         {part.vignette ? (
-          <Image
+          <PartPhoto
             src={part.vignette}
             alt={`${part.name} ${vehicle}`.trim()}
             fill
             preload={priority}
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            className="object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+            className="transition-transform duration-700 ease-out group-hover:scale-105"
           />
         ) : (
           <span className="flex h-full items-center justify-center text-sm text-steel">Photo à venir</span>

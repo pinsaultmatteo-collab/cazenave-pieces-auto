@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { CART_OPEN_EVENT, getCart, removeFromCart, subscribeCart } from "@/lib/cart";
@@ -15,6 +14,7 @@ import { Price } from "@/components/catalog/Price";
 import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 import { site } from "@/lib/site";
 import { CartIcon, CheckIcon, CloseIcon, LockIcon, TruckIcon } from "@/components/icons";
+import { PartPhoto } from "@/components/catalog/PartPhoto";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -222,7 +222,7 @@ function CartDrawer({ open, ids, onClose, paymentEnabled }: { open: boolean; ids
                       >
                         <Link href={partHref(p)} onClick={onClose} className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl bg-mist">
                           {p.vignette ? (
-                            <Image src={p.vignette} alt="" fill sizes="80px" className="bg-white object-contain" />
+                            <PartPhoto src={p.vignette} alt="" fill sizes="80px" />
                           ) : (
                             <span className="flex h-full items-center justify-center text-[10px] text-steel">Photo à venir</span>
                           )}

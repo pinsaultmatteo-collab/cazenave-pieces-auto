@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { getCart, getDeliveryMode, setDeliveryMode as saveDeliveryMode, subscribeCart, type DeliveryMode } from "@/lib/cart";
 import type { Part } from "@/lib/catalog/types";
@@ -12,6 +11,7 @@ import { Price } from "@/components/catalog/Price";
 import { site } from "@/lib/site";
 import { checkoutSchema, type CheckoutInput } from "@/lib/orders/schema";
 import { CheckIcon, LockIcon, PinIcon, TruckIcon } from "@/components/icons";
+import { PartPhoto } from "@/components/catalog/PartPhoto";
 
 type Address = { firstname: string; lastname: string; company: string; phone: string; street: string; streetAdditional: string; postcode: string; city: string };
 const EMPTY_ADDRESS: Address = { firstname: "", lastname: "", company: "", phone: "", street: "", streetAdditional: "", postcode: "", city: "" };
@@ -298,7 +298,7 @@ export function CheckoutForm({ cancelled }: { cancelled?: string }) {
           {parts.map((p) => (
             <li key={p.id} className="flex gap-3 py-3">
               <span className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-mist">
-                {p.vignette && <Image src={p.vignette} alt="" fill sizes="80px" className="bg-white object-contain" />}
+                {p.vignette && <PartPhoto src={p.vignette} alt="" fill sizes="80px" />}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-bold text-ink">{p.name}</span>

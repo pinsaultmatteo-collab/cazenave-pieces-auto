@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/site/PageHero";
 import { LoginForm } from "@/components/account/LoginForm";
@@ -10,6 +9,7 @@ import { formatPrice } from "@/lib/format";
 import { site } from "@/lib/site";
 import { CheckIcon, ChevronRightIcon, PinIcon, TruckIcon } from "@/components/icons";
 import type { OrderRow } from "@/db/schema";
+import { PartPhoto } from "@/components/catalog/PartPhoto";
 
 export const metadata: Metadata = { title: "Mon compte", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -38,7 +38,7 @@ function OrderLine({ order }: { order: OrderRow }) {
         {order.items.map((i) => (
           <li key={i.id} className="flex items-center gap-3 text-sm">
             <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-lg bg-mist">
-              {i.photo && <Image src={i.photo} alt="" fill sizes="56px" className="bg-white object-contain" />}
+              {i.photo && <PartPhoto src={i.photo} alt="" fill sizes="56px" />}
             </span>
             <span className="min-w-0 flex-1 truncate">
               <span className="font-semibold text-ink">{i.name}</span>

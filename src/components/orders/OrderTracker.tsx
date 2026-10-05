@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import type { TrackedOrder, TrackStage } from "@/lib/orders/track";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/lib/site";
 import { CheckIcon, ClockIcon, PhoneIcon, PinIcon, SearchIcon, TruckIcon } from "@/components/icons";
+import { PartPhoto } from "@/components/catalog/PartPhoto";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const inputBase =
@@ -281,7 +281,7 @@ function OrderView({ order }: { order: TrackedOrder }) {
           {order.items.map((i) => (
             <li key={i.id} className="flex items-center gap-3 py-3">
               <span className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-mist">
-                {i.photo && <Image src={i.photo} alt="" fill sizes="80px" className="bg-white object-contain" />}
+                {i.photo && <PartPhoto src={i.photo} alt="" fill sizes="80px" />}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-bold text-ink">{i.name}</span>

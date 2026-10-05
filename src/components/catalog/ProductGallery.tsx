@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
+import { PartPhoto } from "@/components/catalog/PartPhoto";
 
 /** Galerie photo d'une fiche : image principale, flèches, clavier et vignettes. */
 export function ProductGallery({ photos, alt }: { photos: string[]; alt: string }) {
@@ -48,7 +48,7 @@ export function ProductGallery({ photos, alt }: { photos: string[]; alt: string 
             transition={{ duration: 0.3 }}
             className="absolute inset-0"
           >
-            <Image src={list[index]} alt={`${alt} · photo ${index + 1}`} fill preload sizes="(min-width: 1024px) 55vw, 100vw" className="object-contain" />
+            <PartPhoto src={list[index]} alt={`${alt} · photo ${index + 1}`} fill preload sizes="(min-width: 1024px) 55vw, 100vw" />
           </motion.div>
         </AnimatePresence>
         {count > 1 && (
@@ -76,7 +76,7 @@ export function ProductGallery({ photos, alt }: { photos: string[]; alt: string 
                 aria-current={i === index}
                 className={`relative h-20 w-24 overflow-hidden rounded-xl border-2 transition ${i === index ? "border-brand" : "border-transparent opacity-70 hover:opacity-100"}`}
               >
-                <Image src={p} alt="" fill sizes="96px" className="bg-white object-contain" />
+                <PartPhoto src={p} alt="" fill sizes="96px" />
               </button>
             </li>
           ))}
