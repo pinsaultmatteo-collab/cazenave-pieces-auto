@@ -159,7 +159,7 @@ export function SearchBox({ id, inline = false, className = "", placeholder = "R
                     <Link href={p.href} onClick={() => setOpen(false)} className={rowClass(`p${p.id}`)}>
                       <span className="relative h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-mist">
                         {p.photo ? (
-                          <Image src={p.photo} alt="" fill sizes="64px" className="object-cover" />
+                          <Image src={p.photo} alt="" fill sizes="64px" className="bg-white object-contain" />
                         ) : (
                           <span className="flex h-full items-center justify-center text-[10px] text-steel">Photo à venir</span>
                         )}

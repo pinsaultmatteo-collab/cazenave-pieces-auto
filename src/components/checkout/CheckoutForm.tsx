@@ -298,7 +298,7 @@ export function CheckoutForm({ cancelled }: { cancelled?: string }) {
           {parts.map((p) => (
             <li key={p.id} className="flex gap-3 py-3">
               <span className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-mist">
-                {p.vignette && <Image src={p.vignette} alt="" fill sizes="80px" className="object-cover" />}
+                {p.vignette && <Image src={p.vignette} alt="" fill sizes="80px" className="bg-white object-contain" />}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-bold text-ink">{p.name}</span>

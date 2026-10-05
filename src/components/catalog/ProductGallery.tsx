@@ -25,7 +25,7 @@ export function ProductGallery({ photos, alt }: { photos: string[]; alt: string 
   return (
     <div className="min-w-0">
       <div
-        className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-mist shadow-xl shadow-ink/10 focus:outline-none"
+        className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-white shadow-xl shadow-ink/10 focus:outline-none"
         tabIndex={count > 1 ? 0 : -1}
         onKeyDown={(e) => {
           if (e.key === "ArrowLeft") {
@@ -48,7 +48,7 @@ export function ProductGallery({ photos, alt }: { photos: string[]; alt: string 
             transition={{ duration: 0.3 }}
             className="absolute inset-0"
           >
-            <Image src={list[index]} alt={`${alt} · photo ${index + 1}`} fill preload sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
+            <Image src={list[index]} alt={`${alt} · photo ${index + 1}`} fill preload sizes="(min-width: 1024px) 55vw, 100vw" className="object-contain" />
           </motion.div>
         </AnimatePresence>
         {count > 1 && (
@@ -76,7 +76,7 @@ export function ProductGallery({ photos, alt }: { photos: string[]; alt: string 
                 aria-current={i === index}
                 className={`relative h-20 w-24 overflow-hidden rounded-xl border-2 transition ${i === index ? "border-brand" : "border-transparent opacity-70 hover:opacity-100"}`}
               >
-                <Image src={p} alt="" fill sizes="96px" className="object-cover" />
+                <Image src={p} alt="" fill sizes="96px" className="bg-white object-contain" />
               </button>
             </li>
           ))}

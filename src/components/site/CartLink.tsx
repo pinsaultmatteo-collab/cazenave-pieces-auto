@@ -222,7 +222,7 @@ function CartDrawer({ open, ids, onClose, paymentEnabled }: { open: boolean; ids
                       >
                         <Link href={partHref(p)} onClick={onClose} className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl bg-mist">
                           {p.vignette ? (
-                            <Image src={p.vignette} alt="" fill sizes="80px" className="object-cover" />
+                            <Image src={p.vignette} alt="" fill sizes="80px" className="bg-white object-contain" />
                           ) : (
                             <span className="flex h-full items-center justify-center text-[10px] text-steel">Photo à venir</span>
                           )}
