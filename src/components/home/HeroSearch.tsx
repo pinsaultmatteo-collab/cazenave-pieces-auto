@@ -77,7 +77,7 @@ export function HeroSearch() {
   };
 
   return (
-    <div className="rounded-2xl border-t-4 border-brand bg-white p-5 shadow-2xl shadow-black/40 sm:p-7">
+    <div className="rounded-2xl border-t-4 border-brand bg-white p-5 text-ink shadow-2xl shadow-black/40 sm:p-7">
       <div role="tablist" aria-label="Mode de recherche" className="flex gap-1 rounded-xl bg-mist p-1">
         {tabs.map((t) => {
           const active = t.id === tab;
@@ -160,7 +160,7 @@ export function HeroSearch() {
                 setModel("");
               }}
               disabled={!brands}
-              className="mt-2 w-full rounded-lg border-2 border-line bg-white px-3 py-3 text-sm font-semibold outline-none focus:border-brand disabled:bg-mist disabled:text-steel"
+              className="mt-2 w-full rounded-lg border-2 border-line bg-white px-3 py-3 text-sm font-semibold text-ink outline-none focus:border-brand disabled:bg-mist disabled:text-steel"
             >
               <option value="">{brands ? "Toutes marques" : "Chargement…"}</option>
               {brands?.map((b) => (
@@ -181,7 +181,7 @@ export function HeroSearch() {
               value={model}
               onChange={(e) => setModel(e.target.value)}
               disabled={!brand || !models?.length}
-              className="mt-2 w-full rounded-lg border-2 border-line bg-white px-3 py-3 text-sm font-semibold outline-none focus:border-brand disabled:bg-mist disabled:text-steel"
+              className="mt-2 w-full rounded-lg border-2 border-line bg-white px-3 py-3 text-sm font-semibold text-ink outline-none focus:border-brand disabled:bg-mist disabled:text-steel"
             >
               <option value="">{!brand ? "Choisissez une marque" : models ? "Tous modèles" : "Chargement…"}</option>
               {models?.map((m) => (
@@ -213,7 +213,7 @@ export function HeroSearch() {
               type="text"
               autoComplete="off"
               placeholder="Ex. 9661087680"
-              className="w-full flex-1 rounded-lg border-2 border-line px-4 py-3 text-sm font-semibold outline-none focus:border-brand"
+              className="w-full flex-1 rounded-lg border-2 border-line bg-white px-4 py-3 text-sm font-semibold text-ink outline-none placeholder:text-steel/60 focus:border-brand"
             />
             <button
               type="submit"
