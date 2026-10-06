@@ -10,6 +10,7 @@ import { formatPrice } from "@/lib/format";
 import { site } from "@/lib/site";
 import { CheckIcon, ClockIcon, PhoneIcon, PinIcon, TruckIcon } from "@/components/icons";
 import type { OrderRow } from "@/db/schema";
+import { TrackPurchase } from "@/components/analytics/Track";
 
 export const metadata: Metadata = { title: "Confirmation de commande", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -51,6 +52,23 @@ export default async function ConfirmationPage({ searchParams }: PageProps<"/com
         compact
       />
       {paid && <ClearCart />}
+      {paid && (
+        <TrackPurchase
+          transactionId={number}
+          value={Number(order.totalTtc)}
+          shipping={Number(order.shippingTtc)}
+          discount={order.proDiscountRate ? discountTotal(order) : undefined}
+          items={order.items.map((i, index) => ({
+            item_id: String(i.id),
+            item_name: i.name,
+            ...(i.brandName ? { item_brand: i.brandName } : {}),
+            ...(i.modelName ? { item_variant: [i.brandName, i.modelName].filter(Boolean).join(" ") } : {}),
+            price: i.priceTtc,
+            quantity: 1 as const,
+            index,
+          }))}
+        />
+      )}
       <div className="container-x grid gap-8 py-10 lg:grid-cols-[1.2fr_0.8fr] lg:py-14">
         <div className="space-y-6">
           <div className={`rounded-3xl border p-6 ${paid ? "border-brand-200 bg-brand-50" : "border-amber-200 bg-amber-50"}`}>

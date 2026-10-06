@@ -3,6 +3,7 @@ import Link from "next/link";
 import logoWhite from "@/assets/brand/logo-white.png";
 import logoPmc from "@/assets/brand/pmc-marketing.png";
 import { site } from "@/lib/site";
+import { CookieSettingsLink } from "@/components/analytics/CookieBanner";
 
 const columns = [
   {
@@ -135,7 +136,8 @@ export function Footer() {
           <p>
             © {year} {site.name} · Tous droits réservés · Agrément préfectoral {site.agrement}
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <CookieSettingsLink className="hover:text-white" />
             <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-white">
               Facebook
             </a>

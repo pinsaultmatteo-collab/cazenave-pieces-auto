@@ -135,7 +135,20 @@ export async function CatalogSection({ basePath, params, fixed }: CatalogSection
         total={result.total}
       />
       <div className="mt-8">
-        <PartsGrid parts={result.items} />
+        <PartsGrid
+          parts={result.items}
+          list={
+            fixed?.model
+              ? { id: "page_modele", name: "Page modèle" }
+              : fixed?.brand
+                ? { id: "page_marque", name: "Page marque" }
+                : fixed?.category
+                  ? { id: "page_categorie", name: "Page catégorie" }
+                  : basePath === "/recherche"
+                    ? { id: "recherche", name: "Résultats de recherche" }
+                    : { id: "catalogue", name: "Catalogue" }
+          }
+        />
       </div>
       <Pagination page={result.page} pages={result.pages} basePath={basePath} params={urlParams} />
     </div>

@@ -4,7 +4,11 @@ import "./globals.css";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
+import Script from "next/script";
 import { Webchat } from "@/components/site/Webchat";
+import { Analytics } from "@/components/analytics/Analytics";
+import { CookieBanner } from "@/components/analytics/CookieBanner";
+import { gtagBootstrap } from "@/components/analytics/gtag-bootstrap";
 import { site } from "@/lib/site";
 
 const montserrat = Montserrat({
@@ -24,6 +28,12 @@ const barlow = Barlow_Condensed({
 });
 
 const isProduction = process.env.VERCEL_ENV === "production";
+
+// Google Analytics 4 (flux « cazenave-ga4 ») : en production uniquement, pour ne pas mêler
+// les visites de test aux vraies. GA_MEASUREMENT_ID permet de tester ailleurs ;
+// GOOGLE_ADS_ID (AW-…) activera le suivi des conversions Google Ads le moment venu.
+const GA_ID = process.env.GA_MEASUREMENT_ID || (isProduction ? "G-3MHZ6HNL5V" : "");
+const ADS_ID = process.env.GOOGLE_ADS_ID || undefined;
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -45,12 +55,23 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="fr" className={`${montserrat.variable} ${barlow.variable} h-full`}>
       <body className="flex min-h-full flex-col">
+        {GA_ID && (
+          <Script id="gtag-bootstrap" strategy="beforeInteractive">
+            {gtagBootstrap(GA_ID, ADS_ID)}
+          </Script>
+        )}
         <SmoothScroll>
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
         </SmoothScroll>
         <Webchat />
+        {GA_ID && (
+          <>
+            <Analytics />
+            <CookieBanner />
+          </>
+        )}
       </body>
     </html>
   );

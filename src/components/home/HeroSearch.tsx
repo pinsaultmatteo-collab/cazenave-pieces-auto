@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { SearchIcon } from "@/components/icons";
 import { normalizePlate } from "@/lib/plate-format";
 import { modelHref } from "@/lib/catalog/links";
+import { track } from "@/lib/analytics";
 
 type Tab = "immat" | "modele" | "reference";
 type Option = { slug: string; name: string; count?: number };
@@ -66,12 +67,15 @@ export function HeroSearch() {
       return;
     }
     setPlateError(null);
+    // La plaque n'est pas transmise à Google (donnée personnelle) : seul le type de recherche l'est
+    track("search", { search_term: "immatriculation", search_type: "plaque" });
     startSearch(() => router.push(`/recherche?immat=${encodeURIComponent(plate)}`));
   };
 
   // Catalogue filtré sur le véhicule, sans paramètres vides dans l'adresse.
   const searchVehicle = (e: React.FormEvent) => {
     e.preventDefault();
+    track("search", { search_term: [brand, model].filter(Boolean).join(" ") || "toutes marques", search_type: "marque_modele" });
     if (brand && model) return router.push(`${modelHref(brand, model)}#recherche-resultats`);
     router.push(brand ? `/pieces-auto/marques/${brand}#recherche-resultats` : "/pieces-auto");
   };
@@ -202,7 +206,12 @@ export function HeroSearch() {
       )}
 
       {tab === "reference" && (
-        <form action="/recherche" method="get" className="mt-4">
+        <form
+          action="/recherche"
+          method="get"
+          className="mt-4"
+          onSubmit={(e) => track("search", { search_term: String(new FormData(e.currentTarget).get("ref") ?? "").trim(), search_type: "reference" })}
+        >
           <label htmlFor="ref" className="text-xs font-bold uppercase tracking-wide text-steel">
             Référence constructeur ou équipementier
           </label>

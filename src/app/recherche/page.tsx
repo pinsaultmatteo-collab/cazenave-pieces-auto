@@ -195,7 +195,7 @@ export default async function SearchPage({ searchParams }: PageProps<"/recherche
                   </h2>
                   <p className="mt-1 text-sm text-steel">Même modèle et même version : la compatibilité est la plus sûre.</p>
                   <div className="mt-5">
-                    <PartsGrid parts={exact.items} />
+                    <PartsGrid parts={exact.items} list={{ id: "recherche_plaque", name: "Recherche par plaque" }} />
                   </div>
                 </section>
               )}

@@ -13,6 +13,8 @@ import { PartCard } from "@/components/catalog/PartCard";
 import { Price, ProAmount } from "@/components/catalog/Price";
 import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
 import { phasePeriod } from "@/lib/catalog/phases";
+import { toGaItem } from "@/lib/analytics";
+import { TrackItemList, TrackViewItem } from "@/components/analytics/Track";
 
 /** Rendu mis en cache et rafraîchi au plus toutes les 10 minutes (stock synchronisé depuis Opisto). */
 export const revalidate = 600;
@@ -142,7 +144,7 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
             </div>
 
             <div className="mt-6">
-              <AddToCartButton partId={part.id} available={canBuy} />
+              <AddToCartButton partId={part.id} available={canBuy} gaItem={toGaItem(part)} />
             </div>
 
             <ul className="mt-6 space-y-2.5 text-sm text-ink">
@@ -216,7 +218,8 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
         <section className="bg-mist">
           <div className="container-x py-14">
             <h2 className="display-title text-3xl text-ink sm:text-4xl">Vous pourriez aussi avoir besoin de</h2>
-            <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <TrackItemList id="fiche_pieces_associees" name="Fiche – pièces associées" items={related.map((p, i) => toGaItem(p, i))} />
+            <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-ga-list="fiche_pieces_associees" data-ga-list-name="Fiche – pièces associées">
               {related.map((p) => (
                 <li key={p.id}>
                   <PartCard part={p} />
@@ -228,6 +231,7 @@ export default async function PartPage({ params }: PageProps<"/piece/[slug]">) {
       )}
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <TrackViewItem item={toGaItem(part)} />
     </>
   );
 }

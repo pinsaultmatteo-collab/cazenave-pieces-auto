@@ -3,9 +3,12 @@
 import { useEffect, useState } from "react";
 import { addToCart, isInCart, openCartDrawer, subscribeCart } from "@/lib/cart";
 import { CartIcon, CheckIcon } from "@/components/icons";
+import { trackItems, withRate, type GaItem } from "@/lib/analytics";
+import { useDiscountRate } from "@/lib/account/client";
 
-export function AddToCartButton({ partId, available }: { partId: number; available: boolean }) {
+export function AddToCartButton({ partId, available, gaItem }: { partId: number; available: boolean; gaItem?: GaItem }) {
   const [inCart, setInCart] = useState(false);
+  const rate = useDiscountRate();
 
   useEffect(() => {
     const sync = () => setInCart(isInCart(partId));
@@ -43,6 +46,7 @@ export function AddToCartButton({ partId, available }: { partId: number; availab
       type="button"
       onClick={() => {
         addToCart(partId);
+        if (gaItem) trackItems("add_to_cart", withRate([gaItem], rate));
         openCartDrawer();
       }}
       className="flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-4 text-sm font-bold uppercase tracking-wide text-ink-900 transition hover:bg-brand-400 hover:shadow-[0_0_30px_rgba(152,174,7,0.4)]"

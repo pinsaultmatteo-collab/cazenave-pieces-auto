@@ -250,3 +250,9 @@ html.lenis body {
     display: none;
   }
 }
+
+/* Bandeau cookies ouvert : la bulle du chat Locomotive ne doit pas le recouvrir
+   (!important : Locomotive réinitialise tous les styles de sa bulle en ligne) */
+html[data-cookie-banner="open"] #loco-webchat {
+  visibility: hidden !important;
+}

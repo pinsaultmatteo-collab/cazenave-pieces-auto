@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { setAccount } from "@/lib/account/client";
 import type { PublicAccount } from "@/lib/account/pricing";
 import { CheckIcon, LockIcon } from "@/components/icons";
+import { track } from "@/lib/analytics";
 
 const inputBase =
   "block h-12 w-full rounded-xl border border-line bg-mist/60 px-4 text-sm text-ink outline-none transition placeholder:text-steel/80 focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15";
@@ -52,6 +53,7 @@ export function LoginForm({ intro, onDone }: { intro?: string; onDone?: (account
       const json = (await res.json()) as { account?: PublicAccount; error?: string };
       if (!res.ok || !json.account) throw new Error(json.error ?? "Connexion impossible");
       setAccount(json.account);
+      track("login", { method: "Code par e-mail", account_type: json.account.isPro ? "pro" : "particulier" });
       onDone?.(json.account);
       router.refresh();
     } catch (err) {

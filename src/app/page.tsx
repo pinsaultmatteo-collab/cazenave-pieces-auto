@@ -22,6 +22,8 @@ import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
 import { ParallaxBanner } from "@/components/motion/ParallaxBanner";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { CheckIcon, ChevronRightIcon, PhoneIcon, ShieldIcon, TruckIcon } from "@/components/icons";
+import { TrackItemList } from "@/components/analytics/Track";
+import { toGaItem } from "@/lib/analytics";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
@@ -147,26 +149,29 @@ export default async function HomePage() {
               link="Toutes les nouveautés"
             />
           </Reveal>
-          <Stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
-            {latest.length > 0
-              ? latest.map((part) => (
-                  <StaggerItem key={part.id}>
-                    <PartCard part={part} />
-                  </StaggerItem>
-                ))
-              : Array.from({ length: 4 }).map((_, i) => (
-                  <StaggerItem key={i} className="overflow-hidden rounded-2xl border border-line bg-white" aria-busy="true">
-                    <div className="relative aspect-[4/3] overflow-hidden bg-ink-50">
-                      <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent motion-reduce:animate-none" />
-                    </div>
-                    <div className="space-y-2 p-4">
-                      <div className="h-4 w-3/4 rounded bg-ink-50" />
-                      <div className="h-3 w-1/2 rounded bg-ink-50" />
-                      <div className="h-6 w-1/3 rounded bg-brand-100" />
-                    </div>
-                  </StaggerItem>
-                ))}
-          </Stagger>
+          {latest.length > 0 && <TrackItemList id="accueil_nouveautes" name="Accueil – dernières pièces" items={latest.map((p, i) => toGaItem(p, i))} />}
+          <div data-ga-list="accueil_nouveautes" data-ga-list-name="Accueil – dernières pièces">
+            <Stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
+              {latest.length > 0
+                ? latest.map((part) => (
+                    <StaggerItem key={part.id}>
+                      <PartCard part={part} />
+                    </StaggerItem>
+                  ))
+                : Array.from({ length: 4 }).map((_, i) => (
+                    <StaggerItem key={i} className="overflow-hidden rounded-2xl border border-line bg-white" aria-busy="true">
+                      <div className="relative aspect-[4/3] overflow-hidden bg-ink-50">
+                        <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent motion-reduce:animate-none" />
+                      </div>
+                      <div className="space-y-2 p-4">
+                        <div className="h-4 w-3/4 rounded bg-ink-50" />
+                        <div className="h-3 w-1/2 rounded bg-ink-50" />
+                        <div className="h-6 w-1/3 rounded bg-brand-100" />
+                      </div>
+                    </StaggerItem>
+                  ))}
+            </Stagger>
+          </div>
         </div>
       </section>
 

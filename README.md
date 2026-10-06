@@ -57,6 +57,14 @@ Le site tourne sur http://localhost:3000.
 - Session : cookie signé `cz_session` (30 jours). Clé `SESSION_SECRET` conseillée, sinon `ORDERS_TOKEN_SECRET` ou `SYNC_SECRET`.
 - « Mon compte » liste les commandes payées sur le site (e-mail de commande ou compte connecté). L'API Opisto ne permet pas de lister les achats faits au comptoir : ils se suivent avec leur numéro de transaction.
 
+## Mesure d'audience (Google Analytics 4)
+
+- Flux GA4 `cazenave-ga4` (`G-3MHZ6HNL5V`), actif en production uniquement. `GA_MEASUREMENT_ID` permet de tester sur un autre environnement ; `GOOGLE_ADS_ID` (`AW-…`) activera le suivi des conversions Google Ads.
+- Consentement (CNIL) : bandeau `src/components/analytics/CookieBanner.tsx`, mode consentement v2 de Google en version de base. La balise Google n'est chargée qu'après accord ; choix redemandé au bout de 6 mois, modifiable via « Gestion des cookies » en pied de page.
+- Événements e-commerce (`src/lib/analytics.ts`) : `view_item_list`, `select_item`, `view_item`, `add_to_cart`, `view_cart`, `remove_from_cart`, `begin_checkout`, `add_shipping_info`, `add_payment_info`, `purchase` (numéro de transaction Opisto). Autres : `search`, `generate_lead` (formulaires), `job_application`, `login`, `contact_click` (téléphone, SMS, e-mail, WhatsApp). Pages vues : mesure améliorée de GA4.
+- Jamais transmis à Google : nom, e-mail, adresse, plaque d'immatriculation, jeton de commande (paramètres `t`, `session_id`, `immat` retirés de l'adresse).
+- Tester : `localStorage.setItem("cazenave.ga-debug", "1")` puis recharger la page pour voir les événements dans DebugView.
+
 ## Organisation
 
 - `src/app` — pages et routes (App Router)

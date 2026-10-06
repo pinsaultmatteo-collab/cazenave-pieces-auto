@@ -14,7 +14,7 @@ const CONDITION_LABEL: Record<Part["condition"], string> = {
 export function PartCard({ part, priority = false }: { part: Part; priority?: boolean }) {
   const vehicle = [part.brandName, part.modelName].filter(Boolean).join(" ");
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/10">
+    <article data-ga-item-id={part.id} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/10">
       <Link href={partHref(part)} className="relative block aspect-[4/3] overflow-hidden bg-white">
         {part.vignette ? (
           <PartPhoto

@@ -2,8 +2,21 @@ import Link from "next/link";
 import type { Part } from "@/lib/catalog/types";
 import { PartCard } from "./PartCard";
 import { site } from "@/lib/site";
+import { toGaItem } from "@/lib/analytics";
+import { TrackItemList } from "@/components/analytics/Track";
 
-export function PartsGrid({ parts, emptyTitle = "Aucune pièce ne correspond à votre recherche" }: { parts: Part[]; emptyTitle?: string }) {
+/** Liste suivie dans Google Analytics (view_item_list, select_item). */
+export type GaList = { id: string; name: string };
+
+export function PartsGrid({
+  parts,
+  emptyTitle = "Aucune pièce ne correspond à votre recherche",
+  list,
+}: {
+  parts: Part[];
+  emptyTitle?: string;
+  list?: GaList;
+}) {
   if (parts.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-line bg-white p-10 text-center">
@@ -24,7 +37,8 @@ export function PartsGrid({ parts, emptyTitle = "Aucune pièce ne correspond à 
     );
   }
   return (
-    <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-ga-list={list?.id} data-ga-list-name={list?.name}>
+      {list && <TrackItemList id={list.id} name={list.name} items={parts.map((p, i) => toGaItem(p, i))} />}
       {/* Pas de préchargement : la grille est sous l'en-tête, la photo d'en-tête passe d'abord */}
       {parts.map((p) => (
         <li key={p.id}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { getCart, getDeliveryMode, setDeliveryMode as saveDeliveryMode, subscribeCart, type DeliveryMode } from "@/lib/cart";
 import type { Part } from "@/lib/catalog/types";
@@ -12,6 +12,7 @@ import { site } from "@/lib/site";
 import { checkoutSchema, type CheckoutInput } from "@/lib/orders/schema";
 import { CheckIcon, LockIcon, PinIcon, TruckIcon } from "@/components/icons";
 import { PartPhoto } from "@/components/catalog/PartPhoto";
+import { toGaItem, trackItems, withRate } from "@/lib/analytics";
 
 type Address = { firstname: string; lastname: string; company: string; phone: string; street: string; streetAdditional: string; postcode: string; city: string };
 const EMPTY_ADDRESS: Address = { firstname: "", lastname: "", company: "", phone: "", street: "", streetAdditional: "", postcode: "", city: "" };
@@ -131,6 +132,14 @@ export function CheckoutForm({ cancelled }: { cancelled?: string }) {
   const shipping = mode === "shipping" ? (parts ?? []).reduce((s, p) => s + (p.shippingCost ?? 0), 0) : 0;
   const total = subtotal + shipping;
 
+  // Début de commande : un envoi par visite, une fois le panier chargé
+  const checkoutTracked = useRef(false);
+  useEffect(() => {
+    if (!parts?.length || checkoutTracked.current) return;
+    checkoutTracked.current = true;
+    trackItems("begin_checkout", withRate(parts.map((p, i) => toGaItem(p, i)), rate));
+  }, [parts, rate]);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!parts?.length) return;
@@ -157,6 +166,10 @@ export function CheckoutForm({ cancelled }: { cancelled?: string }) {
     }
     setErrors({});
     setSubmitting(true);
+    // Formulaire valide : mode de remise choisi, puis départ vers le paiement par carte
+    const gaItems = withRate(parts.map((p, i) => toGaItem(p, i)), rate);
+    trackItems("add_shipping_info", gaItems, { shipping_tier: mode === "shipping" ? "Livraison" : "Retrait au comptoir" });
+    trackItems("add_payment_info", gaItems, { payment_type: "Carte bancaire" });
     try {
       const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
       const json = (await res.json()) as { url?: string; error?: string; code?: string; details?: { ids?: number[] } };

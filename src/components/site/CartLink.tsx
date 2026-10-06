@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -15,6 +15,7 @@ import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 import { site } from "@/lib/site";
 import { CartIcon, CheckIcon, CloseIcon, LockIcon, TruckIcon } from "@/components/icons";
 import { PartPhoto } from "@/components/catalog/PartPhoto";
+import { toGaItem, trackItems, withRate } from "@/lib/analytics";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -131,9 +132,21 @@ function CartDrawer({ open, ids, onClose, paymentEnabled }: { open: boolean; ids
   }, [open, onClose]);
 
   const loading = ids.length > 0 && (!fetched || fetched.key !== idsKey);
-  const parts = !ids.length ? [] : fetched && fetched.key === idsKey ? fetched.parts : [];
+  const parts = useMemo(() => (!ids.length ? [] : fetched && fetched.key === idsKey ? fetched.parts : []), [ids.length, fetched, idsKey]);
   const rate = useDiscountRate();
   const subtotal = parts.reduce((s, p) => s + proPrice(p.priceTtc, rate), 0);
+
+  // Panier consulté : un envoi par ouverture du volet, une fois les pièces chargées
+  const viewed = useRef(false);
+  useEffect(() => {
+    if (!open) {
+      viewed.current = false;
+      return;
+    }
+    if (loading || viewed.current || parts.length === 0) return;
+    viewed.current = true;
+    trackItems("view_cart", withRate(parts.map((p, i) => toGaItem(p, i)), rate));
+  }, [open, loading, parts, rate]);
   const allShip = parts.length > 0 && parts.every((p) => p.shippingAvailable);
   const shipping = parts.reduce((s, p) => s + (p.shippingCost ?? 0), 0);
 
@@ -237,7 +250,10 @@ function CartDrawer({ open, ids, onClose, paymentEnabled }: { open: boolean; ids
                           </p>
                           <button
                             type="button"
-                            onClick={() => removeFromCart(p.id)}
+                            onClick={() => {
+                              trackItems("remove_from_cart", withRate([toGaItem(p)], rate));
+                              removeFromCart(p.id);
+                            }}
                             className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-steel transition hover:text-red-600"
                             aria-label={`Retirer ${p.name} du panier`}
                           >

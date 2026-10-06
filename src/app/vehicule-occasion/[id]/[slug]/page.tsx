@@ -113,7 +113,7 @@ export default async function VehiclePage({ params }: PageProps<"/vehicule-occas
         <div className="container-x py-14">
           <h2 className="display-title text-3xl text-ink sm:text-4xl">Pièces disponibles issues de ce véhicule</h2>
           <div className="mt-8">
-            <PartsGrid parts={parts.items} emptyTitle="Aucune pièce de ce véhicule n'est encore en ligne" />
+            <PartsGrid parts={parts.items} emptyTitle="Aucune pièce de ce véhicule n'est encore en ligne" list={{ id: "vehicule_origine", name: "Véhicule d'origine" }} />
           </div>
         </div>
       </section>

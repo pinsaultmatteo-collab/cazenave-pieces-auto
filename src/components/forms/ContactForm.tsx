@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { site } from "@/lib/site";
 import { CheckIcon, PhoneIcon, PinIcon, UserIcon } from "@/components/icons";
 import { DocumentDrop } from "./DocumentDrop";
+import { track } from "@/lib/analytics";
 
 type Kind = "contact" | "enlevement" | "candidature" | "batterie" | "marchand";
 type Status = { state: "idle" | "sending" | "sent" | "error"; message?: string };
@@ -192,6 +193,9 @@ export function ContactForm({ kind = "contact", defaultSubject = "" }: { kind?: 
       const res = await fetch("/api/contact", { method: "POST", body: fd });
       const json = (await res.json()) as { ok: boolean; error?: string };
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Envoi impossible");
+      // Demande de contact, d'enlèvement, de batterie ou de compte marchand : prospect ; candidature à part
+      if (kind === "candidature") track("job_application");
+      else track("generate_lead", { form_type: kind, ...(kind === "contact" && fd.get("subject") ? { form_subject: String(fd.get("subject")) } : {}) });
       setStatus({ state: "sent" });
       form.reset();
       setMessageLength(0);

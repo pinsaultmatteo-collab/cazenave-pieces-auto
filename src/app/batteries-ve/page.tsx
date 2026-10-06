@@ -205,7 +205,7 @@ export default async function BatteriesPage({ searchParams }: PageProps<"/batter
             )}
           </div>
           <div className="mt-6">
-            <PartsGrid parts={result.items} emptyTitle="Aucune batterie en stock pour le moment" />
+            <PartsGrid parts={result.items} emptyTitle="Aucune batterie en stock pour le moment" list={{ id: "batteries_ve", name: "Batteries VE" }} />
           </div>
           <Pagination page={result.page} pages={result.pages} basePath="/batteries-ve" params={{ sort }} />
           <p className="mt-6 text-center text-xs leading-5 text-steel">

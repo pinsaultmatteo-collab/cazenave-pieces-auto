@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { getCart, getDeliveryMode, removeFromCart, setDeliveryMode, subscribeCart, type DeliveryMode } from "@/lib/cart";
 import { partHref } from "@/lib/catalog/links";
@@ -12,6 +12,7 @@ import { Price } from "./Price";
 import { site } from "@/lib/site";
 import { CloseIcon, LockIcon, PinIcon, TruckIcon } from "@/components/icons";
 import { PartPhoto } from "@/components/catalog/PartPhoto";
+import { toGaItem, trackItems, withRate } from "@/lib/analytics";
 
 type State = { loading: boolean; parts: Part[] };
 
@@ -48,6 +49,14 @@ export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }
       alive = false;
     });
   }, []);
+
+  // Panier consulté : un envoi par visite de la page
+  const viewed = useRef(false);
+  useEffect(() => {
+    if (state.loading || viewed.current || state.parts.length === 0) return;
+    viewed.current = true;
+    trackItems("view_cart", withRate(state.parts.map((p, i) => toGaItem(p, i)), rate));
+  }, [state, rate]);
 
   if (state.loading) {
     return <p className="text-sm text-steel">Chargement du panier…</p>;
@@ -97,7 +106,11 @@ export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }
             </div>
             <div className="flex flex-col items-end justify-between">
               <Price ttc={p.priceTtc} className="display-title text-2xl text-ink" />
-              <button type="button" onClick={() => removeFromCart(p.id)} className="flex items-center gap-1 text-xs font-semibold text-steel hover:text-red-600" aria-label={`Retirer ${p.name} du panier`}>
+              <button type="button" onClick={() => {
+                  trackItems("remove_from_cart", withRate([toGaItem(p)], rate));
+                  removeFromCart(p.id);
+                }}
+                className="flex items-center gap-1 text-xs font-semibold text-steel hover:text-red-600" aria-label={`Retirer ${p.name} du panier`}>
                 <CloseIcon size={14} /> Retirer
               </button>
             </div>
