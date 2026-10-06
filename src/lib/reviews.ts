@@ -1,9 +1,7 @@
 /**
- * Avis clients affichés sur l'accueil.
- *
- * ⚠️ Les avis ci-dessous sont des EXEMPLES de mise en page, à remplacer par
- * de vrais avis (export Google Business Profile, ou branchement de l'API
- * Google Places). Ne pas mettre en ligne tels quels.
+ * Avis clients affichés sur l'accueil : vrais avis de la fiche Google
+ * Business Profile de Cazenave, recopiés tels quels (relevé du 6 octobre
+ * 2026). Nom réduit au prénom et à l'initiale du nom.
  */
 export type Review = {
   author: string;
@@ -13,47 +11,54 @@ export type Review = {
   source: "Google";
 };
 
-export const SAMPLE_REVIEWS: Review[] = [
+export const REVIEWS: Review[] = [
   {
-    author: "Exemple · client particulier",
+    author: "Patrick R.",
+    rating: 5,
+    date: "Octobre 2026",
+    text: "Commande conforme à ce qui était annoncé. Livraison très rapide et renseignements sur le côté confirmé par téléphone. Service parfait.",
+    source: "Google",
+  },
+  {
+    author: "Hannibal S.",
     rating: 5,
     date: "Septembre 2026",
-    text: "Alternateur reçu en 48 h, bien emballé, conforme à la photo. Le SMS pour vérifier la compatibilité a été très utile.",
+    text: "Parfait. Rapide, efficace et tres bonne communication",
     source: "Google",
   },
   {
-    author: "Exemple · garage partenaire",
+    author: "Boulkroune J.",
     rating: 5,
-    date: "Août 2026",
-    text: "Interlocuteur unique, pièces disponibles au comptoir le jour même. On travaille avec eux depuis des années.",
+    date: "Septembre 2026",
+    text: "Pièce propre livraison rapide sur palette devant la Maison. Nickel",
     source: "Google",
   },
   {
-    author: "Exemple · enlèvement de véhicule",
+    author: "Christelle C.",
     rating: 5,
-    date: "Juillet 2026",
-    text: "Véhicule enlevé gratuitement en trois jours, démarches administratives faites par leurs soins. Simple et sérieux.",
+    date: "Septembre 2026",
+    text: "La pièce que j' ai commandé correspondait complètement et le délai de livraison a même avancé ! Super je recommande cette entreprise !",
     source: "Google",
   },
   {
-    author: "Exemple · client particulier",
-    rating: 4,
-    date: "Juin 2026",
-    text: "Bon rapport qualité-prix sur une porte d'occasion. Livraison un peu longue mais équipe réactive au téléphone.",
-    source: "Google",
-  },
-  {
-    author: "Exemple · carrossier",
+    author: "Hrantmj A.",
     rating: 5,
-    date: "Mai 2026",
-    text: "Optique et pare-chocs trouvés dans la couleur d'origine, photos fidèles. Gain de temps et d'argent pour nos clients.",
+    date: "Septembre 2026",
+    text: "Reçu très vite comme d'habitude, pièce presque neuve ça mérite les 5 étoiles merci beaucoup, ça fait des années que j'achète au même endroit 🤩✌️",
     source: "Google",
   },
   {
-    author: "Exemple · client particulier",
+    author: "Samuel L.",
     rating: 5,
-    date: "Avril 2026",
-    text: "Accueil au comptoir très pro, ils ont vérifié la compatibilité avec ma carte grise avant de me vendre la boîte de vitesses.",
+    date: "Septembre 2026",
+    text: "Commande traitée sans délai et colis reçu en parfait état. Reste à vérifier la compatibilité lors du montage prévu prochainement.",
+    source: "Google",
+  },
+  {
+    author: "Babela K.",
+    rating: 5,
+    date: "Septembre 2026",
+    text: "Échange par SMS rapide et efficace. Professionnalisme indéniable",
     source: "Google",
   },
 ];

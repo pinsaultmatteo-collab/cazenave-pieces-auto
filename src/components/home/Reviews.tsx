@@ -1,11 +1,11 @@
 import { site } from "@/lib/site";
-import { SAMPLE_REVIEWS, type Review } from "@/lib/reviews";
+import { REVIEWS, type Review } from "@/lib/reviews";
 import { Reveal } from "@/components/motion/Reveal";
 import { ArrowUpRightIcon, StarIcon } from "@/components/icons";
 import { ReviewsCarousel } from "./ReviewsCarousel";
 
 /** Bloc avis clients : mise en avant Google et carrousel d'avis. */
-export function Reviews({ reviews = SAMPLE_REVIEWS }: { reviews?: Review[] }) {
+export function Reviews({ reviews = REVIEWS }: { reviews?: Review[] }) {
   return (
     <section className="relative overflow-clip bg-mist">
       <div aria-hidden className="pointer-events-none absolute -right-32 top-10 h-96 w-96 rounded-full bg-brand/10 blur-3xl" />
