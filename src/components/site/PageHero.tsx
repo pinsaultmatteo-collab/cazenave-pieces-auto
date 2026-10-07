@@ -27,10 +27,10 @@ export function PageHero({ kicker, title, text, image, imageAlt = "", crumbs, ch
           fill
           preload
           fetchPriority="high"
-          // Photo assombrie par un voile : sur téléphone, une image plus petite et moins
-          // compressée ne se voit pas et accélère nettement l'affichage
-          sizes="(max-width: 640px) 70vw, 100vw"
-          quality={50}
+          // Photo couverte à 80-86 % par un voile sombre : sur téléphone, une image deux fois plus
+          // petite et plus compressée ne se voit pas (≈ 30 Ko au lieu de 98) et s'affiche bien plus vite
+          sizes="(max-width: 640px) 50vw, 100vw"
+          quality={40}
           placeholder={typeof image === "string" ? undefined : "blur"}
           className="-z-20 object-cover object-center"
         />
