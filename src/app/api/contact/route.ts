@@ -30,7 +30,14 @@ const schema = z.object({
   website: z.string().max(0).optional().or(z.literal("")),
 });
 
-const TO = process.env.CONTACT_TO_EMAIL ?? "contact@cazenave.net";
+/** Boîte de réception de chaque formulaire (choix de Sophie, oct. 2026). */
+const RECIPIENTS: Record<z.infer<typeof schema>["kind"], string> = {
+  contact: process.env.CONTACT_TO_EMAIL ?? "contact@cazenave.net",
+  enlevement: "administratif@cazenave.net",
+  marchand: "administratif@cazenave.net",
+  candidature: "gestion@cazenave.net",
+  batterie: "direction@cazenave.net",
+};
 const FROM = process.env.CONTACT_FROM_EMAIL ?? "Site cazenave.net <no-reply@cazenave.net>";
 /** Limite de Vercel : 4,5 Mo par requête, pièces jointes comprises. */
 const CV_MAX_BYTES = 4 * 1024 * 1024;
@@ -146,7 +153,7 @@ export async function POST(request: Request) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: FROM, to: [TO], reply_to: d.email, subject, text, attachments }),
+    body: JSON.stringify({ from: FROM, to: [RECIPIENTS[d.kind]], reply_to: d.email, subject, text, attachments }),
   });
   if (!res.ok) {
     console.error("[contact] échec Resend", res.status, await res.text());
