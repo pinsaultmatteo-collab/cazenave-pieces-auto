@@ -3,8 +3,11 @@ import { site } from "@/lib/site";
 import { getArticles } from "@/lib/mag";
 import { getBrands, getCategories, getVehicles, listModelLinks, listPartLinks, modelHref, partHref, vehicleHref } from "@/lib/catalog";
 
-/** Rendu mis en cache et rafraîchi au plus toutes les 60 minutes (stock synchronisé depuis Opisto). */
-export const revalidate = 3600;
+/**
+ * Rendu mis en cache et rafraîchi au plus toutes les 12 heures : la liste des
+ * 23 000 fiches pèse ~2,5 Mo à relire dans la base (transfert Neon compté).
+ */
+export const revalidate = 43200;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = site.url;

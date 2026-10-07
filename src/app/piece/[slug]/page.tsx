@@ -16,8 +16,11 @@ import { phasePeriod } from "@/lib/catalog/phases";
 import { toGaItem } from "@/lib/analytics";
 import { TrackItemList, TrackViewItem } from "@/components/analytics/Track";
 
-/** Rendu mis en cache et rafraîchi au plus toutes les 10 minutes (stock synchronisé depuis Opisto). */
-export const revalidate = 600;
+/**
+ * Rendu mis en cache et rafraîchi au plus toutes les 30 minutes, au rythme de la
+ * synchronisation Opisto. La disponibilité est revérifiée en base au paiement.
+ */
+export const revalidate = 1800;
 
 const CONDITION: Record<Part["condition"], string> = { GOOD: "Bon état", CORRECT: "État correct", BAD: "État moyen" };
 

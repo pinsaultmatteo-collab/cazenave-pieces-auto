@@ -4,7 +4,7 @@
  */
 import "server-only";
 import { cache } from "react";
-import { and, asc, count, desc, eq, inArray, isNull, ne, sql, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableColumns, inArray, isNull, ne, sql, type SQL } from "drizzle-orm";
 import { getDb } from "@/db";
 import { brands, categories, parts, ranges, subcategories, vehicles, type CategoryRow, type PartRow, type RangeRow, type SubCategoryRow, type VehicleRow } from "@/db/schema";
 import type { Brand, Category, DoorOption, Paginated, Part, PartCondition, PartSearch, Vehicle, VehicleModel, VehiclePhase } from "./types";
@@ -45,12 +45,30 @@ function toModel(r: RangeRow): VehicleModel {
   return { id: r.id, brandId: r.brandId, slug: r.slug, name: r.name };
 }
 
-function toPart(r: PartRow): Part {
+function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+  const out = { ...obj };
+  for (const k of keys) delete out[k];
+  return out;
+}
+
+/**
+ * Colonnes lues pour une pièce. Le transfert de données de Neon est compté :
+ * on ne relit jamais les tarifs de transport détaillés, les photos moyennes ni
+ * le texte de recherche (une ligne complète pèse ~4 Ko, dont 2,2 Ko inutiles).
+ */
+const PART_COLUMNS = omit(getTableColumns(parts), ["shippings", "photosMedium", "searchText"]);
+/** Colonnes d'une carte de pièce (listes) : sans galerie photo, description ni caractéristiques (~0,6 Ko). */
+const CARD_COLUMNS = omit(PART_COLUMNS, ["photos", "description", "characteristics"]);
+
+type PartData = Omit<PartRow, "shippings" | "photosMedium" | "searchText" | "photos" | "description" | "characteristics"> &
+  Partial<Pick<PartRow, "photos" | "description" | "characteristics">>;
+
+function toPart(r: PartData): Part {
   return {
     id: r.id,
     slug: r.slug,
     name: r.name,
-    description: r.description,
+    description: r.description ?? null,
     categoryId: r.categoryId ?? 0,
     categoryName: r.categoryName ?? "",
     subCategoryName: r.subCategoryName,
@@ -71,14 +89,14 @@ function toPart(r: PartRow): Part {
     warrantyMonths: r.warrantyMonths,
     manufacturerReference: r.manufacturerReference,
     adaptableReference: r.adaptableReference,
-    photos: r.photos,
+    photos: r.photos ?? (r.vignette ? [r.vignette] : []),
     vignette: r.vignette,
     available: r.available && !r.blocked && r.deletedAt === null,
     inStock: r.inStock,
     shippingAvailable: r.shippingAvailable,
     shippingCost: num(r.shippingCost),
     shippingId: r.shippingId,
-    characteristics: r.characteristics,
+    characteristics: r.characteristics ?? [],
     engineCode: r.engineCode,
     gearboxCode: r.gearboxCode,
     mileage: r.mileage,
@@ -429,7 +447,7 @@ export async function searchParts(params: PartSearch = {}): Promise<Paginated<Pa
   const [[{ total }], rows] = await Promise.all([
     db.select({ total: count() }).from(parts).where(where),
     db
-      .select()
+      .select(CARD_COLUMNS)
       .from(parts)
       .where(where)
       .orderBy(...order)
@@ -443,7 +461,7 @@ export async function searchParts(params: PartSearch = {}): Promise<Paginated<Pa
 export async function getLatestParts(limit = 8): Promise<Part[]> {
   const db = await getDb();
   const rows = await db
-    .select()
+    .select(CARD_COLUMNS)
     .from(parts)
     .where(and(LIVE, HAS_PHOTO))
     .orderBy(sql`${parts.opistoCreatedAt} desc nulls last`, desc(parts.id))
@@ -487,17 +505,17 @@ export async function getCategoryShowcase(): Promise<Record<number, { photo: str
 
 export async function getPart(id: number): Promise<Part | null> {
   const db = await getDb();
-  const [row] = await db.select().from(parts).where(eq(parts.id, id)).limit(1);
+  const [row] = await db.select(PART_COLUMNS).from(parts).where(eq(parts.id, id)).limit(1);
   return row ? toPart(row) : null;
 }
 
 export async function getRelatedParts(part: Part, limit = 4): Promise<Part[]> {
   const db = await getDb();
-  const out: PartRow[] = [];
+  const out: PartData[] = [];
   if (part.vehicleId) {
     out.push(
       ...(await db
-        .select()
+        .select(CARD_COLUMNS)
         .from(parts)
         .where(and(LIVE, ne(parts.id, part.id), eq(parts.vehicleId, part.vehicleId)))
         .orderBy(desc(parts.opistoCreatedAt))
@@ -508,7 +526,7 @@ export async function getRelatedParts(part: Part, limit = 4): Promise<Part[]> {
     const seen = [part.id, ...out.map((p) => p.id)];
     out.push(
       ...(await db
-        .select()
+        .select(CARD_COLUMNS)
         .from(parts)
         .where(and(LIVE, sql`${parts.id} not in (${sql.join(seen.map((id) => sql`${id}`), sql`, `)})`, eq(parts.name, part.name)))
         .orderBy(desc(parts.opistoCreatedAt))
