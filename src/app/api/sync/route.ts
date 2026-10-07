@@ -21,6 +21,13 @@ function authorized(request: Request): boolean {
   return token === secret || new URL(request.url).searchParams.get("secret") === secret;
 }
 
+/** Message d'erreur avec sa cause (Drizzle enveloppe l'erreur réelle de la base, ex. quota Neon dépassé). */
+function errorMessage(err: unknown): string {
+  if (!(err instanceof Error)) return String(err);
+  const cause = err.cause instanceof Error ? err.cause.message : err.cause ? String(err.cause) : "";
+  return cause ? `${err.message} | cause : ${cause}` : err.message;
+}
+
 export async function GET(request: Request) {
   if (!authorized(request)) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   // Vercel Cron appelle en GET : on synchronise si `run=1`, sinon on renvoie l'état.
@@ -29,7 +36,7 @@ export async function GET(request: Request) {
   try {
     return NextResponse.json(await syncStatus());
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });
+    return NextResponse.json({ error: errorMessage(err) }, { status: 500 });
   }
 }
 
@@ -46,7 +53,7 @@ export async function POST(request: Request) {
     if (report.done) revalidatePath("/");
     return NextResponse.json(report);
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
+    const message = errorMessage(err);
     console.error("[sync]", message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
