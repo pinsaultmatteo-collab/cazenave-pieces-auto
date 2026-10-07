@@ -1,11 +1,13 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { runSync, syncStatus, type SyncMode } from "@/lib/opisto/sync";
+import { checkPages, reportHealth, sendTestAlert } from "@/lib/alerts";
 
 /**
  * Synchronisation du stock Opisto.
  *   POST /api/sync?mode=delta|full   (Authorization: Bearer SYNC_SECRET)
  *   GET  /api/sync                   état et dernières exécutions
+ *   GET  /api/sync?test=alerte       e-mail de test de la surveillance (ALERT_EMAIL)
  * Appelée toutes les 30 minutes par le workflow GitHub Actions, ou à la main
  * avec `npm run sync`. Chaque appel travaille dans un budget de temps et
  * répond `done: false` s'il faut le rappeler pour terminer.
@@ -36,6 +38,8 @@ export async function GET(request: Request) {
   // Vercel Cron appelle en GET : on synchronise si `run=1`, sinon on renvoie l'état.
   const url = new URL(request.url);
   if (url.searchParams.get("run") === "1") return POST(request);
+  // Test de réception des alertes : GET /api/sync?test=alerte
+  if (url.searchParams.get("test") === "alerte") return NextResponse.json(await sendTestAlert());
   try {
     return NextResponse.json(await syncStatus());
   } catch (err) {
@@ -54,10 +58,13 @@ export async function POST(request: Request) {
     const report = await runSync({ mode, budgetMs });
     // L'accueil est mis en cache 30 min : on le régénère à la prochaine visite après chaque synchronisation terminée.
     if (report.done) revalidatePath("/");
+    // Surveillance : synchro réussie, on vérifie aussi que les pages clés répondent (alerte e-mail sinon)
+    if (report.done) await reportHealth(await checkPages(), { runId: report.runId });
     return NextResponse.json(report);
   } catch (err) {
     const message = errorMessage(err);
     console.error("[sync]", message);
+    await reportHealth([{ what: "Synchronisation du stock (base de données ou Opisto)", detail: message }]);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
