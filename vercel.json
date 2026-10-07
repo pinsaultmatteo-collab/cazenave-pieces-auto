@@ -1,5 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": [
+    "fra1"
+  ],
   "crons": [
     { "path": "/api/sync?run=1&mode=delta&slot=jour", "schedule": "0 5-18 * * 1-6" },
     { "path": "/api/sync?run=1&mode=delta&slot=soir", "schedule": "0 20 * * 1-6" },

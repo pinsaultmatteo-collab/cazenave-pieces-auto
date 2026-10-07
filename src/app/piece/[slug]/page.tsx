@@ -22,6 +22,11 @@ import { TrackItemList, TrackViewItem } from "@/components/analytics/Track";
  */
 export const revalidate = 1800;
 
+/** Aucune fiche préparée à la construction : chacune est rendue à sa première visite puis mise en cache (sans cela, Next la refait à chaque visite). */
+export function generateStaticParams(): { slug: string }[] {
+  return [];
+}
+
 const CONDITION: Record<Part["condition"], string> = { GOOD: "Bon état", CORRECT: "État correct", BAD: "État moyen" };
 
 async function load(slug: string) {

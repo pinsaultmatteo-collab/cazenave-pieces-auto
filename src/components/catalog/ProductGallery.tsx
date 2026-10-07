@@ -48,7 +48,7 @@ export function ProductGallery({ photos, alt }: { photos: string[]; alt: string 
             transition={{ duration: 0.3 }}
             className="absolute inset-0"
           >
-            <PartPhoto src={list[index]} alt={`${alt} · photo ${index + 1}`} fill preload sizes="(min-width: 1024px) 55vw, 100vw" />
+            <PartPhoto src={list[index]} alt={`${alt} · photo ${index + 1}`} fill preload={index === 0} fetchPriority={index === 0 ? "high" : "auto"} sizes="(min-width: 1024px) 55vw, 100vw" />
           </motion.div>
         </AnimatePresence>
         {count > 1 && (

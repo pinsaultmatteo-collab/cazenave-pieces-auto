@@ -13,6 +13,11 @@ import { PhoneIcon } from "@/components/icons";
 /** Rendu mis en cache et rafraîchi au plus toutes les 10 minutes (stock synchronisé depuis Opisto). */
 export const revalidate = 600;
 
+/** Fiches rendues à leur première visite puis mises en cache (ISR), comme les fiches pièces. */
+export function generateStaticParams(): { id: string; slug: string }[] {
+  return [];
+}
+
 export async function generateMetadata({ params }: PageProps<"/vehicule-occasion/[id]/[slug]">): Promise<Metadata> {
   const { id } = await params;
   const v = await getVehicle(Number(id));
