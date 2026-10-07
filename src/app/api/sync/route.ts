@@ -11,14 +11,17 @@ import { runSync, syncStatus, type SyncMode } from "@/lib/opisto/sync";
  * répond `done: false` s'il faut le rappeler pour terminer.
  */
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+// Parcours complet de nuit en un ou deux appels (tâche planifiée Vercel, budget 280 s)
+export const maxDuration = 300;
 
+/** SYNC_SECRET (appel manuel, GitHub) ou CRON_SECRET (envoyé par les tâches planifiées Vercel, voir vercel.json). */
 function authorized(request: Request): boolean {
-  const secret = process.env.SYNC_SECRET || process.env.CRON_SECRET;
-  if (!secret) return process.env.NODE_ENV !== "production";
+  const secrets = [process.env.SYNC_SECRET, process.env.CRON_SECRET].filter((s): s is string => Boolean(s));
+  if (!secrets.length) return process.env.NODE_ENV !== "production";
   const header = request.headers.get("authorization") ?? "";
   const token = header.replace(/^Bearer\s+/i, "");
-  return token === secret || new URL(request.url).searchParams.get("secret") === secret;
+  const query = new URL(request.url).searchParams.get("secret");
+  return secrets.some((s) => token === s || query === s);
 }
 
 /** Message d'erreur avec sa cause (Drizzle enveloppe l'erreur réelle de la base, ex. quota Neon dépassé). */

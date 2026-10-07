@@ -1,14 +1,16 @@
 name: Synchronisation Opisto
 
-# Toutes les 30 minutes : appelle l'API du site déployé, qui met à jour la
-# base Neon depuis Opisto (delta ; parcours complet automatique une fois par
-# jour ou sur demande). Secrets à renseigner dans GitHub :
+# Secours : les synchros régulières sont lancées par les tâches planifiées
+# Vercel (vercel.json). Celle-ci tourne une fois par nuit si la synchro Vercel
+# a manqué le parcours complet, et reste lançable à la main (Actions → Run).
+# Elle appelle l'API du site déployé, qui met à jour la base Neon depuis
+# Opisto. Secrets à renseigner dans GitHub :
 #   SITE_URL     ex. https://cazenave.net
 #   SYNC_SECRET  même valeur que la variable SYNC_SECRET sur Vercel
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "30 3 * * *"
   workflow_dispatch:
     inputs:
       mode:

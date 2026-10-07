@@ -380,11 +380,12 @@ export async function runSync(options: SyncOptions = {}): Promise<SyncReport> {
   const report: SyncReport = { runId: null, mode: "none", done: false, requests: 0, partsUpserted: 0, partsDeleted: 0, vehiclesUpserted: 0, durationMs: 0 };
 
   // Mode effectif : reprise d'un full en cours, full demandé ou jamais fait, full périodique, sinon delta.
+  // Un delta demandé explicitement (synchros de journée) ne lance pas le full périodique, réservé à la nuit.
   const cursor = await getState(db, KEYS.fullCursor);
   const completedAt = await getState(db, KEYS.fullCompletedAt);
   let mode: SyncMode = "delta";
   if (cursor || options.mode === "full" || !completedAt) mode = "full";
-  else if (Date.now() - new Date(completedAt).getTime() > FULL_EVERY_MS) mode = "full";
+  else if (options.mode !== "delta" && Date.now() - new Date(completedAt).getTime() > FULL_EVERY_MS) mode = "full";
   report.mode = mode;
 
   const [run] = await db.insert(syncRuns).values({ mode, status: "running" }).returning({ id: syncRuns.id });
