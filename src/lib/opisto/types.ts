@@ -70,6 +70,8 @@ export type OpistoVehicle = {
   VIN?: string;
   Year?: string;
   TypeMine?: string;
+  /** Procédure en cours (VEI, VGE…) : énumération VehicleProcedure, 0 = non renseignée */
+  VehicleProcedure?: number | string | null;
   PoliceId?: number;
   Infos?: string | null;
 };

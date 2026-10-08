@@ -128,6 +128,7 @@ function toVehicle(r: VehicleRow): Vehicle {
     photos: r.photos,
     vignette: r.vignette,
     typeMine: r.typeMine,
+    procedure: r.procedure,
     partsCount: r.partsCount,
   };
 }

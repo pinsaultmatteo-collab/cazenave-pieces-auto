@@ -60,6 +60,8 @@ export type Vehicle = {
   photos: string[];
   vignette: string | null;
   typeMine: string | null;
+  /** Procédure administrative (VEI, VGE…), information demandée par les professionnels */
+  procedure: string | null;
   /** Nombre de pièces disponibles issues de ce véhicule */
   partsCount: number;
 };

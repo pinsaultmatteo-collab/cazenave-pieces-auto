@@ -2,6 +2,7 @@ import { slugify } from "@/lib/slug";
 import type { NewPartRow, NewVehicleRow } from "@/db/schema";
 import { fromOpistoDate } from "./dates";
 import type { OpistoPart, OpistoVehicle } from "./types";
+import { procedureCode } from "@/lib/catalog/procedures";
 
 /** Nettoie les libellés Opisto (capitales, espaces multiples). */
 export function cleanLabel(value: string | undefined | null): string | null {
@@ -95,6 +96,7 @@ export function mapVehicle(v: OpistoVehicle, casse: number, now: Date): NewVehic
     status: cleanLabel(v.Status),
     expertPrice: money(v.ExpertPrice),
     salePrice: typeof v.Price === "number" && v.Price > 0 ? money(v.Price) : null,
+    procedure: procedureCode(v.VehicleProcedure),
     photos: photoUrls(v),
     vignette: photoUrls(v, "medium")[0] || (isRealPhoto(v.Vignette) ? v.Vignette : null),
     policeId: v.PoliceId ?? null,

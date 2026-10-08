@@ -80,6 +80,7 @@ export const DEMO_VEHICLES: Vehicle[] = VEHICLE_SEEDS.map(([brand, model, versio
   photos: [photo, "/demo/parc-rows.jpg", "/demo/aisle.jpg"],
   vignette: photo,
   typeMine: null,
+  procedure: null,
   partsCount: 0,
 }));
 

@@ -30,6 +30,7 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
           </Link>
         </h3>
         <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-steel">
+          {vehicle.procedure && <span className="font-bold text-ink">Procédure {vehicle.procedure}</span>}
           {year && <span>{year}</span>}
           {vehicle.mileage !== null && <span>{formatMileage(vehicle.mileage)}</span>}
           {vehicle.energy && <span>{vehicle.energy}</span>}

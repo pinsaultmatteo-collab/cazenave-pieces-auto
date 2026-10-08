@@ -50,6 +50,13 @@
       "when": 1790943512945,
       "tag": "0006_customer-accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791448264465,
+      "tag": "0007_vehicle-procedure",
+      "breakpoints": true
     }
   ]
 }

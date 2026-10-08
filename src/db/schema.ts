@@ -95,6 +95,8 @@ export const vehicles = pgTable(
     expertPrice: numeric("expert_price", { precision: 10, scale: 2 }),
     /** Prix de vente du véhicule (Vehicle.Price), distinct de l'estimation de l'expert */
     salePrice: numeric("sale_price", { precision: 10, scale: 2 }),
+    /** Procédure administrative (VEI, VGE…), code lisible ; voir src/lib/catalog/procedures.ts */
+    procedure: text("procedure"),
     photos: jsonb("photos").$type<string[]>().notNull().default([]),
     vignette: text("vignette"),
     policeId: integer("police_id"),
