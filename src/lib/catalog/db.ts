@@ -537,6 +537,14 @@ export async function getRelatedParts(part: Part, limit = 4): Promise<Part[]> {
   return out.map(toPart);
 }
 
+/** Adresses des fiches de ces pièces (en stock ou retirées), pour vider leur cache après une synchronisation. */
+export async function getPartPaths(ids: number[]): Promise<string[]> {
+  if (!ids.length) return [];
+  const db = await getDb();
+  const rows = await db.select({ id: parts.id, slug: parts.slug }).from(parts).where(inArray(parts.id, ids));
+  return rows.map((r) => `/piece/${r.id}-${r.slug}`);
+}
+
 /** Adresses de toutes les pièces en stock (plan du site). */
 export async function listPartLinks(): Promise<{ id: number; slug: string; updatedAt: string }[]> {
   const db = await getDb();

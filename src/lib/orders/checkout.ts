@@ -2,7 +2,7 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { orders, type NewOrderRow, type OrderAddress, type OrderItem, type OrderRow } from "@/db/schema";
-import { getPart, partHref } from "@/lib/catalog";
+import { getPartFresh, partHref } from "@/lib/catalog";
 import { checkoutSchema, type CheckoutData, type CheckoutInput } from "./schema";
 import { newOrderRef } from "./refs";
 import { proPrice } from "@/lib/account/pricing";
@@ -47,7 +47,7 @@ export async function createPendingOrder(raw: CheckoutInput, account: Account | 
   if (data.website) throw new CheckoutError("Requête rejetée", "validation");
 
   const ids = [...new Set(data.items)];
-  const parts = await Promise.all(ids.map((id) => getPart(id)));
+  const parts = await Promise.all(ids.map((id) => getPartFresh(id)));
   const missing = ids.filter((id, i) => !parts[i]);
   const unavailable = parts.filter((p): p is NonNullable<typeof p> => !!p && !(p.available && p.inStock));
   if (missing.length || unavailable.length) {

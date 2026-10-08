@@ -1,4 +1,4 @@
-import { getPart } from "@/lib/catalog";
+import { getPartFresh } from "@/lib/catalog";
 
 /** Renvoie les pièces demandées par identifiant : /api/parts?ids=1,2,3 (panier). */
 export async function GET(request: Request) {
@@ -8,6 +8,6 @@ export async function GET(request: Request) {
     .map((s) => Number(s))
     .filter((n) => Number.isInteger(n) && n > 0)
     .slice(0, 50);
-  const parts = (await Promise.all(ids.map((id) => getPart(id)))).filter((p) => p !== null);
+  const parts = (await Promise.all(ids.map((id) => getPartFresh(id)))).filter((p) => p !== null);
   return Response.json({ parts });
 }

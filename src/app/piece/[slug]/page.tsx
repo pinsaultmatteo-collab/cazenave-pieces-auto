@@ -17,10 +17,10 @@ import { toGaItem } from "@/lib/analytics";
 import { TrackItemList, TrackViewItem } from "@/components/analytics/Track";
 
 /**
- * Rendu mis en cache et rafraîchi au plus toutes les 30 minutes, au rythme de la
- * synchronisation Opisto. La disponibilité est revérifiée en base au paiement.
+ * Rendu mis en cache 24 h : la synchronisation Opisto vide la fiche dès que la pièce
+ * change ou est vendue (voir /api/sync). La disponibilité est revérifiée en base au paiement.
  */
-export const revalidate = 1800;
+export const revalidate = 86400;
 
 /** Aucune fiche préparée à la construction : chacune est rendue à sa première visite puis mise en cache (sans cela, Next la refait à chaque visite). */
 export function generateStaticParams(): { slug: string }[] {

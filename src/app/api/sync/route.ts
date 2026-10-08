@@ -1,6 +1,7 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-import { runSync, syncStatus, type SyncMode } from "@/lib/opisto/sync";
+import { runSync, syncStatus, type SyncMode, type SyncReport } from "@/lib/opisto/sync";
+import { CATALOG_TAG, VEHICLES_TAG, getPartPaths, partTag } from "@/lib/catalog";
 import { checkPages, reportHealth, sendTestAlert } from "@/lib/alerts";
 
 /**
@@ -8,6 +9,7 @@ import { checkPages, reportHealth, sendTestAlert } from "@/lib/alerts";
  *   POST /api/sync?mode=delta|full   (Authorization: Bearer SYNC_SECRET)
  *   GET  /api/sync                   état et dernières exécutions
  *   GET  /api/sync?test=alerte       e-mail de test de la surveillance (ALERT_EMAIL)
+ *   GET  /api/sync?piece=123456      vide le cache de la fiche de cette pièce
  * Appelée toutes les 30 minutes par le workflow GitHub Actions, ou à la main
  * avec `npm run sync`. Chaque appel travaille dans un budget de temps et
  * répond `done: false` s'il faut le rappeler pour terminer.
@@ -26,6 +28,25 @@ function authorized(request: Request): boolean {
   return secrets.some((s) => token === s || query === s);
 }
 
+/**
+ * Après une synchronisation terminée : listes du catalogue rafraîchies à la prochaine visite,
+ * et fiches des pièces modifiées ou vendues vidées tout de suite (les autres restent en cache).
+ */
+async function refreshCaches(report: SyncReport) {
+  if (report.partsUpserted + report.partsDeleted > 0) revalidateTag(CATALOG_TAG, "max");
+  if (report.vehiclesUpserted > 0) revalidateTag(VEHICLES_TAG, "max");
+  await refreshParts(report.changedPartIds ?? []);
+}
+
+/** Vide le cache des fiches de ces pièces (données et page). Renvoie les adresses vidées. */
+async function refreshParts(partIds: number[]): Promise<string[]> {
+  const ids = [...new Set(partIds)];
+  for (const id of ids) revalidateTag(partTag(id), { expire: 0 });
+  const paths = await getPartPaths(ids);
+  for (const path of paths) revalidatePath(path);
+  return paths;
+}
+
 /** Message d'erreur avec sa cause (Drizzle enveloppe l'erreur réelle de la base, ex. quota Neon dépassé). */
 function errorMessage(err: unknown): string {
   if (!(err instanceof Error)) return String(err);
@@ -40,6 +61,9 @@ export async function GET(request: Request) {
   if (url.searchParams.get("run") === "1") return POST(request);
   // Test de réception des alertes : GET /api/sync?test=alerte
   if (url.searchParams.get("test") === "alerte") return NextResponse.json(await sendTestAlert());
+  // Fiche à rafraîchir à la main : GET /api/sync?piece=123456
+  const piece = Number(url.searchParams.get("piece"));
+  if (Number.isInteger(piece) && piece > 0) return NextResponse.json({ refreshed: await refreshParts([piece]) });
   try {
     return NextResponse.json(await syncStatus());
   } catch (err) {
@@ -58,9 +82,11 @@ export async function POST(request: Request) {
     const report = await runSync({ mode, budgetMs });
     // L'accueil est mis en cache 30 min : on le régénère à la prochaine visite après chaque synchronisation terminée.
     if (report.done) revalidatePath("/");
+    if (report.done) await refreshCaches(report);
     // Surveillance : synchro réussie, on vérifie aussi que les pages clés répondent (alerte e-mail sinon)
     if (report.done) await reportHealth(await checkPages(), { runId: report.runId });
-    return NextResponse.json(report);
+    const { changedPartIds, ...summary } = report;
+    return NextResponse.json({ ...summary, changedParts: changedPartIds?.length ?? 0 });
   } catch (err) {
     const message = errorMessage(err);
     console.error("[sync]", message);

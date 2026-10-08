@@ -11,8 +11,8 @@ import { ProductGallery } from "@/components/catalog/ProductGallery";
 import { PartsGrid } from "@/components/catalog/PartsGrid";
 import { PhoneIcon } from "@/components/icons";
 
-/** Rendu mis en cache et rafraîchi au plus toutes les 10 minutes (stock synchronisé depuis Opisto). */
-export const revalidate = 600;
+/** Rendu mis en cache 6 h ; les données du véhicule et de ses pièces sont rafraîchies à chaque synchronisation Opisto (étiquettes de cache). */
+export const revalidate = 21600;
 
 /** Fiches rendues à leur première visite puis mises en cache (ISR), comme les fiches pièces. */
 export function generateStaticParams(): { id: string; slug: string }[] {
