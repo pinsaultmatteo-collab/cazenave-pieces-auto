@@ -10,8 +10,10 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/10">
       <Link href={vehicleHref(vehicle)} className="relative block aspect-[4/3] overflow-hidden bg-mist">
         {vehicle.vignette && (
+          // Photo Opisto en taille moyenne servie telle quelle (pas de recompression facturée par Vercel)
           <Image
             src={vehicle.vignette}
+            unoptimized
             alt={vehicleLabel(vehicle)}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"

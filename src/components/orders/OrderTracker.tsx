@@ -281,7 +281,7 @@ function OrderView({ order }: { order: TrackedOrder }) {
           {order.items.map((i) => (
             <li key={i.id} className="flex items-center gap-3 py-3">
               <span className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-mist">
-                {i.photo && <PartPhoto src={i.photo} alt="" fill sizes="80px" />}
+                {i.photo && <PartPhoto opistoSize="small" src={i.photo} alt="" fill sizes="80px" />}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-bold text-ink">{i.name}</span>

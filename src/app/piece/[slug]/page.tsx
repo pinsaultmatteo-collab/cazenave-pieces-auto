@@ -17,15 +17,11 @@ import { toGaItem } from "@/lib/analytics";
 import { TrackItemList, TrackViewItem } from "@/components/analytics/Track";
 
 /**
- * Rendu mis en cache 24 h : la synchronisation Opisto vide la fiche dès que la pièce
- * change ou est vendue (voir /api/sync). La disponibilité est revérifiée en base au paiement.
+ * Fiche rendue à chaque visite, toujours à jour du stock. Pas de mise en cache : les
+ * robots consultent chacune des 20 000 fiches une seule fois, et chaque mise en cache
+ * était une écriture facturée par Vercel qui ne resservait presque jamais (10 oct. 2026).
  */
-export const revalidate = 86400;
-
-/** Aucune fiche préparée à la construction : chacune est rendue à sa première visite puis mise en cache (sans cela, Next la refait à chaque visite). */
-export function generateStaticParams(): { slug: string }[] {
-  return [];
-}
+export const dynamic = "force-dynamic";
 
 const CONDITION: Record<Part["condition"], string> = { GOOD: "Bon état", CORRECT: "État correct", BAD: "État moyen" };
 

@@ -8,14 +8,15 @@
  * Les pages consomment ces fonctions sans rien savoir de la source. Les
  * composants client importent uniquement `./links` et `./types`.
  *
- * Cache de données : chaque visite (robots compris) réveillait la base Neon,
- * qui ne se mettait jamais en veille (≈ 7 h de calcul par jour). Les lectures
- * sont donc gardées dans le cache de données de Vercel :
- * - étiquette `catalog` (listes, compteurs, filtres) : vidée après chaque
- *   synchronisation qui a changé le stock (voir /api/sync) ;
- * - étiquette `part-{id}` (fiche produit) : vidée pour la seule pièce modifiée
- *   ou vendue, les 20 000 autres fiches restent en cache.
- * Le panier et le paiement lisent la base en direct (`getPartFresh`).
+ * Cache de données : seules les données communes à tout le catalogue
+ * (familles, marques, modèles, compteurs, nouveautés, véhicules à vendre)
+ * sont gardées dans le cache de Vercel, étiquette `catalog`, vidée après
+ * chaque synchronisation qui change le stock (voir /api/sync). Elles sont
+ * relues par presque toutes les pages.
+ * Le reste (fiches, recherches, filtres d'une page modèle) est lu en direct :
+ * les robots consultent chaque fiche une seule fois, et le mettre en cache
+ * coûtait des écritures facturées par Vercel sans jamais resservir
+ * (mesuré le 10 oct. 2026 : 0,4 lecture par écriture).
  */
 import { unstable_cache } from "next/cache";
 import * as db from "./db";
@@ -40,64 +41,39 @@ export function isDemoData(): boolean {
 
 const impl = () => (catalogSource() === "demo" ? demo : db);
 
-/** Étiquettes du cache de données, vidées par /api/sync. */
+/** Étiquette du cache de données, vidée par /api/sync. */
 export const CATALOG_TAG = "catalog";
-export const VEHICLES_TAG = "vehicles";
-export const partTag = (id: number) => `part-${id}`;
-
-const HOUR = 3600;
 
 type AsyncFn = (...args: never[]) => Promise<unknown>;
 
-/** Lecture mise en cache (base de données uniquement ; le jeu de démonstration est lu tel quel). */
-function cached<F extends AsyncFn>(name: string, dbFn: F, demoFn: F, options: { tags: string[]; revalidate: number }): F {
-  const fromCache = unstable_cache(dbFn as unknown as (...args: unknown[]) => Promise<unknown>, ["catalog", name], options);
+/** Lecture partagée mise en cache 6 h au plus (base de données uniquement ; le jeu de démonstration est lu tel quel). */
+function shared<F extends AsyncFn>(name: string, dbFn: F, demoFn: F): F {
+  const fromCache = unstable_cache(dbFn as unknown as (...args: unknown[]) => Promise<unknown>, ["catalog", name], { tags: [CATALOG_TAG], revalidate: 6 * 3600 });
   return ((...args: Parameters<F>) => (catalogSource() === "demo" ? demoFn(...args) : fromCache(...args))) as F;
 }
 
-/** Données du catalogue : rafraîchies à chaque synchronisation (au plus 6 h sans changement). */
-const catalog = <F extends AsyncFn>(name: string, dbFn: F, demoFn: F) => cached(name, dbFn, demoFn, { tags: [CATALOG_TAG], revalidate: 6 * HOUR });
+/* Données communes, relues par presque toutes les pages : en cache. */
+export const getCategories = shared("getCategories", db.getCategories, demo.getCategories);
+export const getCategoryBySlug = shared("getCategoryBySlug", db.getCategoryBySlug, demo.getCategoryBySlug);
+export const getBrands = shared("getBrands", db.getBrands, demo.getBrands);
+export const getBrandBySlug = shared("getBrandBySlug", db.getBrandBySlug, demo.getBrandBySlug);
+export const getModels = shared("getModels", db.getModels, demo.getModels);
+export const getModelsWithCounts = shared("getModelsWithCounts", db.getModelsWithCounts, demo.getModelsWithCounts);
+export const listModelLinks = shared("listModelLinks", db.listModelLinks, demo.listModelLinks);
+export const getBrandCounts = shared("getBrandCounts", db.getBrandCounts, demo.getBrandCounts);
+export const getCategoryCounts = shared("getCategoryCounts", db.getCategoryCounts, demo.getCategoryCounts);
+export const getLatestParts = shared("getLatestParts", db.getLatestParts, demo.getLatestParts);
+export const getCategoryShowcase = shared("getCategoryShowcase", db.getCategoryShowcase, demo.getCategoryShowcase);
+export const getVehicles = shared("getVehicles", db.getVehicles, demo.getVehicles);
 
-export const getCategories = catalog("getCategories", db.getCategories, demo.getCategories);
-export const getCategoryBySlug = catalog("getCategoryBySlug", db.getCategoryBySlug, demo.getCategoryBySlug);
-export const getBrands = catalog("getBrands", db.getBrands, demo.getBrands);
-export const getBrandBySlug = catalog("getBrandBySlug", db.getBrandBySlug, demo.getBrandBySlug);
-export const getModels = catalog("getModels", db.getModels, demo.getModels);
-export const getModelsWithCounts = catalog("getModelsWithCounts", db.getModelsWithCounts, demo.getModelsWithCounts);
-export const getCategoryFacets = catalog("getCategoryFacets", db.getCategoryFacets, demo.getCategoryFacets);
-export const listModelLinks = catalog("listModelLinks", db.listModelLinks, demo.listModelLinks);
-export const getPhases = catalog("getPhases", db.getPhases, demo.getPhases);
-export const getDoorOptions = catalog("getDoorOptions", db.getDoorOptions, demo.getDoorOptions);
-export const getBrandCounts = catalog("getBrandCounts", db.getBrandCounts, demo.getBrandCounts);
-export const getCategoryCounts = catalog("getCategoryCounts", db.getCategoryCounts, demo.getCategoryCounts);
-export const searchParts = catalog("searchParts", db.searchParts, demo.searchParts);
-export const getLatestParts = catalog("getLatestParts", db.getLatestParts, demo.getLatestParts);
-export const getCategoryShowcase = catalog("getCategoryShowcase", db.getCategoryShowcase, demo.getCategoryShowcase);
-export const suggest = catalog("suggest", db.suggest, demo.suggest);
-export const getVehicles = cached("getVehicles", db.getVehicles, demo.getVehicles, { tags: [CATALOG_TAG, VEHICLES_TAG], revalidate: 6 * HOUR });
-export const getVehicle = cached("getVehicle", db.getVehicle, demo.getVehicle, { tags: [VEHICLES_TAG], revalidate: 6 * HOUR });
-
-/** Fiche produit : en cache 24 h, vidée dès que la pièce change ou est vendue (étiquette propre à la pièce). */
-export const getPart: typeof db.getPart = (id) =>
-  catalogSource() === "demo" ? demo.getPart(id) : unstable_cache(() => db.getPart(id), ["catalog", "getPart", String(id)], { tags: [partTag(id)], revalidate: 24 * HOUR })();
-
-export const getPartModel: typeof db.getPartModel = (id) =>
-  catalogSource() === "demo" ? demo.getPartModel(id) : unstable_cache(() => db.getPartModel(id), ["catalog", "getPartModel", String(id)], { tags: [partTag(id)], revalidate: 24 * HOUR })();
-
-/** Pièces associées d'une fiche : en cache 6 h (une pièce vendue entre-temps mène à la page « plus en rayon »). */
-export const getRelatedParts: typeof db.getRelatedParts = (part, limit) =>
-  catalogSource() === "demo"
-    ? demo.getRelatedParts(part, limit)
-    : unstable_cache(() => db.getRelatedParts(part, limit), ["catalog", "getRelatedParts", String(part.id), String(part.vehicleId), part.name, String(limit ?? 4)], {
-        tags: ["related"],
-        revalidate: 6 * HOUR,
-      })();
-
-/** Liste des 20 000 fiches (plan du site) : trop volumineuse pour le cache de données, le plan du site est lui-même mis en cache 12 h. */
+/* Lectures propres à une page (fiche, recherche, filtres) : en direct. */
+export const getCategoryFacets: typeof db.getCategoryFacets = (...a) => impl().getCategoryFacets(...a);
+export const getPhases: typeof db.getPhases = (...a) => impl().getPhases(...a);
+export const getDoorOptions: typeof db.getDoorOptions = (...a) => impl().getDoorOptions(...a);
+export const searchParts: typeof db.searchParts = (...a) => impl().searchParts(...a);
+export const suggest: typeof db.suggest = (...a) => impl().suggest(...a);
+export const getPart: typeof db.getPart = (...a) => impl().getPart(...a);
+export const getPartModel: typeof db.getPartModel = (...a) => impl().getPartModel(...a);
+export const getRelatedParts: typeof db.getRelatedParts = (...a) => impl().getRelatedParts(...a);
+export const getVehicle: typeof db.getVehicle = (...a) => impl().getVehicle(...a);
 export const listPartLinks: typeof db.listPartLinks = (...a) => impl().listPartLinks(...a);
-
-/** Adresses des fiches à vider après une synchronisation (lecture directe). */
-export const getPartPaths: typeof db.getPartPaths = (...a) => impl().getPartPaths(...a);
-
-/** Lecture directe, sans cache : disponibilité au moment du panier et du paiement. */
-export const getPartFresh: typeof db.getPart = (...a) => impl().getPart(...a);

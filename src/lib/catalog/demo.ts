@@ -48,11 +48,6 @@ export async function listModelLinks(): Promise<{ brand: string; model: string; 
   return [];
 }
 
-export async function getPartPaths(ids: number[]): Promise<string[]> {
-  void ids;
-  return [];
-}
-
 export async function getPartModel(partId: number): Promise<{ brand: string; brandName: string; model: string; modelName: string } | null> {
   void partId;
   return null;

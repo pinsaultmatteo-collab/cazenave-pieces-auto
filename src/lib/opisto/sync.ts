@@ -37,8 +37,6 @@ export type SyncReport = {
   cursor?: { page: number; total: number | null; startedAt: string };
   window?: { from: string; to: string };
   error?: string;
-  /** Pièces créées, modifiées ou retirées pendant l'appel : leurs fiches en cache sont à rafraîchir (non renvoyé par l'API). */
-  changedPartIds?: number[];
 };
 
 export type SyncOptions = {
@@ -296,8 +294,6 @@ async function runFull(ctx: Ctx): Promise<void> {
     .where(and(isNull(parts.deletedAt), lt(parts.syncedAt, startedAt)))
     .returning({ id: parts.id });
   report.partsDeleted += gone.length;
-  // Parcours complet : seules les pièces retirées changent d'état (les modifications passent par les deltas)
-  report.changedPartIds = [...(report.changedPartIds ?? []), ...gone.map((g) => g.id)];
 
   const veh = await syncVehicles(db, new Date(), deadline + 30_000);
   report.vehiclesUpserted += veh.upserted;
@@ -366,7 +362,6 @@ async function runDelta(ctx: Ctx): Promise<void> {
   const removed: number[] = [];
   for (let i = 0; i < goneIds.length; i += 500) removed.push(...(await markDeleted(db, goneIds.slice(i, i + 500), to)));
   report.partsDeleted += removed.length;
-  report.changedPartIds = [...(report.changedPartIds ?? []), ...live.map((p) => p.Id), ...removed];
 
   const veh = await syncVehicles(db, to, ctx.deadline + 30_000);
   report.vehiclesUpserted += veh.upserted;

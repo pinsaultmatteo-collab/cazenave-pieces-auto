@@ -76,7 +76,7 @@ export function ProductGallery({ photos, alt }: { photos: string[]; alt: string 
                 aria-current={i === index}
                 className={`relative h-20 w-24 overflow-hidden rounded-xl border-2 transition ${i === index ? "border-brand" : "border-transparent opacity-70 hover:opacity-100"}`}
               >
-                <PartPhoto src={p} alt="" fill sizes="96px" />
+                <PartPhoto opistoSize="small" src={p} alt="" fill sizes="96px" />
               </button>
             </li>
           ))}

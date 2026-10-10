@@ -88,7 +88,7 @@ export function CartView({ paymentEnabled = true }: { paymentEnabled?: boolean }
         {state.parts.map((p) => (
           <li key={p.id} className="flex gap-4 rounded-2xl border border-line bg-white p-4">
             <Link href={partHref(p)} className="relative h-24 w-32 shrink-0 overflow-hidden rounded-xl bg-mist">
-              {p.vignette && <PartPhoto src={p.vignette} alt="" fill sizes="128px" />}
+              {p.vignette && <PartPhoto opistoSize="small" src={p.vignette} alt="" fill sizes="128px" />}
             </Link>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">{p.categoryName}</p>

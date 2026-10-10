@@ -18,6 +18,7 @@ export function PartCard({ part, priority = false }: { part: Part; priority?: bo
       <Link href={partHref(part)} className="relative block aspect-[4/3] overflow-hidden bg-white">
         {part.vignette ? (
           <PartPhoto
+            opistoSize="medium"
             src={part.vignette}
             alt={`${part.name} ${vehicle}`.trim()}
             fill

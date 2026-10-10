@@ -11,13 +11,8 @@ import { ProductGallery } from "@/components/catalog/ProductGallery";
 import { PartsGrid } from "@/components/catalog/PartsGrid";
 import { PhoneIcon } from "@/components/icons";
 
-/** Rendu mis en cache 6 h ; les données du véhicule et de ses pièces sont rafraîchies à chaque synchronisation Opisto (étiquettes de cache). */
-export const revalidate = 21600;
-
-/** Fiches rendues à leur première visite puis mises en cache (ISR), comme les fiches pièces. */
-export function generateStaticParams(): { id: string; slug: string }[] {
-  return [];
-}
+/** Fiche rendue à chaque visite, comme les fiches pièces (pas de mise en cache facturée pour des pages vues une fois par les robots). */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/vehicule-occasion/[id]/[slug]">): Promise<Metadata> {
   const { id } = await params;
