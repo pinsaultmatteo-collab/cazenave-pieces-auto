@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/site/PageHero";
 import { CatalogSection, readCatalogParams } from "@/components/catalog/catalog-page";
-import { getCategories, getCategoryCounts } from "@/lib/catalog";
+import { getCategories, getCategoryCounts, isDemoData } from "@/lib/catalog";
 import { photos } from "@/lib/photos";
 import { CategoryIcon } from "@/components/svg/CategoryIcons";
 import { HeroSearch } from "@/components/home/HeroSearch";
@@ -16,7 +16,9 @@ export const metadata: Metadata = {
 
 export default async function PartsPage({ searchParams }: PageProps<"/pieces-auto">) {
   const params = readCatalogParams(await searchParams);
-  const [categories, counts] = await Promise.all([getCategories(), getCategoryCounts()]);
+  const [allCategories, counts] = await Promise.all([getCategories(), getCategoryCounts()]);
+  // Seules les familles qui ont du stock (pas de « Pneus 0 ») ; le jeu de démonstration n'a pas de compteurs fiables
+  const categories = isDemoData() ? allCategories : allCategories.filter((c) => (counts[c.id] ?? 0) > 0);
 
   return (
     <>

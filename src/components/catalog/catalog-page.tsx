@@ -125,7 +125,7 @@ export async function CatalogSection({ basePath, params, fixed }: CatalogSection
         basePath={basePath}
         categories={categories
           .map((c) => ({ slug: c.slug, name: c.name, count: modelFacets ? (modelFacets.find((f) => f.slug === c.slug)?.count ?? 0) : (catCounts[c.id] ?? 0) }))
-          .filter((c) => !modelFacets || c.count > 0 || c.slug === values.category)}
+          .filter((c) => c.count > 0 || c.slug === values.category)}
         brands={brands.map((b) => ({ slug: b.slug, name: b.name, count: brandCounts[b.id] ?? 0 }))}
         modelsByBrand={{ ...modelsByBrand, ...(effective.brand && fixed?.brand ? { [effective.brand]: modelsByBrand[effective.brand] ?? [] } : {}) }}
         values={{ ...values, brand: values.brand ?? fixed?.brand, model: values.model ?? fixed?.model }}

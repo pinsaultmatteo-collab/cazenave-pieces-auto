@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
 import { getArticles } from "@/lib/mag";
-import { getBrands, getCategories, getVehicles, listModelLinks, listPartLinks, modelHref, partHref, vehicleHref } from "@/lib/catalog";
+import { getBrands, getCategories, getCategoryCounts, getVehicles, listModelLinks, listPartLinks, modelHref, partHref, vehicleHref } from "@/lib/catalog";
 
 /**
  * Rendu mis en cache et rafraîchi au plus toutes les 12 heures : la liste des
@@ -28,8 +28,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/garantie`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
   ];
 
-  const [categories, brands, models, parts, vehicles] = await Promise.all([
+  const [categories, categoryCounts, brands, models, parts, vehicles] = await Promise.all([
     getCategories(),
+    getCategoryCounts(),
     getBrands(),
     listModelLinks(),
     listPartLinks(),
@@ -38,7 +39,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...statics,
-    ...categories.map((c) => ({ url: `${base}/pieces-auto/${c.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.8 })),
+    // Familles sans pièce en stock exclues (pages vides)
+    ...categories.filter((c) => (categoryCounts[c.id] ?? 0) > 0).map((c) => ({ url: `${base}/pieces-auto/${c.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.8 })),
     ...brands.map((b) => ({ url: `${base}/pieces-auto/marques/${b.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.7 })),
     ...models.map((m) => ({ url: `${base}${modelHref(m.brand, m.model)}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.7 })),
     ...parts.map((p) => ({ url: `${base}${partHref(p)}`, lastModified: new Date(p.updatedAt), changeFrequency: "weekly" as const, priority: 0.6 })),
